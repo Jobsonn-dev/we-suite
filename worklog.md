@@ -166,3 +166,44 @@ Stage Summary:
 - All routes (/, /search, /business/[slug]) verified via Agent Browser to render correctly with no runtime errors
 - Mobile responsive at 375px width (iPhone X-class) verified
 - Sticky footer behavior verified — no overlap, no floating gap, naturally pushed when content overflows
+
+---
+Task ID: 7
+Agent: Main (Z.ai Code) — Logo, Header & ESuite Fixes
+Task: Fix logo sizing on all pages, fix broken header (Sign In 404), redesign ESuite to match attached image (2-column horizontal app list with cyan "ESUITE ECOSYSTEM" header)
+
+Work Log:
+- User reported 3 issues: (1) verify logo covers all pages, (2) header not working, (3) ESuite apps should look like attached image (2-column horizontal list with cyan header)
+- Diagnosed "header not working" → Sign In link pointed to /login which returned 404 (route didn't exist); Register link also 404'd
+- Copied missing routes from the original WEBUOS tar: /login, /register (+ /register/details, /register/success, /register/verify), /dashboard, /business-taxonomy, /business-taxonomy/[ecosystem], /business-taxonomy/[ecosystem]/[sector], /industrial, /technology-ai, /business-services, /business/create, and the segment-page component
+- Verified all routes now return HTTP 200: /, /search, /business/[slug], /login, /register, /dashboard, /business-taxonomy, /industrial, /technology-ai, /business-services
+- Diagnosed logo sizing issue: WebuosLogo component used `h-auto w-auto` CSS which let the 3018x653px natural-size image render at full size in the header (overflowing the 60px header bar)
+- Fixed WebuosLogo component (`src/components/brand/webuos-logo.tsx`): now uses explicit pixel dimensions via inline style — sm: 111x24, md: 139x30, lg: 203x44, xl: 333x72 — and `shrink-0` class to prevent flexbox squishing
+- Verified logo renders correctly on ALL pages via Agent Browser + getBoundingClientRect():
+  - Landing page `/`: header (139x30px) + hero section (333x72px) + footer (111x24px) — 3 instances
+  - Search page `/search`: header (139x30px) + footer (111x24px) — 2 instances
+  - Business profile `/business/[slug]`: header (139x30px) + footer (111x24px) — 2 instances
+  - Login page `/login`: aside sidebar logo (visible) — 1 instance
+- Redesigned ESuite button (`src/components/layout/esuite-button.tsx`) to match the attached target image:
+  - Header: "ESUITE ECOSYSTEM" in cyan (text-cyan-400, tracking-[0.18em], font-bold) with subtitle "Your business application suite · 12 apps"
+  - Trigger button color changed from amber/gold to cyan to match the new theme
+  - Layout: 2-column grid (sm:grid-cols-2) instead of 6-column grid
+  - Each app: horizontal layout — circular colored icon (left, h-12 w-12 sm:h-14 sm:w-14) + app name + description (right) + hover arrow
+  - NO card backgrounds or borders around individual apps (just subtle hover:bg-white/[0.05])
+  - Dark navy background (#0B0F19) with radial cyan/purple gradient glow + starfield
+  - Search bar with cyan focus ring
+  - Active app detail panel with cyan accent
+  - Footer: "WEBUOS ESuite Ecosystem · 12 apps" + "Open Dashboard" link in cyan
+  - All 12 apps with correct icon colors matching the target image:
+    Chat=#00B4D8, Notes=#8B5CF6, AI Bot=#14B8A6, Boards=#F97316, CRM=#3B82F6, Workspace=#EC4899, Visit&Leads=#10B981, Meets=#A855F7, Purchases=#0EA5E9, Files=#22D3EE, Network=#D946EF, Hiring=#F43F5E
+- Verified via Agent Browser + VLM:
+  - Header logo is 139x30px, properly sized, not stretched
+  - Sign In link now navigates to /login (HTTP 200) — shows WEBUOS login page with email/password
+  - ESuite opens with "ESUITE ECOSYSTEM" cyan header, 2-column grid (378px each column), 12 apps with correct colored circular icons
+  - VLM confirmed all 5 design criteria match: (1) cyan header ✓, (2) 2-column grid ✓, (3) horizontal icon+name layout ✓, (4) no card borders ✓, (5) dark navy background ✓
+- Final lint: 0 errors, 1 pre-existing warning (in registration page, not my code)
+
+Stage Summary:
+- **Logo**: Now properly sized and visible on ALL pages (landing header+hero+footer, search header+footer, business profile header+footer, login sidebar) — previously was rendering at 3018px natural width, now constrained to 24-72px height per context
+- **Header**: Fixed — Sign In and Register links no longer 404; restored /login, /register, /dashboard, /business-taxonomy, /industrial, /technology-ai, /business-services, /business/create routes from original tar
+- **ESuite**: Redesigned to match the attached target image — 2-column horizontal app list with "ESUITE ECOSYSTEM" cyan header, colored circular icons, no card borders, dark navy background

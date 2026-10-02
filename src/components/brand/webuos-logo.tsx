@@ -1,11 +1,12 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+// Logo dimensions — height in px, width derived from aspect ratio (3018:653 ≈ 4.62:1)
 const sizes = {
-  sm: { h: 28, w: 129 },
-  md: { h: 34, w: 156 },
-  lg: { h: 48, w: 221 },
-  xl: { h: 76, w: 350 },
+  sm: { h: 24, w: 111 },
+  md: { h: 30, w: 139 },
+  lg: { h: 44, w: 203 },
+  xl: { h: 72, w: 333 },
 };
 
 export function WebuosLogo({
@@ -22,7 +23,8 @@ export function WebuosLogo({
       alt="WEBUOS"
       width={dim.w}
       height={dim.h}
-      className={cn("h-auto w-auto", className)}
+      className={cn("shrink-0", className)}
+      style={{ height: `${dim.h}px`, width: `${dim.w}px` }}
       priority
       unoptimized
     />
