@@ -2,43 +2,75 @@
 
 import { useState, useRef, useEffect } from "react";
 import {
-  Layers, ChevronDown, X, Search, MessageSquare, StickyNote, Bot,
-  KanbanSquare, Contact, Briefcase, MapPin, Video, ShoppingCart,
-  FolderOpen, Globe, UserPlus, LogOut, ArrowRight, LayoutGrid,
+  Layers, ChevronDown, X, Search,
+  MessageSquare, StickyNote, Bot, KanbanSquare, Contact, Briefcase,
+  MapPin, Video, ShoppingCart, FolderOpen, Globe, UserPlus,
+  Mail, Calendar, BarChart3, FileText, Wallet, CreditCard,
+  Truck, Package, Users, Settings, Shield, Bell, Star, CheckSquare,
+  Database, Cloud, Cpu, Code2, PenTool,
+  LogOut, ArrowRight, LayoutGrid, type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ============================================================
 // ESuite Ecosystem App Launcher
-// 2-column horizontal list with circular colored icons
+// Small icon-over-name tiles in a responsive grid
 // "ESUITE ECOSYSTEM" header in cyan, dark navy background
 // ============================================================
 
 interface AppDef {
   id: string;
   name: string;
-  icon: typeof MessageSquare;
+  icon: LucideIcon;
   desc: string;
-  // Solid background color for the circular icon (hex or tailwind class)
+  // Solid background color for the icon tile (tailwind class)
   iconBg: string;
-  // App page route (relative)
   href: string;
 }
 
 const apps: AppDef[] = [
+  // Communication & Collaboration
   { id: "chat", name: "Chat", icon: MessageSquare, desc: "Real-time messaging", iconBg: "bg-[#00B4D8]", href: "/dashboard" },
-  { id: "notes", name: "Notes", icon: StickyNote, desc: "Capture ideas & knowledge", iconBg: "bg-[#8B5CF6]", href: "/dashboard" },
-  { id: "ai-bot", name: "AI Bot", icon: Bot, desc: "AI assistant for business", iconBg: "bg-[#14B8A6]", href: "/dashboard" },
-  { id: "boards", name: "Boards", icon: KanbanSquare, desc: "Kanban project boards", iconBg: "bg-[#F97316]", href: "/dashboard" },
-  { id: "crm", name: "CRM", icon: Contact, desc: "Customer relationships", iconBg: "bg-[#3B82F6]", href: "/dashboard" },
-  { id: "workspace", name: "Workspace", icon: Briefcase, desc: "Your business workspace", iconBg: "bg-[#EC4899]", href: "/dashboard" },
-  { id: "visit", name: "Visit & Leads", icon: MapPin, desc: "Discovery & lead tracking", iconBg: "bg-[#10B981]", href: "/dashboard" },
   { id: "meets", name: "Meets", icon: Video, desc: "Video meetings & calls", iconBg: "bg-[#A855F7]", href: "/dashboard" },
+  { id: "mail", name: "Mail", icon: Mail, desc: "Business email", iconBg: "bg-[#3B82F6]", href: "/dashboard" },
+  { id: "notes", name: "Notes", icon: StickyNote, desc: "Capture ideas & knowledge", iconBg: "bg-[#8B5CF6]", href: "/dashboard" },
+  // AI & Automation
+  { id: "ai-bot", name: "AI Bot", icon: Bot, desc: "AI assistant for business", iconBg: "bg-[#14B8A6]", href: "/dashboard" },
+  { id: "ai-flow", name: "AI Flow", icon: Cpu, desc: "AI workflow builder", iconBg: "bg-[#06B6D4]", href: "/dashboard" },
+  // Productivity & Projects
+  { id: "boards", name: "Boards", icon: KanbanSquare, desc: "Kanban project boards", iconBg: "bg-[#F97316]", href: "/dashboard" },
+  { id: "calendar", name: "Calendar", icon: Calendar, desc: "Schedule & events", iconBg: "bg-[#EF4444]", href: "/dashboard" },
+  { id: "tasks", name: "Tasks", icon: CheckSquare, desc: "Task management", iconBg: "bg-[#22D3EE]", href: "/dashboard" },
+  { id: "docs", name: "Docs", icon: FileText, desc: "Document editor", iconBg: "bg-[#0EA5E9]", href: "/dashboard" },
+  // CRM & Sales
+  { id: "crm", name: "CRM", icon: Contact, desc: "Customer relationships", iconBg: "bg-[#3B82F6]", href: "/dashboard" },
+  { id: "visit", name: "Visit & Leads", icon: MapPin, desc: "Discovery & lead tracking", iconBg: "bg-[#10B981]", href: "/dashboard" },
+  { id: "pipeline", name: "Pipeline", icon: BarChart3, desc: "Sales pipeline & deals", iconBg: "bg-[#F59E0B]", href: "/dashboard" },
+  // Finance & Commerce
+  { id: "wallet", name: "Wallet", icon: Wallet, desc: "Business wallet & payments", iconBg: "bg-[#10B981]", href: "/dashboard" },
+  { id: "invoices", name: "Invoices", icon: CreditCard, desc: "Billing & invoicing", iconBg: "bg-[#6366F1]", href: "/dashboard" },
   { id: "purchases", name: "Purchases", icon: ShoppingCart, desc: "Procurement & orders", iconBg: "bg-[#0EA5E9]", href: "/dashboard" },
+  { id: "logistics", name: "Logistics", icon: Truck, desc: "Shipments & delivery", iconBg: "bg-[#F97316]", href: "/dashboard" },
+  { id: "inventory", name: "Inventory", icon: Package, desc: "Stock & warehouse", iconBg: "bg-[#14B8A6]", href: "/dashboard" },
+  // Workspace & People
+  { id: "workspace", name: "Workspace", icon: Briefcase, desc: "Your business workspace", iconBg: "bg-[#EC4899]", href: "/dashboard" },
   { id: "files", name: "Files", icon: FolderOpen, desc: "Document storage & sharing", iconBg: "bg-[#22D3EE]", href: "/dashboard" },
   { id: "network", name: "Network", icon: Globe, desc: "Business connections", iconBg: "bg-[#D946EF]", href: "/dashboard" },
   { id: "hiring", name: "Hiring", icon: UserPlus, desc: "Recruitment & talent", iconBg: "bg-[#F43F5E]", href: "/dashboard" },
+  { id: "team", name: "Team", icon: Users, desc: "Team & directory", iconBg: "bg-[#8B5CF6]", href: "/dashboard" },
+  // Insights & Tools
+  { id: "analytics", name: "Analytics", icon: BarChart3, desc: "Reports & insights", iconBg: "bg-[#06B6D4]", href: "/dashboard" },
+  { id: "database", name: "Database", icon: Database, desc: "Data & records", iconBg: "bg-[#6366F1]", href: "/dashboard" },
+  { id: "cloud", name: "Cloud", icon: Cloud, desc: "Cloud storage & apps", iconBg: "bg-[#0EA5E9]", href: "/dashboard" },
+  { id: "devtools", name: "DevTools", icon: Code2, desc: "Developer tools", iconBg: "bg-[#14B8A6]", href: "/dashboard" },
+  { id: "design", name: "Design", icon: PenTool, desc: "Brand & creative assets", iconBg: "bg-[#EC4899]", href: "/dashboard" },
+  { id: "security", name: "Security", icon: Shield, desc: "Security & compliance", iconBg: "bg-[#EF4444]", href: "/dashboard" },
+  { id: "alerts", name: "Alerts", icon: Bell, desc: "Notifications & alerts", iconBg: "bg-[#F59E0B]", href: "/dashboard" },
+  { id: "favorites", name: "Favorites", icon: Star, desc: "Saved & starred items", iconBg: "bg-[#FACC15]", href: "/dashboard" },
+  { id: "settings", name: "Settings", icon: Settings, desc: "Account & preferences", iconBg: "bg-[#64748B]", href: "/dashboard" },
 ];
+
+export const esuiteApps = apps;
 
 export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }) {
   const [open, setOpen] = useState(false);
@@ -50,7 +82,10 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node) && btnRef.current && !btnRef.current.contains(e.target as Node)) {
+      if (
+        panelRef.current && !panelRef.current.contains(e.target as Node) &&
+        btnRef.current && !btnRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
         setSelected(null);
       }
@@ -137,8 +172,7 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
           <div
             className="pointer-events-none absolute inset-x-0 bottom-0 h-48"
             style={{
-              background:
-                "radial-gradient(ellipse 60% 100% at 50% 100%, rgba(34,211,238,0.15), transparent 70%)",
+              background: "radial-gradient(ellipse 60% 100% at 50% 100%, rgba(34,211,238,0.15), transparent 70%)",
             }}
           />
 
@@ -173,7 +207,7 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
           {/* Body */}
           <div className="relative z-10 flex flex-1 flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto px-5 py-6 scrollbar-thin sm:px-10 sm:py-8">
-              <div className="mx-auto max-w-3xl">
+              <div className="mx-auto max-w-5xl">
                 {/* Search */}
                 <div className="mb-6 relative">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
@@ -192,8 +226,8 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
                   {activeApp ? "Selected application" : "All applications"}
                 </p>
 
-                {/* 2-column horizontal app list */}
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
+                {/* Small icon-over-name tile grid */}
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3 md:grid-cols-6 lg:grid-cols-8">
                   {filtered.map((app) => {
                     const Icon = app.icon;
                     const isActive = selected === app.id;
@@ -202,40 +236,32 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
                         key={app.id}
                         type="button"
                         onClick={() => setSelected(isActive ? null : app.id)}
+                        title={app.desc}
                         className={cn(
-                          "group flex items-center gap-4 rounded-xl px-4 py-3.5 text-left transition-all duration-200 sm:px-5 sm:py-4",
+                          "group flex flex-col items-center gap-2 rounded-xl px-2 py-3 text-center transition-all duration-200",
                           isActive
                             ? "bg-white/[0.08] ring-1 ring-cyan-500/40"
                             : "hover:bg-white/[0.05]",
                         )}
                       >
-                        {/* Circular colored icon */}
+                        {/* Small colored rounded-square icon */}
                         <span
                           className={cn(
-                            "inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-white shadow-lg transition-transform duration-200 group-hover:scale-110 sm:h-14 sm:w-14",
+                            "inline-flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-md transition-transform duration-200 group-hover:scale-110 sm:h-12 sm:w-12",
                             app.iconBg,
                           )}
                         >
-                          <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                          <Icon className="h-5 w-5 sm:h-[22px] sm:w-[22px]" />
                         </span>
-                        {/* App name + description */}
-                        <span className="min-w-0 flex-1">
-                          <span className="block text-base font-semibold text-white sm:text-lg">
-                            {app.name}
-                          </span>
-                          <span className="block truncate text-xs text-white/50 sm:text-[13px]">
-                            {app.desc}
-                          </span>
-                        </span>
-                        {/* Hover arrow */}
-                        <ArrowRight
+                        {/* App name */}
+                        <span
                           className={cn(
-                            "h-4 w-4 shrink-0 text-cyan-400 transition-all",
-                            isActive
-                              ? "translate-x-0 opacity-100"
-                              : "-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-100",
+                            "block truncate text-[11px] font-medium sm:text-xs",
+                            isActive ? "text-white" : "text-white/70 group-hover:text-white",
                           )}
-                        />
+                        >
+                          {app.name}
+                        </span>
                       </button>
                     );
                   })}
@@ -260,7 +286,7 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
                       <div className="flex items-center gap-4">
                         <span
                           className={cn(
-                            "inline-flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg",
+                            "inline-flex h-14 w-14 items-center justify-center rounded-xl text-white shadow-lg",
                             activeApp.iconBg,
                           )}
                         >

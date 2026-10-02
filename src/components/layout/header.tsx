@@ -1,13 +1,140 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { Globe, Menu, X, Search, ArrowRight } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Globe, Menu, X, Search, ArrowRight, Mic } from "lucide-react";
 import { WebuosLogo } from "@/components/brand/webuos-logo";
-import { ESuiteButton } from "@/components/layout/esuite-button";
+import { ESuiteButton, esuiteApps } from "@/components/layout/esuite-button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
+
+// ============================================================
+// Header Search Bar
+// Compact search input + dropdown showing smaller app icons + names
+// ============================================================
+function HeaderSearch() {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [focused, setFocused] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setFocused(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Filter apps for the dropdown
+  const filteredApps = query.trim()
+    ? esuiteApps.filter(
+        (a) =>
+          a.name.toLowerCase().includes(query.toLowerCase()) ||
+          a.desc.toLowerCase().includes(query.toLowerCase()),
+      )
+    : esuiteApps.slice(0, 8); // Show first 8 apps by default
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!query.trim()) return;
+    setFocused(false);
+    router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+  }
+
+  function openApp(href: string) {
+    setFocused(false);
+    setQuery("");
+    router.push(href);
+  }
+
+  return (
+    <div ref={ref} className="relative w-full max-w-md">
+      <form onSubmit={submit} className="relative flex items-center">
+        <Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground" />
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setFocused(true)}
+          placeholder="Search companies, products, services..."
+          className="h-9 w-full rounded-full border border-border bg-muted/50 pl-10 pr-10 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+          aria-label="Search"
+        />
+        <button
+          type="submit"
+          className="absolute right-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+          aria-label="Submit search"
+        >
+          <ArrowRight className="h-3.5 w-3.5" />
+        </button>
+      </form>
+
+      {/* Dropdown: smaller app icons + names */}
+      {focused && (
+        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-2xl border border-border bg-popover shadow-soft-lg" style={{ animation: "fadeIn .15s ease-out" }}>
+          {/* Quick apps section */}
+          <div className="border-b border-border p-3">
+            <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {query.trim() ? `Matching apps (${filteredApps.length})` : "Quick apps"}
+            </p>
+            <div className="grid grid-cols-4 gap-1 sm:grid-cols-5">
+              {filteredApps.slice(0, 10).map((app) => {
+                const Icon = app.icon;
+                return (
+                  <button
+                    key={app.id}
+                    type="button"
+                    onClick={() => openApp(app.href)}
+                    title={app.desc}
+                    className="group flex flex-col items-center gap-1.5 rounded-lg px-1.5 py-2 transition-colors hover:bg-muted"
+                  >
+                    <span
+                      className={cn(
+                        "inline-flex h-9 w-9 items-center justify-center rounded-lg text-white shadow-sm transition-transform group-hover:scale-110",
+                        app.iconBg,
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className="block w-full truncate text-center text-[10px] font-medium text-foreground/80 group-hover:text-foreground">
+                      {app.name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Search action footer */}
+          <div className="p-2">
+            <button
+              type="button"
+              onClick={() => {
+                setFocused(false);
+                if (query.trim()) router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+              }}
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <span className="flex-1 truncate">
+                {query.trim() ? (
+                  <>Search WEBUOS for <span className="font-semibold text-foreground">&ldquo;{query}&rdquo;</span></>
+                ) : (
+                  <>Type to search the WEBUOS ecosystem</>
+                )}
+              </span>
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -42,10 +169,9 @@ export function Header() {
         </Link>
 
         <div className={cn("flex flex-1 items-center justify-center transition-opacity duration-300", showSearch ? "opacity-100" : "opacity-0 pointer-events-none")}>
-          <form onSubmit={submit} className={cn("relative hidden w-full max-w-md items-center md:flex", showSearch ? "flex" : "hidden")}>
-            <Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground" />
-            <input type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search companies, products, services..." className="h-9 w-full rounded-full border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15" />
-          </form>
+          <div className={cn("hidden w-full md:block", showSearch ? "block" : "hidden")}>
+            <HeaderSearch />
+          </div>
           <button type="button" onClick={() => setSearchOpen(true)} className={cn("inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground md:hidden", showSearch ? "flex" : "hidden")} aria-label="Search">
             <Search className="h-4 w-4" />
           </button>

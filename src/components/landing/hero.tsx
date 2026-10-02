@@ -17,7 +17,8 @@ export function Hero() {
         <div className="mb-3 flex justify-center"><WebuosLogo size="xl" /></div>
         <h1 className="sr-only">WEBUOS - Global Business Discovery Platform</h1>
         <p className="mb-8 max-w-3xl text-center text-base font-medium text-foreground/80 sm:text-lg">
-          World Enterprises Business Unified Operating System Connecting &amp; Powering Business.
+          World Enterprises Business Unified Operating System —{" "}
+          <span className="font-semibold text-foreground">Connecting &amp; Powering the Ecosystem.</span>
         </p>
         <SearchBar />
         <div className="mt-5 flex w-full max-w-[620px] flex-col items-center justify-center gap-2.5 sm:flex-row">

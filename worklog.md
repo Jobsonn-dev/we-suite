@@ -207,3 +207,61 @@ Stage Summary:
 - **Logo**: Now properly sized and visible on ALL pages (landing header+hero+footer, search header+footer, business profile header+footer, login sidebar) — previously was rendering at 3018px natural width, now constrained to 24-72px height per context
 - **Header**: Fixed — Sign In and Register links no longer 404; restored /login, /register, /dashboard, /business-taxonomy, /industrial, /technology-ai, /business-services, /business/create routes from original tar
 - **ESuite**: Redesigned to match the attached target image — 2-column horizontal app list with "ESUITE ECOSYSTEM" cyan header, colored circular icons, no card borders, dark navy background
+
+---
+Task ID: 8
+Agent: Main (Z.ai Code) — Header Search Dropdown, ESuite Tiles, Hero Tagline
+Task: Modify header search bar to show app dropdown, redesign ESuite with small icon-over-name tiles + more dummy apps, update hero tagline
+
+Work Log:
+- User requested 3 changes: (1) header search bar should show a dropdown with smaller app icons + names, (2) ESuite apps should display as smaller icons with names (like the attached image showing a grid of small icon-over-name tiles), (3) add more dummy apps, (4) update hero tagline to "World Enterprises Business Unified Operating System — Connecting & Powering the Ecosystem."
+
+**Change 1 — Hero tagline updated** (`src/components/landing/hero.tsx`):
+- Old: "World Enterprises Business Unified Operating System Connecting & Powering Business."
+- New: "World Enterprises Business Unified Operating System — Connecting & Powering the Ecosystem."
+- Added em-dash separator and bolded "Connecting & Powering the Ecosystem." for visual emphasis
+- Verified via Agent Browser + VLM: exact tagline confirmed including em-dash and "Ecosystem" wording
+
+**Change 2 — ESuite redesigned with small icon-over-name tiles + more apps** (`src/components/layout/esuite-button.tsx`):
+- Added 20 more dummy apps (12 → 32 total apps) across categories:
+  - Communication & Collaboration: Chat, Meets, Mail, Notes
+  - AI & Automation: AI Bot, AI Flow
+  - Productivity & Projects: Boards, Calendar, Tasks, Docs
+  - CRM & Sales: CRM, Visit & Leads, Pipeline
+  - Finance & Commerce: Wallet, Invoices, Purchases, Logistics, Inventory
+  - Workspace & People: Workspace, Files, Network, Hiring, Team
+  - Insights & Tools: Analytics, Database, Cloud, DevTools, Design, Security, Alerts, Favorites, Settings
+- Changed layout from 2-column horizontal list (icon-left + name-right) to **small icon-over-name tile grid**:
+  - Responsive grid: 3 cols mobile → 4 cols sm → 6 cols md → 8 cols lg
+  - Each tile: small colored rounded-square icon (h-11 w-11 / h-12 w-12) on top + app name below (text-[11px] / text-xs)
+  - No card backgrounds (just subtle hover:bg-white/[0.05])
+  - Active tile gets ring-1 ring-cyan-500/40
+- Exported `esuiteApps` array so the header search dropdown can reuse the same app list
+- Verified via Agent Browser + VLM: 32 apps shown in grid, header "ESUITE ECOSYSTEM" in cyan, small rounded-square icons with white symbols, app names below
+
+**Change 3 — Header search bar dropdown added** (`src/components/layout/header.tsx`):
+- Created new `HeaderSearch` component (compact, inline in header) with:
+  - Search input (h-9, rounded-full) with magnifying glass icon + submit arrow button
+  - On focus: dropdown appears below showing "Quick apps" section
+  - Quick apps grid: 4 cols mobile / 5 cols sm — small 9x9 colored rounded-lg icons + 10px app names
+  - Shows first 8 apps by default, filters by query when typing
+  - Clicking an app navigates to /dashboard (app route)
+  - Footer: "Search WEBUOS for '<query>'" action that submits the search
+  - Closes on outside click or Escape
+- Replaced the old plain `<form>` in the header with `<HeaderSearch />`
+- Mobile search (hamburger menu) unchanged
+- Verified via Agent Browser + VLM: dropdown shows small app icons (Chat=cyan, Meets=purple, Mail=blue, Notes=violet, AI Bot=teal, AI Flow=cyan, Boards=orange, Calendar=red) with names below in a grid
+
+**Verification:**
+- `bun run lint`: 0 errors (1 pre-existing warning in registration page, not my code)
+- All routes return HTTP 200: /, /search, /business/[slug], /login, /register, /dashboard
+- Agent Browser confirmed:
+  - Hero tagline: "World Enterprises Business Unified Operating System — Connecting & Powering the Ecosystem." ✓
+  - ESuite: 32 apps in small icon-over-name tile grid ✓
+  - Header search dropdown: shows quick apps as small icons + names ✓
+
+Stage Summary:
+- Hero tagline updated with em-dash and "Ecosystem" wording
+- ESuite redesigned: 32 apps (was 12) shown as small icon-over-name tiles in a responsive 3-8 column grid (was 2-column horizontal list)
+- Header search bar enhanced with a dropdown showing quick app access (small colored icons + names) and a "Search WEBUOS for..." action footer
+- All changes verified end-to-end via Agent Browser + VLM
