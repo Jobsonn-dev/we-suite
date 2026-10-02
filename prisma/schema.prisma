@@ -1,0 +1,256 @@
+// ============================================================
+// WEBUOS - Global Business Search Engine Schema
+// Business Discovery Platform Data Model
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// USERS & ORGANIZATIONS
+// ============================================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SearchHistory {
+  id        String   @id @default(cuid())
+  query     String
+  userId    String?
+  sessionId String?
+  createdAt DateTime @default(now())
+
+  @@index([query])
+  @@index([userId])
+}
+
+model SavedBusiness {
+  id        String   @id @default(cuid())
+  userId    String
+  companyId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, companyId])
+}
+
+// ============================================================
+// BUSINESS ENTITIES (searchable)
+// ============================================================
+
+model Company {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  logoUrl        String?
+  verified       Boolean  @default(false)
+  claimed        Boolean  @default(false)
+  registered     Boolean  @default(true)
+  pendingVerification Boolean @default(false)
+
+  businessType   String   // Manufacturer, Supplier, Distributor, etc.
+  businessSize   String?  // Startup, Small, Medium, Large, Enterprise
+  establishedYear Int?
+
+  ecosystemId    String   // industrial, technology-ai, business-services
+  sectorId       String?
+  categoryId     String?
+
+  industryName   String?
+  categoryName   String?
+
+  description    String?
+  website        String?
+  email          String?
+  phone          String?
+
+  country        String?
+  state          String?
+  city           String?
+  district       String?
+  postalCode    String?
+  latitude       Float?
+  longitude      Float?
+
+  address        String?
+  businessHours  String?
+
+  employeeRange  String?  // "1-10", "11-50", "51-200", etc.
+  annualRevenue  String?
+
+  industriesServed String? // comma-separated
+  marketsServed   String?  // comma-separated
+  certifications  String?  // comma-separated
+
+  foundedYear    Int?
+  socialLinks    String?  // JSON string
+
+  rating         Float    @default(0)
+  reviewCount    Int      @default(0)
+
+  productCount   Int      @default(0)
+  serviceCount   Int      @default(0)
+
+  views          Int      @default(0)
+  popularity     Float    @default(0) // internal ranking signal
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  products       Product[]
+  services       Service[]
+
+  @@index([ecosystemId])
+  @@index([businessType])
+  @@index([country, state, city])
+  @@index([verified])
+  @@index([name])
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  imageUrl    String?
+  description String?
+
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  category    String?
+  subcategory String?
+  brand       String?
+
+  specifications String? // JSON
+  moq         String?  // minimum order quantity
+  priceRange  String?
+  currency    String?
+  availability String? // In Stock, Out of Stock, Made to Order
+  exporter    Boolean  @default(false)
+
+  country     String?
+  state       String?
+  city        String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([category])
+  @@index([name])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  category    String?
+  industryServed String?
+  coverage    String? // Local, National, Global
+  pricingModel String? // Hourly, Fixed, Subscription, Quote
+  availability String?
+
+  country     String?
+  state       String?
+  city        String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([category])
+  @@index([name])
+}
+
+model Industry {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  ecosystemId String?
+  sectorId    String?
+  categoryId  String?
+
+  categoryCount Int   @default(0)
+  companyCount  Int   @default(0)
+  productCount  Int   @default(0)
+  serviceCount  Int   @default(0)
+  technologyCount Int @default(0)
+
+  createdAt   DateTime @default(now())
+
+  @@index([ecosystemId])
+  @@index([name])
+}
+
+model Technology {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  type        String?  // Software, Platform, AI, Cloud, etc.
+  description String?
+  providers   String?  // comma-separated
+  useCases    String?  // comma-separated
+  industries  String?  // comma-separated
+  companyCount Int @default(0)
+
+  createdAt   DateTime @default(now())
+
+  @@index([name])
+  @@index([type])
+}
+
+model Location {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  type        String   // Country, State, City, District
+  country     String?
+  state       String?
+  city        String?
+
+  businessCount Int @default(0)
+  industries    String? // comma-separated
+  popularCompanies String? // comma-separated
+
+  createdAt   DateTime @default(now())
+
+  @@index([name])
+  @@index([type])
+}
+
+model SearchEvent {
+  id        String   @id @default(cuid())
+  query     String
+  eventType String   // search_started, search_submitted, search_result_viewed, company_opened, etc.
+  resultCount Int?
+  clickedPosition Int?
+  sessionId String?
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([query])
+  @@index([eventType])
+}
+
+model SearchSynonym {
+  id        String   @id @default(cuid())
+  term      String   @unique
+  synonyms  String   // comma-separated
+  createdAt DateTime @default(now())
+}

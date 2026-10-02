@@ -1,0 +1,2002 @@
+     1→     1→WEBUOS Global Business Search Engine
+     2→     2→
+     3→     3→TAGLINE:
+     4→     4→World Enterprises Business Unified Operating System Connecting & Powering Business.
+     5→     5→
+     6→     6→PROJECT OBJECTIVE:
+     7→     7→
+     8→     8→Transform the existing WEBUOS landing page into a powerful, enterprise-grade global search engine and business discovery platform.
+     9→     9→
+    10→    10→The search experience should be inspired by the usability and simplicity of Google Search, but WEBUOS must NOT be a visual clone of Google.
+    11→    11→
+    12→    12→WEBUOS is specifically designed for BUSINESS DISCOVERY.
+    13→    13→
+    14→    14→Users must be able to search and discover:
+    15→    15→
+    16→    16→• Companies
+    17→    17→• Businesses
+    18→    18→• Products
+    19→    19→• Services
+    20→    20→• Industries
+    21→    21→• Technologies
+    22→    22→• AI companies
+    23→    23→• Manufacturers
+    24→    24→• Suppliers
+    25→    25→• Distributors
+    26→    26→• Wholesalers
+    27→    27→• Consultants
+    28→    28→• Professional service providers
+    29→    29→• Business categories
+    30→    30→• Industrial organizations
+    31→    31→• IT companies
+    32→    32→• AI companies
+    33→    33→• Commercial businesses
+    34→    34→• Business professionals
+    35→    35→• Business locations
+    36→    36→• Business opportunities
+    37→    37→
+    38→    38→The existing WEBUOS landing page is the primary visual reference and must be preserved as the design language.
+    39→    39→
+    40→    40→==================================================
+    41→    41→1. EXISTING WEBUOS VISUAL DIRECTION
+    42→    42→==================================================
+    43→    43→
+    44→    44→Use the existing attached WEBUOS UI as the visual foundation.
+    45→    45→
+    46→    46→Current landing page contains:
+    47→    47→
+    48→    48→• WEBUOS logo
+    49→    49→• Dark premium interface
+    50→    50→• Large centered WEBUOS logo
+    51→    51→• Tagline
+    52→    52→• Large global search bar
+    53→    53→• Voice search icon
+    54→    54→• Search button
+    55→    55→• Advanced Search button
+    56→    56→• Register / Signup button
+    57→    57→• Three ecosystem cards
+    58→    58→• Header navigation
+    59→    59→• ESUITE button
+    60→    60→• App launcher
+    61→    61→• Theme selector
+    62→    62→• Language selector
+    63→    63→• Sign In button
+    64→    64→
+    65→    65→Do NOT redesign the identity from scratch.
+    66→    66→
+    67→    67→Maintain:
+    68→    68→
+    69→    69→• Dark futuristic enterprise UI
+    70→    70→• Premium technology appearance
+    71→    71→• Subtle grid/background effects
+    72→    72→• Blue/cyan WEBUOS branding
+    73→    73→• Gold accent
+    74→    74→• Blue accent
+    75→    75→• Purple accent
+    76→    76→• Rounded cards
+    77→    77→• Thin borders
+    78→    78→• Minimal shadows
+    79→    79→• High readability
+    80→    80→• Professional enterprise appearance
+    81→    81→
+    82→    82→The search engine must feel like a natural extension of this landing page.
+    83→    83→
+    84→    84→==================================================
+    85→    85→2. CORE SEARCH EXPERIENCE
+    86→    86→==================================================
+    87→    87→
+    88→    88→The primary search bar must become the central search engine.
+    89→    89→
+    90→    90→Search placeholder:
+    91→    91→
+    92→    92→"Search companies, products, services or industries..."
+    93→    93→
+    94→    94→Users can type natural language queries.
+    95→    95→
+    96→    96→Examples:
+    97→    97→
+    98→    98→"steel manufacturers in Bangalore"
+    99→    99→
+   100→   100→"AI companies in India"
+   101→   101→
+   102→   102→"industrial automation companies"
+   103→   103→
+   104→   104→"ERP software companies"
+   105→   105→
+   106→   106→"electrical suppliers in Karnataka"
+   107→   107→
+   108→   108→"software development companies"
+   109→   109→
+   110→   110→"automobile manufacturers"
+   111→   111→
+   112→   112→"construction companies in Dubai"
+   113→   113→
+   114→   114→"cloud computing services"
+   115→   115→
+   116→   116→"machine learning companies"
+   117→   117→
+   118→   118→"industrial equipment suppliers"
+   119→   119→
+   120→   120→"best ERP companies"
+   121→   121→
+   122→   122→"companies manufacturing CNC machines"
+   123→   123→
+   124→   124→"IT companies in Bangalore"
+   125→   125→
+   126→   126→"AI startups in India"
+   127→   127→
+   128→   128→==================================================
+   129→   129→3. SEARCH QUERY UNDERSTANDING
+   130→   130→==================================================
+   131→   131→
+   132→   132→Create a search interpretation layer.
+   133→   133→
+   134→   134→The system should identify:
+   135→   135→
+   136→   136→• Search intent
+   137→   137→• Entity type
+   138→   138→• Industry
+   139→   139→• Category
+   140→   140→• Subcategory
+   141→   141→• Location
+   142→   142→• Country
+   143→   143→• State
+   144→   144→• City
+   145→   145→• Product
+   146→   146→• Service
+   147→   147→• Company
+   148→   148→• Technology
+   149→   149→• Business type
+   150→   150→• Keywords
+   151→   151→• Attributes
+   152→   152→• Filters
+   153→   153→
+   154→   154→Example:
+   155→   155→
+   156→   156→QUERY:
+   157→   157→
+   158→   158→"automobile component manufacturers in Bangalore"
+   159→   159→
+   160→   160→INTERPRET AS:
+   161→   161→
+   162→   162→Intent:
+   163→   163→Business Discovery
+   164→   164→
+   165→   165→Entity:
+   166→   166→Company
+   167→   167→
+   168→   168→Industry:
+   169→   169→Industrial Engineering & Manufacturing
+   170→   170→
+   171→   171→Category:
+   172→   172→Automotive
+   173→   173→
+   174→   174→Business Type:
+   175→   175→Manufacturer
+   176→   176→
+   177→   177→Location:
+   178→   178→Bangalore, Karnataka, India
+   179→   179→
+   180→   180→Keywords:
+   181→   181→automobile components
+   182→   182→
+   183→   183→The UI should use this interpretation to produce highly relevant results.
+   184→   184→
+   185→   185→==================================================
+   186→   186→4. SEARCH TYPES
+   187→   187→==================================================
+   188→   188→
+   189→   189→Support multiple search modes.
+   190→   190→
+   191→   191→A. GLOBAL SEARCH
+   192→   192→
+   193→   193→Search across the complete WEBUOS ecosystem.
+   194→   194→
+   195→   195→B. COMPANY SEARCH
+   196→   196→
+   197→   197→Search registered and indexed companies.
+   198→   198→
+   199→   199→C. PRODUCT SEARCH
+   200→   200→
+   201→   201→Search products and product catalogs.
+   202→   202→
+   203→   203→D. SERVICE SEARCH
+   204→   204→
+   205→   205→Search professional and commercial services.
+   206→   206→
+   207→   207→E. INDUSTRY SEARCH
+   208→   208→
+   209→   209→Search industries, sectors, categories and subcategories.
+   210→   210→
+   211→   211→F. TECHNOLOGY SEARCH
+   212→   212→
+   213→   213→Search technologies, software, AI tools, platforms and technology companies.
+   214→   214→
+   215→   215→G. LOCATION SEARCH
+   216→   216→
+   217→   217→Search businesses by:
+   218→   218→
+   219→   219→Country
+   220→   220→State
+   221→   221→Province
+   222→   222→City
+   223→   223→District
+   224→   224→Area
+   225→   225→PIN / ZIP code
+   226→   226→
+   227→   227→H. PEOPLE / PROFESSIONAL SEARCH
+   228→   228→
+   229→   229→Search business professionals, consultants, freelancers, experts and service providers where applicable.
+   230→   230→
+   231→   231→==================================================
+   232→   232→5. SEARCH RESULTS PAGE
+   233→   233→==================================================
+   234→   234→
+   235→   235→When the user submits a search, navigate to:
+   236→   236→
+   237→   237→/search?q=<query>
+   238→   238→
+   239→   239→The search results page must have a professional search-engine layout.
+   240→   240→
+   241→   241→HEADER:
+   242→   242→
+   243→   243→Left:
+   244→   244→
+   245→   245→WEBUOS logo
+   246→   246→
+   247→   247→Center:
+   248→   248→
+   249→   249→Search input containing the current query
+   250→   250→
+   251→   251→Right:
+   252→   252→
+   253→   253→• ESUITE
+   254→   254→• App Launcher
+   255→   255→• Theme
+   256→   256→• Language
+   257→   257→• Sign In
+   258→   258→
+   259→   259→Below header:
+   260→   260→
+   261→   261→Search navigation tabs:
+   262→   262→
+   263→   263→ALL
+   264→   264→COMPANIES
+   265→   265→PRODUCTS
+   266→   266→SERVICES
+   267→   267→INDUSTRIES
+   268→   268→TECHNOLOGY
+   269→   269→LOCATIONS
+   270→   270→
+   271→   271→Example:
+   272→   272→
+   273→   273→Search: "AI companies in Bangalore"
+   274→   274→
+   275→   275→Tabs:
+   276→   276→
+   277→   277→All | Companies | Products | Services | Industries | Technology | Locations
+   278→   278→
+   279→   279→==================================================
+   280→   280→6. SEARCH RESULT LAYOUT
+   281→   281→==================================================
+   282→   282→
+   283→   283→Desktop layout:
+   284→   284→
+   285→   285→LEFT:
+   286→   286→
+   287→   287→Main search results.
+   288→   288→
+   289→   289→RIGHT:
+   290→   290→
+   291→   291→Optional contextual information panel.
+   292→   292→
+   293→   293→LEFT WIDTH:
+   294→   294→
+   295→   295→Approximately 70%.
+   296→   296→
+   297→   297→RIGHT WIDTH:
+   298→   298→
+   299→   299→Approximately 30%.
+   300→   300→
+   301→   301→MAIN RESULT CARD:
+   302→   302→
+   303→   303→Each company result should support:
+   304→   304→
+   305→   305→• Company logo
+   306→   306→• Company name
+   307→   307→• Verification badge
+   308→   308→• Business type
+   309→   309→• Industry
+   310→   310→• Category
+   311→   311→• Location
+   312→   312→• Short description
+   313→   313→• Products
+   314→   314→• Services
+   315→   315→• Website
+   316→   316→• Contact option
+   317→   317→• Profile button
+   318→   318→• Save button
+   319→   319→• Share button
+   320→   320→
+   321→   321→Example:
+   322→   322→
+   323→   323→ABC Technologies Pvt Ltd
+   324→   324→
+   325→   325→✓ Verified Business
+   326→   326→
+   327→   327→Information Technology & Artificial Intelligence
+   328→   328→
+   329→   329→Software Development • AI • Cloud Computing
+   330→   330→
+   331→   331→Bangalore, Karnataka, India
+   332→   332→
+   333→   333→"Enterprise software and AI solutions provider..."
+   334→   334→
+   335→   335→[View Company] [Contact] [Save]
+   336→   336→
+   337→   337→==================================================
+   338→   338→7. RESULT TYPES
+   339→   339→==================================================
+   340→   340→
+   341→   341→Create different result cards depending on entity type.
+   342→   342→
+   343→   343→COMPANY RESULT:
+   344→   344→
+   345→   345→Logo
+   346→   346→Company Name
+   347→   347→Verification
+   348→   348→Industry
+   349→   349→Category
+   350→   350→Location
+   351→   351→Description
+   352→   352→Products
+   353→   353→Services
+   354→   354→CTA
+   355→   355→
+   356→   356→PRODUCT RESULT:
+   357→   357→
+   358→   358→Product Image
+   359→   359→Product Name
+   360→   360→Manufacturer
+   361→   361→Category
+   362→   362→Specifications
+   363→   363→Location
+   364→   364→Price / RFQ where available
+   365→   365→Availability
+   366→   366→CTA
+   367→   367→
+   368→   368→SERVICE RESULT:
+   369→   369→
+   370→   370→Service Name
+   371→   371→Provider
+   372→   372→Category
+   373→   373→Location
+   374→   374→Description
+   375→   375→Experience / capabilities
+   376→   376→CTA
+   377→   377→
+   378→   378→INDUSTRY RESULT:
+   379→   379→
+   380→   380→Industry Name
+   381→   381→Description
+   382→   382→Categories
+   383→   383→Companies
+   384→   384→Products
+   385→   385→Services
+   386→   386→CTA
+   387→   387→
+   388→   388→TECHNOLOGY RESULT:
+   389→   389→
+   390→   390→Technology Name
+   391→   391→Technology Type
+   392→   392→Providers
+   393→   393→Companies
+   394→   394→Use Cases
+   395→   395→Industries
+   396→   396→CTA
+   397→   397→
+   398→   398→LOCATION RESULT:
+   399→   399→
+   400→   400→Location
+   401→   401→Country
+   402→   402→State
+   403→   403→City
+   404→   404→Number of businesses
+   405→   405→Industries
+   406→   406→Popular companies
+   407→   407→CTA
+   408→   408→
+   409→   409→==================================================
+   410→   410→8. SEARCH RESULT RELEVANCE ENGINE
+   411→   411→==================================================
+   412→   412→
+   413→   413→Implement a relevance-ranking system.
+   414→   414→
+   415→   415→Ranking signals should include:
+   416→   416→
+   417→   417→1. Exact query match
+   418→   418→2. Entity match
+   419→   419→3. Search intent match
+   420→   420→4. Category match
+   421→   421→5. Industry match
+   422→   422→6. Location match
+   423→   423→7. Business verification
+   424→   424→8. Profile completeness
+   425→   425→9. Product/service relevance
+   426→   426→10. Text relevance
+   427→   427→11. Popularity
+   428→   428→12. Freshness
+   429→   429→13. User interaction signals
+   430→   430→14. Business quality signals
+   431→   431→
+   432→   432→Do NOT simply sort alphabetically.
+   433→   433→
+   434→   434→The system should calculate a relevance score internally.
+   435→   435→
+   436→   436→Example:
+   437→   437→
+   438→   438→relevance_score =
+   439→   439→query_match +
+   440→   440→entity_match +
+   441→   441→category_match +
+   442→   442→location_match +
+   443→   443→industry_match +
+   444→   444→quality_score +
+   445→   445→freshness_score
+   446→   446→
+   447→   447→The actual internal score does not need to be displayed to users.
+   448→   448→
+   449→   449→==================================================
+   450→   450→9. SEARCH AUTOCOMPLETE
+   451→   451→==================================================
+   452→   452→
+   453→   453→Implement Google-style autocomplete functionality, but customized for WEBUOS.
+   454→   454→
+   455→   455→When typing:
+   456→   456→
+   457→   457→"steel"
+   458→   458→
+   459→   459→Suggestions:
+   460→   460→
+   461→   461→Steel Manufacturers
+   462→   462→Steel Suppliers
+   463→   463→Steel Products
+   464→   464→Steel Companies
+   465→   465→Steel Fabricators
+   466→   466→Steel Distributors
+   467→   467→Steel Industry
+   468→   468→Steel Services
+   469→   469→
+   470→   470→When typing:
+   471→   471→
+   472→   472→"AI"
+   473→   473→
+   474→   474→Suggestions:
+   475→   475→
+   476→   476→AI Companies
+   477→   477→AI Products
+   478→   478→AI Services
+   479→   479→Artificial Intelligence
+   480→   480→Machine Learning
+   481→   481→AI Startups
+   482→   482→AI Software
+   483→   483→AI Consultants
+   484→   484→
+   485→   485→Show icons based on result type.
+   486→   486→
+   487→   487→Example:
+   488→   488→
+   489→   489→🏢 Company
+   490→   490→📦 Product
+   491→   491→🛠 Service
+   492→   492→🏭 Industry
+   493→   493→💻 Technology
+   494→   494→📍 Location
+   495→   495→
+   496→   496→==================================================
+   497→   497→10. SEARCH SUGGESTIONS
+   498→   498→==================================================
+   499→   499→
+   500→   500→Support:
+   501→   501→
+   502→   502→• Query suggestions
+   503→   503→• Related searches
+   504→   504→• Popular searches
+   505→   505→• Recent searches
+   506→   506→• Trending business searches
+   507→   507→
+   508→   508→Example:
+   509→   509→
+   510→   510→Related searches:
+   511→   511→
+   512→   512→AI companies in Bangalore
+   513→   513→AI startups in India
+   514→   514→AI software companies
+   515→   515→Machine learning companies
+   516→   516→AI consulting services
+   517→   517→
+   518→   518→==================================================
+   519→   519→11. ADVANCED SEARCH
+   520→   520→==================================================
+   521→   521→
+   522→   522→The existing "Advanced Search" button must open a professional advanced search interface.
+   523→   523→
+   524→   524→Filters:
+   525→   525→
+   526→   526→ENTITY TYPE
+   527→   527→
+   528→   528→□ Companies
+   529→   529→□ Products
+   530→   530→□ Services
+   531→   531→□ Industries
+   532→   532→□ Technologies
+   533→   533→
+   534→   534→BUSINESS TYPE
+   535→   535→
+   536→   536→□ Manufacturer
+   537→   537→□ Supplier
+   538→   538→□ Distributor
+   539→   539→□ Wholesaler
+   540→   540→□ Retailer
+   541→   541→□ Service Provider
+   542→   542→□ Consultant
+   543→   543→□ Freelancer
+   544→   544→□ Startup
+   545→   545→□ Enterprise
+   546→   546→
+   547→   547→ECOSYSTEM
+   548→   548→
+   549→   549→□ Industrial Engineering & Manufacturing
+   550→   550→□ Information Technology & Artificial Intelligence
+   551→   551→□ Professional, Commercial & Business Services
+   552→   552→
+   553→   553→LOCATION
+   554→   554→
+   555→   555→Country
+   556→   556→State / Province
+   557→   557→City
+   558→   558→District
+   559→   559→Postal Code
+   560→   560→
+   561→   561→INDUSTRY
+   562→   562→
+   563→   563→Dynamic industry selector.
+   564→   564→
+   565→   565→CATEGORY
+   566→   566→
+   567→   567→Dynamic category selector.
+   568→   568→
+   569→   569→VERIFICATION
+   570→   570→
+   571→   571→□ Verified Businesses
+   572→   572→□ Registered Businesses
+   573→   573→□ All Businesses
+   574→   574→
+   575→   575→BUSINESS SIZE
+   576→   576→
+   577→   577→□ Startup
+   578→   578→□ Small
+   579→   579→□ Medium
+   580→   580→□ Large
+   581→   581→□ Enterprise
+   582→   582→
+   583→   583→OTHER FILTERS:
+   584→   584→
+   585→   585→• Open / Active
+   586→   586→• Established year
+   587→   587→• Employee range
+   588→   588→• Product availability
+   589→   589→• Service availability
+   590→   590→• Online / Physical
+   591→   591→• Exporter
+   592→   592→• Importer
+   593→   593→
+   594→   594→Buttons:
+   595→   595→
+   596→   596→[Apply Filters]
+   597→   597→
+   598→   598→[Reset]
+   599→   599→
+   600→   600→==================================================
+   601→   601→12. THREE WEBUOS ECOSYSTEMS
+   602→   602→==================================================
+   603→   603→
+   604→   604→The existing three ecosystem cards must become search scopes.
+   605→   605→
+   606→   606→ECOSYSTEM 01:
+   607→   607→
+   608→   608→INDUSTRIAL ENGINEERING & MANUFACTURING
+   609→   609→
+   610→   610→Examples:
+   611→   611→
+   612→   612→Manufacturing
+   613→   613→Automotive
+   614→   614→Aerospace
+   615→   615→Industrial Equipment
+   616→   616→Mechanical Engineering
+   617→   617→Electrical Engineering
+   618→   618→Electronics
+   619→   619→Construction
+   620→   620→Energy
+   621→   621→Chemicals
+   622→   622→Materials
+   623→   623→Automation
+   624→   624→Logistics
+   625→   625→etc.
+   626→   626→
+   627→   627→ECOSYSTEM 02:
+   628→   628→
+   629→   629→INFORMATION TECHNOLOGY & ARTIFICIAL INTELLIGENCE
+   630→   630→
+   631→   631→Examples:
+   632→   632→
+   633→   633→Software
+   634→   634→Cloud
+   635→   635→Cybersecurity
+   636→   636→AI
+   637→   637→Machine Learning
+   638→   638→Data
+   639→   639→SaaS
+   640→   640→Web Development
+   641→   641→Mobile Development
+   642→   642→DevOps
+   643→   643→IT Services
+   644→   644→Robotics
+   645→   645→etc.
+   646→   646→
+   647→   647→ECOSYSTEM 03:
+   648→   648→
+   649→   649→PROFESSIONAL, COMMERCIAL & BUSINESS SERVICES
+   650→   650→
+   651→   651→Examples:
+   652→   652→
+   653→   653→Finance
+   654→   654→Accounting
+   655→   655→Legal
+   656→   656→Consulting
+   657→   657→Marketing
+   658→   658→Recruitment
+   659→   659→HR
+   660→   660→Real Estate
+   661→   661→Education
+   662→   662→Training
+   663→   663→Business Consulting
+   664→   664→Professional Services
+   665→   665→etc.
+   666→   666→
+   667→   667→Clicking an ecosystem must allow users to search only within that ecosystem.
+   668→   668→
+   669→   669→==================================================
+   670→   670→13. TAXONOMY SEARCH
+   671→   671→==================================================
+   672→   672→
+   673→   673→Use the existing WEBUOS taxonomy.
+   674→   674→
+   675→   675→Structure:
+   676→   676→
+   677→   677→Ecosystem
+   678→   678→    ↓
+   679→   679→Sector
+   680→   680→    ↓
+   681→   681→Category
+   682→   682→    ↓
+   683→   683→Subcategory
+   684→   684→    ↓
+   685→   685→Business Type
+   686→   686→    ↓
+   687→   687→Products / Services
+   688→   688→
+   689→   689→The search engine must understand this hierarchy.
+   690→   690→
+   691→   691→Example:
+   692→   692→
+   693→   693→Industrial Engineering & Manufacturing
+   694→   694→    ↓
+   695→   695→Automotive
+   696→   696→    ↓
+   697→   697→Automotive Components
+   698→   698→    ↓
+   699→   699→Engine Components
+   700→   700→    ↓
+   701→   701→Manufacturers
+   702→   702→    ↓
+   703→   703→Specific Products
+   704→   704→
+   705→   705→Users should be able to search at any level.
+   706→   706→
+   707→   707→==================================================
+   708→   708→14. BUSINESS PROFILE SEARCH RESULT
+   709→   709→==================================================
+   710→   710→
+   711→   711→Clicking a company result should open:
+   712→   712→
+   713→   713→/business/[slug]
+   714→   714→
+   715→   715→Company profile should contain:
+   716→   716→
+   717→   717→• Company logo
+   718→   718→• Company name
+   719→   719→• Verification status
+   720→   720→• Business type
+   721→   721→• Industry
+   722→   722→• Categories
+   723→   723→• About
+   724→   724→• Products
+   725→   725→• Services
+   726→   726→• Locations
+   727→   727→• Contact information
+   728→   728→• Website
+   729→   729→• Business hours
+   730→   730→• Certifications
+   731→   731→• Industries served
+   732→   732→• Markets served
+   733→   733→• Company size
+   734→   734→• Founded year
+   735→   735→• Social links
+   736→   736→• Documents where applicable
+   737→   737→• Reviews where applicable
+   738→   738→• Related companies
+   739→   739→• Similar businesses
+   740→   740→
+   741→   741→Primary CTAs:
+   742→   742→
+   743→   743→[Contact Business]
+   744→   744→
+   745→   745→[View Products]
+   746→   746→
+   747→   747→[View Services]
+   748→   748→
+   749→   749→[Save]
+   750→   750→
+   751→   751→[Share]
+   752→   752→
+   753→   753→==================================================
+   754→   754→15. PRODUCT SEARCH
+   755→   755→==================================================
+   756→   756→
+   757→   757→Create dedicated product discovery.
+   758→   758→
+   759→   759→Route:
+   760→   760→
+   761→   761→/search/products
+   762→   762→
+   763→   763→Product result should support:
+   764→   764→
+   765→   765→• Product image
+   766→   766→• Product name
+   767→   767→• Manufacturer
+   768→   768→• Brand
+   769→   769→• Category
+   770→   770→• Subcategory
+   771→   771→• Specifications
+   772→   772→• MOQ
+   773→   773→• Availability
+   774→   774→• Location
+   775→   775→• Seller
+   776→   776→• Related products
+   777→   777→• Request Quote
+   778→   778→
+   779→   779→Support:
+   780→   780→
+   781→   781→Search
+   782→   782→Filter
+   783→   783→Sort
+   784→   784→Compare
+   785→   785→Save
+   786→   786→Share
+   787→   787→Request Quote
+   788→   788→
+   789→   789→==================================================
+   790→   790→16. SERVICE SEARCH
+   791→   791→==================================================
+   792→   792→
+   793→   793→Route:
+   794→   794→
+   795→   795→/search/services
+   796→   796→
+   797→   797→Support:
+   798→   798→
+   799→   799→• Service provider
+   800→   800→• Service category
+   801→   801→• Service description
+   802→   802→• Location
+   803→   803→• Industry served
+   804→   804→• Service coverage
+   805→   805→• Pricing model
+   806→   806→• Availability
+   807→   807→• Verification
+   808→   808→• Contact
+   809→   809→
+   810→   810→==================================================
+   811→   811→17. INDUSTRY SEARCH
+   812→   812→==================================================
+   813→   813→
+   814→   814→Route:
+   815→   815→
+   816→   816→/search/industries
+   817→   817→
+   818→   818→Display:
+   819→   819→
+   820→   820→Industry
+   821→   821→Description
+   822→   822→Categories
+   823→   823→Subcategories
+   824→   824→Companies
+   825→   825→Products
+   826→   826→Services
+   827→   827→Technologies
+   828→   828→Locations
+   829→   829→
+   830→   830→==================================================
+   831→   831→18. LOCATION SEARCH
+   832→   832→==================================================
+   833→   833→
+   834→   834→Support geographic discovery.
+   835→   835→
+   836→   836→Example:
+   837→   837→
+   838→   838→"Manufacturers in Bangalore"
+   839→   839→
+   840→   840→Results should understand:
+   841→   841→
+   842→   842→Country:
+   843→   843→India
+   844→   844→
+   845→   845→State:
+   846→   846→Karnataka
+   847→   847→
+   848→   848→City:
+   849→   849→Bangalore
+   850→   850→
+   851→   851→Industry:
+   852→   852→Manufacturing
+   853→   853→
+   854→   854→Business Type:
+   855→   855→Manufacturer
+   856→   856→
+   857→   857→Display:
+   858→   858→
+   859→   859→• Map
+   860→   860→• Businesses
+   861→   861→• Industries
+   862→   862→• Products
+   863→   863→• Services
+   864→   864→
+   865→   865→Use map integration only where appropriate.
+   866→   866→
+   867→   867→==================================================
+   868→   868→19. SEARCH FILTER SIDEBAR
+   869→   869→==================================================
+   870→   870→
+   871→   871→Desktop:
+   872→   872→
+   873→   873→Sticky filter sidebar.
+   874→   874→
+   875→   875→Mobile:
+   876→   876→
+   877→   877→Filter button opens bottom sheet / drawer.
+   878→   878→
+   879→   879→Filters should update results dynamically.
+   880→   880→
+   881→   881→Do not reload the complete page unnecessarily.
+   882→   882→
+   883→   883→Use URL query parameters so searches are shareable.
+   884→   884→
+   885→   885→Example:
+   886→   886→
+   887→   887→/search?q=ai+companies&industry=technology&location=bangalore
+   888→   888→
+   889→   889→==================================================
+   890→   890→20. SORT OPTIONS
+   891→   891→==================================================
+   892→   892→
+   893→   893→Provide:
+   894→   894→
+   895→   895→Relevance
+   896→   896→Newest
+   897→   897→Recently Updated
+   898→   898→Most Complete
+   899→   899→Most Relevant
+   900→   900→Nearest
+   901→   901→A-Z
+   902→   902→
+   903→   903→Do not expose internal ranking formulas.
+   904→   904→
+   905→   905→==================================================
+   906→   906→21. SEARCH STATES
+   907→   907→==================================================
+   908→   908→
+   909→   909→Implement:
+   910→   910→
+   911→   911→Loading
+   912→   912→
+   913→   913→Skeleton loading
+   914→   914→
+   915→   915→Empty results
+   916→   916→
+   917→   917→No exact match
+   918→   918→
+   919→   919→Partial match
+   920→   920→
+   921→   921→Error
+   922→   922→
+   923→   923→Network failure
+   924→   924→
+   925→   925→No index available
+   926→   926→
+   927→   927→Restricted result
+   928→   928→
+   929→   929→Example empty state:
+   930→   930→
+   931→   931→"No businesses found for this search."
+   932→   932→
+   933→   933→Then:
+   934→   934→
+   935→   935→"Try a broader search or explore related categories."
+   936→   936→
+   937→   937→Show:
+   938→   938→
+   939→   939→Related Searches
+   940→   940→
+   941→   941→Popular Categories
+   942→   942→
+   943→   943→Nearby Businesses
+   944→   944→
+   945→   945→==================================================
+   946→   946→22. AI-ASSISTED SEARCH
+   947→   947→==================================================
+   948→   948→
+   949→   949→WEBUOS should eventually support semantic/natural-language search.
+   950→   950→
+   951→   951→Example:
+   952→   952→
+   953→   953→User:
+   954→   954→
+   955→   955→"I need a supplier of industrial automation equipment in Bangalore."
+   956→   956→
+   957→   957→The system should understand:
+   958→   958→
+   959→   959→Intent:
+   960→   960→Supplier discovery
+   961→   961→
+   962→   962→Industry:
+   963→   963→Industrial Engineering & Manufacturing
+   964→   964→
+   965→   965→Category:
+   966→   966→Industrial Automation
+   967→   967→
+   968→   968→Business Type:
+   969→   969→Supplier
+   970→   970→
+   971→   971→Location:
+   972→   972→Bangalore
+   973→   973→
+   974→   974→Then produce relevant businesses.
+   975→   975→
+   976→   976→Another example:
+   977→   977→
+   978→   978→"Find companies that manufacture CNC machines in Karnataka."
+   979→   979→
+   980→   980→Interpret:
+   981→   981→
+   982→   982→Business Type:
+   983→   983→Manufacturer
+   984→   984→
+   985→   985→Product:
+   986→   986→CNC Machines
+   987→   987→
+   988→   988→Location:
+   989→   989→Karnataka
+   990→   990→
+   991→   991→Return relevant companies.
+   992→   992→
+   993→   993→==================================================
+   994→   994→23. SEARCH ANSWER PANEL
+   995→   995→==================================================
+   996→   996→
+   997→   997→For suitable queries, provide an optional AI-generated summary above results.
+   998→   998→
+   999→   999→Example:
+  1000→  1000→
+  1001→  1001→Query:
+  1002→  1002→
+  1003→  1003→"AI companies in Bangalore"
+  1004→  1004→
+  1005→  1005→Summary:
+  1006→  1006→
+  1007→  1007→"Bangalore has a large ecosystem of companies working across artificial intelligence, machine learning, enterprise software and related technologies."
+  1008→  1008→
+  1009→  1009→Then:
+  1010→  1010→
+  1011→  1011→Relevant Companies
+  1012→  1012→Industries
+  1013→  1013→Services
+  1014→  1014→Technologies
+  1015→  1015→Locations
+  1016→  1016→
+  1017→  1017→Important:
+  1018→  1018→
+  1019→  1019→AI-generated information must be clearly distinguishable from verified business data.
+  1020→  1020→
+  1021→  1021→Do not fabricate company information.
+  1022→  1022→
+  1023→  1023→==================================================
+  1024→  1024→24. BUSINESS DATA TRUST
+  1025→  1025→==================================================
+  1026→  1026→
+  1027→  1027→Implement data-quality states:
+  1028→  1028→
+  1029→  1029→Verified
+  1030→  1030→Claimed
+  1031→  1031→Registered
+  1032→  1032→Unverified
+  1033→  1033→Pending Verification
+  1034→  1034→
+  1035→  1035→Use clear badges.
+  1036→  1036→
+  1037→  1037→Example:
+  1038→  1038→
+  1039→  1039→✓ Verified Business
+  1040→  1040→
+  1041→  1041→Do not allow the UI to imply verification where verification has not occurred.
+  1042→  1042→
+  1043→  1043→==================================================
+  1044→  1044→25. SEARCH ANALYTICS
+  1045→  1045→==================================================
+  1046→  1046→
+  1047→  1047→Track search events internally.
+  1048→  1048→
+  1049→  1049→Events:
+  1050→  1050→
+  1051→  1051→search_started
+  1052→  1052→search_submitted
+  1053→  1053→search_result_viewed
+  1054→  1054→company_opened
+  1055→  1055→product_opened
+  1056→  1056→service_opened
+  1057→  1057→filter_applied
+  1058→  1058→search_result_clicked
+  1059→  1059→save_business
+  1060→  1060→contact_business
+  1061→  1061→request_quote
+  1062→  1062→search_no_results
+  1063→  1063→search_refined
+  1064→  1064→
+  1065→  1065→Capture:
+  1066→  1066→
+  1067→  1067→• Search query
+  1068→  1068→• Timestamp
+  1069→  1069→• Entity type
+  1070→  1070→• Filters
+  1071→  1071→• Result position
+  1072→  1072→• Click position
+  1073→  1073→• Session ID
+  1074→  1074→• User ID when authenticated
+  1075→  1075→• Location where permitted
+  1076→  1076→
+  1077→  1077→Use analytics only for product improvement and relevance ranking.
+  1078→  1078→
+  1079→  1079→==================================================
+  1080→  1080→26. PERSONALIZED SEARCH
+  1081→  1081→==================================================
+  1082→  1082→
+  1083→  1083→For authenticated users, eventually support:
+  1084→  1084→
+  1085→  1085→• Recent searches
+  1086→  1086→• Saved searches
+  1087→  1087→• Saved businesses
+  1088→  1088→• Saved products
+  1089→  1089→• Saved services
+  1090→  1090→• Preferred industries
+  1091→  1091→• Preferred locations
+  1092→  1092→
+  1093→  1093→Do not make personalization mandatory.
+  1094→  1094→
+  1095→  1095→Guest users must be able to search normally.
+  1096→  1096→
+  1097→  1097→==================================================
+  1098→  1098→27. SEARCH HISTORY
+  1099→  1099→==================================================
+  1100→  1100→
+  1101→  1101→Authenticated users:
+  1102→  1102→
+  1103→  1103→Recent searches
+  1104→  1104→
+  1105→  1105→Saved searches
+  1106→  1106→
+  1107→  1107→Search alerts
+  1108→  1108→
+  1109→  1109→Example:
+  1110→  1110→
+  1111→  1111→Saved Search:
+  1112→  1112→
+  1113→  1113→"Industrial automation suppliers in Bangalore"
+  1114→  1114→
+  1115→  1115→Allow:
+  1116→  1116→
+  1117→  1117→[Run Search]
+  1118→  1118→
+  1119→  1119→[Edit]
+  1120→  1120→
+  1121→  1121→[Delete]
+  1122→  1122→
+  1123→  1123→==================================================
+  1124→  1124→28. SEARCH ALERTS
+  1125→  1125→==================================================
+  1126→  1126→
+  1127→  1127→Future feature.
+  1128→  1128→
+  1129→  1129→Users can save a search and receive notifications when matching businesses/products/services are added or updated.
+  1130→  1130→
+  1131→  1131→Example:
+  1132→  1132→
+  1133→  1133→"Notify me when new AI companies in Bangalore are added."
+  1134→  1134→
+  1135→  1135→==================================================
+  1136→  1136→29. SEO
+  1137→  1137→==================================================
+  1138→  1138→
+  1139→  1139→Every major search/discovery page must be SEO-friendly.
+  1140→  1140→
+  1141→  1141→Implement:
+  1142→  1142→
+  1143→  1143→Dynamic metadata
+  1144→  1144→Canonical URLs
+  1145→  1145→Open Graph
+  1146→  1146→Structured data
+  1147→  1147→Organization schema
+  1148→  1148→Product schema
+  1149→  1149→Service schema
+  1150→  1150→Breadcrumb schema
+  1151→  1151→LocalBusiness schema where applicable
+  1152→  1152→
+  1153→  1153→Do not index arbitrary user-generated query combinations blindly.
+  1154→  1154→
+  1155→  1155→Create controlled indexable taxonomy pages.
+  1156→  1156→
+  1157→  1157→==================================================
+  1158→  1158→30. URL ARCHITECTURE
+  1159→  1159→==================================================
+  1160→  1160→
+  1161→  1161→Recommended routes:
+  1162→  1162→
+  1163→  1163→/search
+  1164→  1164→
+  1165→  1165→/search?q=
+  1166→  1166→
+  1167→  1167→/search/companies
+  1168→  1168→
+  1169→  1169→/search/products
+  1170→  1170→
+  1171→  1171→/search/services
+  1172→  1172→
+  1173→  1173→/search/industries
+  1174→  1174→
+  1175→  1175→/search/technology
+  1176→  1176→
+  1177→  1177→/search/locations
+  1178→  1178→
+  1179→  1179→/search/advanced
+  1180→  1180→
+  1181→  1181→/business/[slug]
+  1182→  1182→
+  1183→  1183→/product/[slug]
+  1184→  1184→
+  1185→  1185→/service/[slug]
+  1186→  1186→
+  1187→  1187→/industry/[slug]
+  1188→  1188→
+  1189→  1189→/technology/[slug]
+  1190→  1190→
+  1191→  1191→/location/[slug]
+  1192→  1192→
+  1193→  1193→/business-taxonomy
+  1194→  1194→
+  1195→  1195→/business-taxonomy/[ecosystem]
+  1196→  1196→
+  1197→  1197→/business-taxonomy/[ecosystem]/[sector]
+  1198→  1198→
+  1199→  1199→==================================================
+  1200→  1200→31. DATABASE SEARCH MODEL
+  1201→  1201→==================================================
+  1202→  1202→
+  1203→  1203→Design the database so the search engine can scale.
+  1204→  1204→
+  1205→  1205→Core entities:
+  1206→  1206→
+  1207→  1207→User
+  1208→  1208→Organization
+  1209→  1209→Company
+  1210→  1210→BusinessProfile
+  1211→  1211→Industry
+  1212→  1212→Ecosystem
+  1213→  1213→Sector
+  1214→  1214→Category
+  1215→  1215→Subcategory
+  1216→  1216→Product
+  1217→  1217→ProductCategory
+  1218→  1218→Service
+  1219→  1219→ServiceCategory
+  1220→  1220→Technology
+  1221→  1221→Location
+  1222→  1222→Country
+  1223→  1223→State
+  1224→  1224→City
+  1225→  1225→BusinessLocation
+  1226→  1226→BusinessContact
+  1227→  1227→BusinessVerification
+  1228→  1228→BusinessDocument
+  1229→  1229→BusinessRelationship
+  1230→  1230→SearchQuery
+  1231→  1231→SearchEvent
+  1232→  1232→SavedSearch
+  1233→  1233→SearchHistory
+  1234→  1234→
+  1235→  1235→Relationships must be normalized and designed for high-volume search.
+  1236→  1236→
+  1237→  1237→==================================================
+  1238→  1238→32. SEARCH INDEX
+  1239→  1239→==================================================
+  1240→  1240→
+  1241→  1241→Do not rely only on PostgreSQL LIKE queries for a production search engine.
+  1242→  1242→
+  1243→  1243→Create a dedicated search indexing layer.
+  1244→  1244→
+  1245→  1245→Preferred architecture:
+  1246→  1246→
+  1247→  1247→PostgreSQL
+  1248→  1248→    ↓
+  1249→  1249→Data / Event Pipeline
+  1250→  1250→    ↓
+  1251→  1251→Search Index
+  1252→  1252→    ↓
+  1253→  1253→WEBUOS Search API
+  1254→  1254→    ↓
+  1255→  1255→Next.js Search UI
+  1256→  1256→
+  1257→  1257→The search layer should support:
+  1258→  1258→
+  1259→  1259→• Full-text search
+  1260→  1260→• Prefix search
+  1261→  1261→• Typo tolerance
+  1262→  1262→• Fuzzy matching
+  1263→  1263→• Filters
+  1264→  1264→• Facets
+  1265→  1265→• Ranking
+  1266→  1266→• Geo search
+  1267→  1267→• Synonyms
+  1268→  1268→• Autocomplete
+  1269→  1269→
+  1270→  1270→Typesense / OpenSearch / Elasticsearch can be considered.
+  1271→  1271→
+  1272→  1272→The implementation must remain replaceable so the search engine provider can be changed later.
+  1273→  1273→
+  1274→  1274→==================================================
+  1275→  1275→33. SEARCH API
+  1276→  1276→==================================================
+  1277→  1277→
+  1278→  1278→Create a clean search API.
+  1279→  1279→
+  1280→  1280→Example:
+  1281→  1281→
+  1282→  1282→GET /api/search?q=steel+manufacturers
+  1283→  1283→
+  1284→  1284→Parameters:
+  1285→  1285→
+  1286→  1286→q
+  1287→  1287→type
+  1288→  1288→ecosystem
+  1289→  1289→sector
+  1290→  1290→category
+  1291→  1291→subcategory
+  1292→  1292→country
+  1293→  1293→state
+  1294→  1294→city
+  1295→  1295→business_type
+  1296→  1296→verified
+  1297→  1297→page
+  1298→  1298→limit
+  1299→  1299→sort
+  1300→  1300→
+  1301→  1301→Example:
+  1302→  1302→
+  1303→  1303→GET /api/search?q=AI+companies&city=Bangalore&type=company
+  1304→  1304→
+  1305→  1305→Response:
+  1306→  1306→
+  1307→  1307→{
+  1308→  1308→  query,
+  1309→  1309→  interpreted_query,
+  1310→  1310→  filters,
+  1311→  1311→  total,
+  1312→  1312→  page,
+  1313→  1313→  limit,
+  1314→  1314→  results,
+  1315→  1315→  facets,
+  1316→  1316→  related_searches
+  1317→  1317→}
+  1318→  1318→
+  1319→  1319→==================================================
+  1320→  1320→34. AUTOCOMPLETE API
+  1321→  1321→==================================================
+  1322→  1322→
+  1323→  1323→Endpoint:
+  1324→  1324→
+  1325→  1325→GET /api/search/suggest?q=steel
+  1326→  1326→
+  1327→  1327→Return:
+  1328→  1328→
+  1329→  1329→companies
+  1330→  1330→products
+  1331→  1331→services
+  1332→  1332→industries
+  1333→  1333→technologies
+  1334→  1334→locations
+  1335→  1335→queries
+  1336→  1336→
+  1337→  1337→Use debouncing on the frontend.
+  1338→  1338→
+  1339→  1339→Do not call the API for every keystroke.
+  1340→  1340→
+  1341→  1341→==================================================
+  1342→  1342→35. SEARCH PERFORMANCE
+  1343→  1343→==================================================
+  1344→  1344→
+  1345→  1345→Target:
+  1346→  1346→
+  1347→  1347→Autocomplete:
+  1348→  1348→< 150ms where possible
+  1349→  1349→
+  1350→  1350→Search:
+  1351→  1351→< 500ms where possible
+  1352→  1352→
+  1353→  1353→Initial search page:
+  1354→  1354→fast first meaningful render
+  1355→  1355→
+  1356→  1356→Use:
+  1357→  1357→
+  1358→  1358→Debouncing
+  1359→  1359→Caching
+  1360→  1360→Pagination
+  1361→  1361→Cursor pagination where appropriate
+  1362→  1362→Index optimization
+  1363→  1363→Lazy loading
+  1364→  1364→Server-side filtering
+  1365→  1365→Result limits
+  1366→  1366→
+  1367→  1367→Do not load thousands of results into the browser.
+  1368→  1368→
+  1369→  1369→==================================================
+  1370→  1370→36. PAGINATION
+  1371→  1371→==================================================
+  1372→  1372→
+  1373→  1373→Support:
+  1374→  1374→
+  1375→  1375→Previous
+  1376→  1376→Next
+  1377→  1377→Page numbers where appropriate
+  1378→  1378→
+  1379→  1379→For high-volume datasets prefer cursor-based pagination.
+  1380→  1380→
+  1381→  1381→Example:
+  1382→  1382→
+  1383→  1383→/search?q=manufacturers&cursor=abc123
+  1384→  1384→
+  1385→  1385→==================================================
+  1386→  1386→37. RESPONSIVE DESIGN
+  1387→  1387→==================================================
+  1388→  1388→
+  1389→  1389→Desktop:
+  1390→  1390→
+  1391→  1391→Large search interface
+  1392→  1392→Sidebar filters
+  1393→  1393→Multi-column results
+  1394→  1394→
+  1395→  1395→Tablet:
+  1396→  1396→
+  1397→  1397→Reduced sidebar
+  1398→  1398→Compact filters
+  1399→  1399→
+  1400→  1400→Mobile:
+  1401→  1401→
+  1402→  1402→Compact header
+  1403→  1403→Search bar
+  1404→  1404→Filter drawer
+  1405→  1405→Single-column result cards
+  1406→  1406→Sticky search controls
+  1407→  1407→
+  1408→  1408→The existing WEBUOS visual identity must remain consistent across all screen sizes.
+  1409→  1409→
+  1410→  1410→==================================================
+  1411→  1411→38. HEADER SEARCH
+  1412→  1412→==================================================
+  1413→  1413→
+  1414→  1414→After leaving the landing page, the header must contain a compact search bar.
+  1415→  1415→
+  1416→  1416→Example:
+  1417→  1417→
+  1418→  1418→WEBUOS logo | Search companies, products, services... | Search | ESUITE | Apps | Theme | EN | Sign In
+  1419→  1419→
+  1420→  1420→The header search should remain available throughout the public discovery experience.
+  1421→  1421→
+  1422→  1422→==================================================
+  1423→  1423→39. VOICE SEARCH
+  1424→  1424→==================================================
+  1425→  1425→
+  1426→  1426→The microphone icon should support browser speech recognition where supported.
+  1427→  1427→
+  1428→  1428→Flow:
+  1429→  1429→
+  1430→  1430→Click microphone
+  1431→  1431→→ Request microphone permission
+  1432→  1432→→ Listen
+  1433→  1433→→ Convert speech to text
+  1434→  1434→→ Place text into search field
+  1435→  1435→→ Submit search
+  1436→  1436→
+  1437→  1437→Handle unsupported browsers gracefully.
+  1438→  1438→
+  1439→  1439→==================================================
+  1440→  1440→40. COMMAND / KEYBOARD SEARCH
+  1441→  1441→==================================================
+  1442→  1442→
+  1443→  1443→Support:
+  1444→  1444→
+  1445→  1445→/
+  1446→  1446→
+  1447→  1447→Focus search
+  1448→  1448→
+  1449→  1449→Ctrl + K
+  1450→  1450→
+  1451→  1451→Open global search
+  1452→  1452→
+  1453→  1453→Escape
+  1454→  1454→
+  1455→  1455→Close autocomplete
+  1456→  1456→
+  1457→  1457→Arrow Up / Down
+  1458→  1458→
+  1459→  1459→Navigate suggestions
+  1460→  1460→
+  1461→  1461→Enter
+  1462→  1462→
+  1463→  1463→Submit search
+  1464→  1464→
+  1465→  1465→==================================================
+  1466→  1466→41. SEARCH RESULT UX
+  1467→  1467→==================================================
+  1468→  1468→
+  1469→  1469→Avoid clutter.
+  1470→  1470→
+  1471→  1471→Each result should have clear hierarchy:
+  1472→  1472→
+  1473→  1473→TITLE
+  1474→  1474→Verification
+  1475→  1475→Category
+  1476→  1476→Location
+  1477→  1477→Description
+  1478→  1478→Relevant attributes
+  1479→  1479→Actions
+  1480→  1480→
+  1481→  1481→Do not display excessive metadata.
+  1482→  1482→
+  1483→  1483→Use progressive disclosure.
+  1484→  1484→
+  1485→  1485→==================================================
+  1486→  1486→42. RELATED SEARCHES
+  1487→  1487→==================================================
+  1488→  1488→
+  1489→  1489→At the bottom of results:
+  1490→  1490→
+  1491→  1491→Related searches
+  1492→  1492→
+  1493→  1493→Example:
+  1494→  1494→
+  1495→  1495→For:
+  1496→  1496→
+  1497→  1497→"industrial automation Bangalore"
+  1498→  1498→
+  1499→  1499→Show:
+  1500→  1500→
+  1501→  1501→Industrial automation companies Bangalore
+  1502→  1502→Industrial automation suppliers Bangalore
+  1503→  1503→Factory automation companies Bangalore
+  1504→  1504→PLC suppliers Bangalore
+  1505→  1505→Robotics companies Bangalore
+  1506→  1506→
+  1507→  1507→==================================================
+  1508→  1508→43. NO-RESULT INTELLIGENCE
+  1509→  1509→==================================================
+  1510→  1510→
+  1511→  1511→If no exact results exist:
+  1512→  1512→
+  1513→  1513→1. Correct spelling
+  1514→  1514→2. Find synonyms
+  1515→  1515→3. Broaden category
+  1516→  1516→4. Remove restrictive filters
+  1517→  1517→5. Suggest related searches
+  1518→  1518→6. Suggest nearby locations
+  1519→  1519→
+  1520→  1520→Example:
+  1521→  1521→
+  1522→  1522→"No exact matches for 'CNC machin supplier'."
+  1523→  1523→
+  1524→  1524→Suggestion:
+  1525→  1525→
+  1526→  1526→"Did you mean: CNC machine suppliers?"
+  1527→  1527→
+  1528→  1528→==================================================
+  1529→  1529→44. SYNONYMS
+  1530→  1530→==================================================
+  1531→  1531→
+  1532→  1532→Support business terminology synonyms.
+  1533→  1533→
+  1534→  1534→Examples:
+  1535→  1535→
+  1536→  1536→IT = Information Technology
+  1537→  1537→
+  1538→  1538→AI = Artificial Intelligence
+  1539→  1539→
+  1540→  1540→ML = Machine Learning
+  1541→  1541→
+  1542→  1542→ERP = Enterprise Resource Planning
+  1543→  1543→
+  1544→  1544→B2B = Business-to-Business
+  1545→  1545→
+  1546→  1546→Manufacturer = Manufacturing Company
+  1547→  1547→
+  1548→  1548→Supplier = Vendor
+  1549→  1549→
+  1550→  1550→Company = Business / Organization
+  1551→  1551→
+  1552→  1552→The synonym system must be configurable from an admin interface.
+  1553→  1553→
+  1554→  1554→==================================================
+  1555→  1555→45. ADMIN SEARCH MANAGEMENT
+  1556→  1556→==================================================
+  1557→  1557→
+  1558→  1558→Create admin capabilities for:
+  1559→  1559→
+  1560→  1560→Search synonyms
+  1561→  1561→Search redirects
+  1562→  1562→Popular searches
+  1563→  1563→Blocked queries
+  1564→  1564→Search ranking rules
+  1565→  1565→Featured businesses
+  1566→  1566→Featured products
+  1567→  1567→Search analytics
+  1568→  1568→Search errors
+  1569→  1569→No-result queries
+  1570→  1570→Taxonomy management
+  1571→  1571→
+  1572→  1572→Admin should be able to inspect:
+  1573→  1573→
+  1574→  1574→Top searches
+  1575→  1575→Zero-result searches
+  1576→  1576→High-click searches
+  1577→  1577→Low-click searches
+  1578→  1578→Search-to-contact conversion
+  1579→  1579→Search-to-profile conversion
+  1580→  1580→
+  1581→  1581→==================================================
+  1582→  1582→46. SECURITY
+  1583→  1583→==================================================
+  1584→  1584→
+  1585→  1585→Implement:
+  1586→  1586→
+  1587→  1587→Authentication where required
+  1588→  1588→Authorization
+  1589→  1589→Rate limiting
+  1590→  1590→Input validation
+  1591→  1591→Query sanitization
+  1592→  1592→API protection
+  1593→  1593→Abuse prevention
+  1594→  1594→Bot protection
+  1595→  1595→Audit logging
+  1596→  1596→
+  1597→  1597→Never expose:
+  1598→  1598→
+  1599→  1599→Internal database IDs unnecessarily
+  1600→  1600→Private business information
+  1601→  1601→Private user information
+  1602→  1602→Internal ranking logic
+  1603→  1603→Admin-only fields
+  1604→  1604→
+  1605→  1605→==================================================
+  1606→  1606→47. DATA PRIVACY
+  1607→  1607→==================================================
+  1608→  1608→
+  1609→  1609→Search history must be treated as user data.
+  1610→  1610→
+  1611→  1611→Provide mechanisms for:
+  1612→  1612→
+  1613→  1613→Clear history
+  1614→  1614→Delete saved searches
+  1615→  1615→Privacy settings
+  1616→  1616→
+  1617→  1617→Do not expose private search history publicly.
+  1618→  1618→
+  1619→  1619→==================================================
+  1620→  1620→48. FRONTEND TECHNOLOGY
+  1621→  1621→==================================================
+  1622→  1622→
+  1623→  1623→Use the existing project technology and architecture.
+  1624→  1624→
+  1625→  1625→Current project appears to use:
+  1626→  1626→
+  1627→  1627→Next.js
+  1628→  1628→React
+  1629→  1629→TypeScript
+  1630→  1630→Tailwind CSS
+  1631→  1631→Prisma
+  1632→  1632→PostgreSQL
+  1633→  1633→
+  1634→  1634→Do not unnecessarily replace the existing stack.
+  1635→  1635→
+  1636→  1636→Use reusable components.
+  1637→  1637→
+  1638→  1638→Suggested component structure:
+  1639→  1639→
+  1640→  1640→SearchEngine
+  1641→  1641→SearchBar
+  1642→  1642→SearchInput
+  1643→  1643→SearchButton
+  1644→  1644→VoiceSearch
+  1645→  1645→SearchAutocomplete
+  1646→  1646→SearchSuggestions
+  1647→  1647→SearchTabs
+  1648→  1648→SearchFilters
+  1649→  1649→FilterPanel
+  1650→  1650→SearchResults
+  1651→  1651→SearchResultCard
+  1652→  1652→CompanyResultCard
+  1653→  1653→ProductResultCard
+  1654→  1654→ServiceResultCard
+  1655→  1655→IndustryResultCard
+  1656→  1656→TechnologyResultCard
+  1657→  1657→LocationResultCard
+  1658→  1658→SearchPagination
+  1659→  1659→RelatedSearches
+  1660→  1660→SearchEmptyState
+  1661→  1661→SearchLoadingState
+  1662→  1662→SearchSummary
+  1663→  1663→SearchSidebar
+  1664→  1664→SearchHeader
+  1665→  1665→
+  1666→  1666→==================================================
+  1667→  1667→49. DESIGN SYSTEM
+  1668→  1668→==================================================
+  1669→  1669→
+  1670→  1670→Follow the existing WEBUOS design.
+  1671→  1671→
+  1672→  1672→Colors:
+  1673→  1673→
+  1674→  1674→WEBUOS Blue/Cyan:
+  1675→  1675→Primary brand
+  1676→  1676→
+  1677→  1677→Gold:
+  1678→  1678→Primary business / ESUITE accent
+  1679→  1679→
+  1680→  1680→Blue:
+  1681→  1681→Technology / IT ecosystem
+  1682→  1682→
+  1683→  1683→Purple:
+  1684→  1684→Professional / business services ecosystem
+  1685→  1685→
+  1686→  1686→Dark background:
+  1687→  1687→Primary UI
+  1688→  1688→
+  1689→  1689→Use semantic color tokens instead of hardcoded colors.
+  1690→  1690→
+  1691→  1691→Maintain accessibility.
+  1692→  1692→
+  1693→  1693→Minimum:
+  1694→  1694→
+  1695→  1695→WCAG AA where practical.
+  1696→  1696→
+  1697→  1697→==================================================
+  1698→  1698→50. SEARCH LANDING PAGE
+  1699→  1699→==================================================
+  1700→  1700→
+  1701→  1701→Preserve the current landing page structure.
+  1702→  1702→
+  1703→  1703→Hero:
+  1704→  1704→
+  1705→  1705→WEBUOS logo
+  1706→  1706→
+  1707→  1707→"World Enterprises Business Unified Operating System Connecting & Powering Business."
+  1708→  1708→
+  1709→  1709→Large search bar:
+  1710→  1710→
+  1711→  1711→Search companies, products, services or industries...
+  1712→  1712→
+  1713→  1713→Buttons:
+  1714→  1714→
+  1715→  1715→[Advanced Search]
+  1716→  1716→
+  1717→  1717→[Register / Signup]
+  1718→  1718→
+  1719→  1719→Then:
+  1720→  1720→
+  1721→  1721→03 Ecosystems
+  1722→  1722→
+  1723→  1723→01
+  1724→  1724→Industrial Engineering & Manufacturing
+  1725→  1725→
+  1726→  1726→02
+  1727→  1727→Information Technology & Artificial Intelligence
+  1728→  1728→
+  1729→  1729→03
+  1730→  1730→Professional, Commercial & Business Services
+  1731→  1731→
+  1732→  1732→Clicking search should transition into the search engine.
+  1733→  1733→
+  1734→  1734→==================================================
+  1735→  1735→51. GOOGLE-LIKE SIMPLICITY
+  1736→  1736→==================================================
+  1737→  1737→
+  1738→  1738→The search engine should follow these UX principles:
+  1739→  1739→
+  1740→  1740→• Extremely simple first interaction
+  1741→  1741→• Fast results
+  1742→  1742→• Clear ranking
+  1743→  1743→• Minimal visual noise
+  1744→  1744→• Strong autocomplete
+  1745→  1745→• Excellent typo handling
+  1746→  1746→• Useful filters
+  1747→  1747→• Useful related searches
+  1748→  1748→• Search refinement
+  1749→  1749→• Keyboard navigation
+  1750→  1750→• Mobile-first responsiveness
+  1751→  1751→
+  1752→  1752→But do NOT copy Google's branding, layout pixel-for-pixel, logo, proprietary UI or visual identity.
+  1753→  1753→
+  1754→  1754→WEBUOS must remain its own product.
+  1755→  1755→
+  1756→  1756→==================================================
+  1757→  1757→52. BUSINESS-FIRST DIFFERENTIATION
+  1758→  1758→==================================================
+  1759→  1759→
+  1760→  1760→The biggest difference from a generic search engine:
+  1761→  1761→
+  1762→  1762→WEBUOS understands BUSINESS ENTITIES.
+  1763→  1763→
+  1764→  1764→Example:
+  1765→  1765→
+  1766→  1766→Google-style:
+  1767→  1767→
+  1768→  1768→"ABC Manufacturing"
+  1769→  1769→
+  1770→  1770→WEBUOS should understand:
+  1771→  1771→
+  1772→  1772→Company
+  1773→  1773→Industry
+  1774→  1774→Sector
+  1775→  1775→Category
+  1776→  1776→Products
+  1777→  1777→Services
+  1778→  1778→Location
+  1779→  1779→Business Type
+  1780→  1780→Markets
+  1781→  1781→Capabilities
+  1782→  1782→Verification
+  1783→  1783→Relationships
+  1784→  1784→
+  1785→  1785→The search result should therefore be much more structured than a normal web search result.
+  1786→  1786→
+  1787→  1787→==================================================
+  1788→  1788→53. FUTURE WEB SEARCH
+  1789→  1789→==================================================
+  1790→  1790→
+  1791→  1791→Design the architecture so WEBUOS can later index public web pages.
+  1792→  1792→
+  1793→  1793→Future architecture:
+  1794→  1794→
+  1795→  1795→WEB CRAWLER
+  1796→  1796→↓
+  1797→  1797→Document Parser
+  1798→  1798→↓
+  1799→  1799→Content Extraction
+  1800→  1800→↓
+  1801→  1801→Normalization
+  1802→  1802→↓
+  1803→  1803→Entity Extraction
+  1804→  1804→↓
+  1805→  1805→Classification
+  1806→  1806→↓
+  1807→  1807→Deduplication
+  1808→  1808→↓
+  1809→  1809→Search Index
+  1810→  1810→↓
+  1811→  1811→Ranking
+  1812→  1812→↓
+  1813→  1813→WEBUOS Search
+  1814→  1814→
+  1815→  1815→Future indexed objects:
+  1816→  1816→
+  1817→  1817→Web Pages
+  1818→  1818→Companies
+  1819→  1819→Products
+  1820→  1820→Services
+  1821→  1821→Articles
+  1822→  1822→Documents
+  1823→  1823→Business Profiles
+  1824→  1824→Locations
+  1825→  1825→Technologies
+  1826→  1826→
+  1827→  1827→Do NOT implement a full web crawler initially unless explicitly required.
+  1828→  1828→
+  1829→  1829→Build the architecture so it can be added later.
+  1830→  1830→
+  1831→  1831→==================================================
+  1832→  1832→54. AI SEMANTIC SEARCH FUTURE
+  1833→  1833→==================================================
+  1834→  1834→
+  1835→  1835→The architecture should support future semantic retrieval.
+  1836→  1836→
+  1837→  1837→Potential pipeline:
+  1838→  1838→
+  1839→  1839→User Query
+  1840→  1840→↓
+  1841→  1841→Query Understanding
+  1842→  1842→↓
+  1843→  1843→Keyword Search
+  1844→  1844→↓
+  1845→  1845→Structured Filtering
+  1846→  1846→↓
+  1847→  1847→Semantic Retrieval
+  1848→  1848→↓
+  1849→  1849→Hybrid Ranking
+  1850→  1850→↓
+  1851→  1851→Result Generation
+  1852→  1852→
+  1853→  1853→Do not force vector search into the first implementation if it is unnecessary.
+  1854→  1854→
+  1855→  1855→The system should support a hybrid search architecture later.
+  1856→  1856→
+  1857→  1857→==================================================
+  1858→  1858→55. SEARCH QUALITY DASHBOARD
+  1859→  1859→==================================================
+  1860→  1860→
+  1861→  1861→Create internal metrics:
+  1862→  1862→
+  1863→  1863→Search volume
+  1864→  1864→Unique searches
+  1865→  1865→No-result rate
+  1866→  1866→Average result position clicked
+  1867→  1867→CTR
+  1868→  1868→Search refinement rate
+  1869→  1869→Search-to-profile rate
+  1870→  1870→Search-to-contact rate
+  1871→  1871→Search-to-RFQ rate
+  1872→  1872→Autocomplete usage
+  1873→  1873→Voice search usage
+  1874→  1874→
+  1875→  1875→Provide admin charts.
+  1876→  1876→
+  1877→  1877→==================================================
+  1878→  1878→56. DEVELOPMENT RULES
+  1879→  1879→==================================================
+  1880→  1880→
+  1881→  1881→IMPORTANT:
+  1882→  1882→
+  1883→  1883→1. Inspect the existing WEBUOS project before modifying code.
+  1884→  1884→
+  1885→  1885→2. Do NOT replace existing components unnecessarily.
+  1886→  1886→
+  1887→  1887→3. Reuse existing header, logo, theme, buttons and taxonomy components.
+  1888→  1888→
+  1889→  1889→4. Preserve the current landing page.
+  1890→  1890→
+  1891→  1891→5. Add the search engine as a new scalable module.
+  1892→  1892→
+  1893→  1893→6. Keep business taxonomy centralized.
+  1894→  1894→
+  1895→  1895→7. Avoid duplicated taxonomy definitions.
+  1896→  1896→
+  1897→  1897→8. Use TypeScript types everywhere.
+  1898→  1898→
+  1899→  1899→9. Use server-side validation.
+  1900→  1900→
+  1901→  1901→10. Use clean API contracts.
+  1902→  1902→
+  1903→  1903→11. Use reusable components.
+  1904→  1904→
+  1905→  1905→12. Keep search provider abstraction separate from UI.
+  1906→  1906→
+  1907→  1907→13. Do not hardcode business results.
+  1908→  1908→
+  1909→  1909→14. Create seed/demo data only where necessary.
+  1910→  1910→
+  1911→  1911→15. Make the system production-ready.
+  1912→  1912→
+  1913→  1913→==================================================
+  1914→  1914→57. DEVELOPMENT PHASES
+  1915→  1915→==================================================
+  1916→  1916→
+  1917→  1917→PHASE 1 — SEARCH UI
+  1918→  1918→
+  1919→  1919→Build:
+  1920→  1920→
+  1921→  1921→• Search page
+  1922→  1922→• Search header
+  1923→  1923→• Search input
+  1924→  1924→• Autocomplete
+  1925→  1925→• Tabs
+  1926→  1926→• Filters
+  1927→  1927→• Result cards
+  1928→  1928→• Pagination
+  1929→  1929→• Empty states
+  1930→  1930→• Loading states
+  1931→  1931→• Related searches
+  1932→  1932→
+  1933→  1933→PHASE 2 — SEARCH API
+  1934→  1934→
+  1935→  1935→Build:
+  1936→  1936→
+  1937→  1937→• Query API
+  1938→  1938→• Suggestion API
+  1939→  1939→• Filters
+  1940→  1940→• Pagination
+  1941→  1941→• Search response schema
+  1942→  1942→
+  1943→  1943→PHASE 3 — SEARCH INDEX
+  1944→  1944→
+  1945→  1945→Integrate:
+  1946→  1946→
+  1947→  1947→PostgreSQL
+  1948→  1948→+
+  1949→  1949→Dedicated search engine
+  1950→  1950→
+  1951→  1951→Implement:
+  1952→  1952→
+  1953→  1953→• Full text
+  1954→  1954→• Fuzzy search
+  1955→  1955→• Prefix search
+  1956→  1956→• Facets
+  1957→  1957→• Ranking
+  1958→  1958→• Geo filtering
+  1959→  1959→
+  1960→  1960→PHASE 4 — BUSINESS ENTITY SEARCH
+  1961→  1961→
+  1962→  1962→Implement:
+  1963→  1963→
+  1964→  1964→Companies
+  1965→  1965→Products
+  1966→  1966→Services
+  1967→  1967→Industries
+  1968→  1968→Technologies
+  1969→  1969→Locations
+  1970→  1970→
+  1971→  1971→PHASE 5 — ADVANCED SEARCH
+  1972→  1972→
+  1973→  1973→Implement complete filtering system.
+  1974→  1974→
+  1975→  1975→PHASE 6 — SEARCH ANALYTICS
+  1976→  1976→
+  1977→  1977→Implement search event tracking.
+  1978→  1978→
+  1979→  1979→PHASE 7 — AI SEARCH
+  1980→  1980→
+  1981→  1981→Implement query interpretation and semantic/natural-language search.
+  1982→  1982→
+  1983→  1983→PHASE 8 — WEB SEARCH
+  1984→  1984→
+  1985→  1985→Prepare crawler/indexing architecture for future expansion.
+  1986→  1986→
+  1987→  1987→==================================================
+  1988→  1988→58. ACCEPTANCE CRITERIA
+  1989→  1989→==================================================
+  1990→  1990→
+  1991→  1991→The implementation is considered complete only when:
+  1992→  1992→
+  1993→  1993→✓ User can search from WEBUOS landing page.
+  1994→  1994→
+  1995→  1995→✓ Search navigates to a dedicated results page.
+  1996→  1996→
+  1997→  1997→✓ Query remains visible in search input.
+  1998→  1998→
+  1999→  1999→✓ Autocomplete works.
+  2000→  2000→
+
+[showing lines 1-2000 of 2002; use offset=2001 with limit to continue reading]

@@ -1,0 +1,995 @@
+     1→// ============================================================
+     2→// WEBUOS Business Taxonomy Data
+     3→// Interconnected hierarchy: Ecosystem → Core Sector → Category
+     4→// Each Category has Related Products, Services, and Business Profiles
+     5→// ============================================================
+     6→
+     7→export interface BusinessProfile {
+     8→  name: string;
+     9→  type: string;
+    10→  location: string;
+    11→}
+    12→
+    13→export interface ProductOrService {
+    14→  name: string;
+    15→  type: "product" | "service";
+    16→  description: string;
+    17→}
+    18→
+    19→export interface Category {
+    20→  id: string;
+    21→  code: string;
+    22→  name: string;
+    23→  description: string;
+    24→  products: ProductOrService[];
+    25→  services: ProductOrService[];
+    26→  businessProfiles: BusinessProfile[];
+    27→}
+    28→
+    29→export interface CoreSector {
+    30→  id: string;
+    31→  code: string;
+    32→  number: string;
+    33→  name: string;
+    34→  description: string;
+    35→  icon: string;
+    36→  color: string;
+    37→  categories: Category[];
+    38→}
+    39→
+    40→export interface Ecosystem {
+    41→  id: string;
+    42→  code: string;
+    43→  number: string;
+    44→  name: string;
+    45→  shortName: string;
+    46→  tagline: string;
+    47→  description: string;
+    48→  icon: string;
+    49→  accent: "gold" | "blue" | "purple";
+    50→  image: string;
+    51→  categories: CoreSector[];
+    52→}
+    53→
+    54→// ============================================================
+    55→// ECOSYSTEM 01: INDUSTRIAL ENGINEERING & MANUFACTURING
+    56→// ============================================================
+    57→
+    58→const industrial: Ecosystem = {
+    59→  id: "industrial",
+    60→  code: "IEM",
+    61→  number: "01",
+    62→  name: "Industrial Engineering & Manufacturing",
+    63→  shortName: "Industrial",
+    64→  tagline: "Build • Produce • Operate",
+    65→  description: "Industries involved in engineering, manufacturing, industrial production, physical products, infrastructure, machinery, energy, transportation, materials, automation, and the physical economy.",
+    66→  icon: "Factory",
+    67→  accent: "gold",
+    68→  image: "/segment-industrial.jpg",
+    69→  categories: [
+    70→    {
+    71→      id: "manufacturing-production",
+    72→      code: "IEM-01",
+    73→      number: "01",
+    74→      name: "Manufacturing & Production",
+    75→      description: "Discrete and process manufacturing, fabrication, and production operations.",
+    76→      icon: "Factory",
+    77→      color: "amber",
+    78→      categories: [
+    79→        {
+    80→          id: "discrete-manufacturing",
+    81→          code: "IEM-01-001",
+    82→          name: "Discrete Manufacturing",
+    83→          description: "Production of distinct items such as parts, assemblies, and finished goods.",
+    84→          products: [
+    85→            { name: "CNC Machined Components", type: "product", description: "Precision-machined metal and plastic parts." },
+    86→            { name: "Assembled Units", type: "product", description: "Finished assembled products and sub-assemblies." },
+    87→            { name: "Production Tooling", type: "product", description: "Jigs, fixtures, dies, and molds." },
+    88→          ],
+    89→          services: [
+    90→            { name: "Contract Manufacturing", type: "service", description: "OEM and ODM contract production services." },
+    91→            { name: "Production Planning", type: "service", description: "Scheduling, capacity planning, and workflow optimization." },
+    92→          ],
+    93→          businessProfiles: [
+    94→            { name: "Precision Parts Ltd", type: "Contract Manufacturer", location: "Pune, India" },
+    95→            { name: "Global Assemblies Inc", type: "OEM Manufacturer", location: "Detroit, USA" },
+    96→          ],
+    97→        },
+    98→        {
+    99→          id: "process-manufacturing",
+   100→          code: "IEM-01-002",
+   101→          name: "Process Manufacturing",
+   102→          description: "Production using formulas/recipes — chemicals, food, beverages, pharma.",
+   103→          products: [
+   104→            { name: "Industrial Chemicals", type: "product", description: "Bulk and specialty chemical products." },
+   105→            { name: "Processed Food Products", type: "product", description: "Packaged food and beverage products." },
+   106→          ],
+   107→          services: [
+   108→            { name: "Batch Production", type: "service", description: "Formula-based batch manufacturing services." },
+   109→            { name: "Quality Testing", type: "service", description: "Lab testing and certification services." },
+   110→          ],
+   111→          businessProfiles: [
+   112→            { name: "ChemProcess Industries", type: "Chemical Manufacturer", location: "Gujarat, India" },
+   113→          ],
+   114→        },
+   115→        {
+   116→          id: "additive-manufacturing",
+   117→          code: "IEM-01-003",
+   118→          name: "Additive Manufacturing",
+   119→          description: "3D printing and rapid prototyping for industrial applications.",
+   120→          products: [
+   121→            { name: "3D Printed Prototypes", type: "product", description: "Rapid prototypes in metal and polymer." },
+   122→            { name: "Custom Tooling", type: "product", description: "Additively manufactured jigs and fixtures." },
+   123→          ],
+   124→          services: [
+   125→            { name: "Design for Additive", type: "service", description: "DfAM consulting and optimization services." },
+   126→            { name: "Prototyping Services", type: "service", description: "On-demand 3D printing services." },
+   127→          ],
+   128→          businessProfiles: [
+   129→            { name: "AdditiveTech Solutions", type: "3D Printing Service", location: "Bengaluru, India" },
+   130→          ],
+   131→        },
+   132→      ],
+   133→    },
+   134→    {
+   135→      id: "energy-utilities",
+   136→      code: "IEM-02",
+   137→      number: "02",
+   138→      name: "Energy & Utilities",
+   139→      description: "Power generation, renewable energy, oil & gas, and utility infrastructure.",
+   140→      icon: "Zap",
+   141→      color: "orange",
+   142→      categories: [
+   143→        {
+   144→          id: "renewable-energy",
+   145→          code: "IEM-02-001",
+   146→          name: "Renewable Energy",
+   147→          description: "Solar, wind, hydro, and other clean energy generation.",
+   148→          products: [
+   149→            { name: "Solar Panels", type: "product", description: "Monocrystalline and polycrystalline PV modules." },
+   150→            { name: "Wind Turbines", type: "product", description: "Onshore and offshore wind turbine systems." },
+   151→            { name: "Inverters", type: "product", description: "String and central solar inverters." },
+   152→          ],
+   153→          services: [
+   154→            { name: "EPC Services", type: "service", description: "Engineering, procurement, and construction for solar/wind plants." },
+   155→            { name: "O&M Services", type: "service", description: "Operations and maintenance for renewable plants." },
+   156→          ],
+   157→          businessProfiles: [
+   158→            { name: "SolarTech Energy", type: "Solar EPC", location: "Jaipur, India" },
+   159→            { name: "WindPower Systems", type: "Turbine Manufacturer", location: "Hamburg, Germany" },
+   160→          ],
+   161→        },
+   162→        {
+   163→          id: "oil-gas",
+   164→          code: "IEM-02-002",
+   165→          name: "Oil & Gas",
+   166→          description: "Upstream, midstream, and downstream oil & gas operations.",
+   167→          products: [
+   168→            { name: "Refined Petroleum Products", type: "product", description: "Gasoline, diesel, jet fuel, and lubricants." },
+   169→            { name: "Pipeline Equipment", type: "product", description: "Pipes, valves, and pressure vessels." },
+   170→          ],
+   171→          services: [
+   172→            { name: "Drilling Services", type: "service", description: "Onshore and offshore drilling operations." },
+   173→            { name: "Refinery Maintenance", type: "service", description: "Turnaround and maintenance services." },
+   174→          ],
+   175→          businessProfiles: [
+   176→            { name: "PetroTech Industries", type: "Refining Company", location: "Mumbai, India" },
+   177→          ],
+   178→        },
+   179→      ],
+   180→    },
+   181→    {
+   182→      id: "construction-infrastructure",
+   183→      code: "IEM-03",
+   184→      number: "03",
+   185→      name: "Construction & Infrastructure",
+   186→      description: "Civil, commercial, residential, and industrial construction.",
+   187→      icon: "HardHat",
+   188→      color: "red",
+   189→      categories: [
+   190→        {
+   191→          id: "civil-construction",
+   192→          code: "IEM-03-001",
+   193→          name: "Civil Construction",
+   194→          description: "Roads, bridges, tunnels, dams, and civil works.",
+   195→          products: [
+   196→            { name: "Ready Mix Concrete", type: "product", description: "Grade RMC for construction projects." },
+   197→            { name: "Structural Steel", type: "product", description: "Beams, columns, and structural sections." },
+   198→          ],
+   199→          services: [
+   200→            { name: "Civil Contracting", type: "service", description: "End-to-end civil works execution." },
+   201→            { name: "Project Management", type: "service", description: "Construction project management services." },
+   202→          ],
+   203→          businessProfiles: [
+   204→            { name: "BuildTech Contractors", type: "Civil Contractor", location: "Delhi, India" },
+   205→          ],
+   206→        },
+   207→        {
+   208→          id: "commercial-construction",
+   209→          code: "IEM-03-002",
+   210→          name: "Commercial Construction",
+   211→          description: "Office buildings, malls, hospitals, and commercial complexes.",
+   212→          products: [
+   213→            { name: "Building Materials", type: "product", description: "Cement, aggregates, and finishing materials." },
+   214→            { name: "HVAC Systems", type: "product", description: "Heating, ventilation, and AC systems." },
+   215→          ],
+   216→          services: [
+   217→            { name: "Turnkey Construction", type: "service", description: "Design-build commercial projects." },
+   218→          ],
+   219→          businessProfiles: [
+   220→            { name: "CommercialBuild Ltd", type: "Builder", location: "Mumbai, India" },
+   221→          ],
+   222→        },
+   223→      ],
+   224→    },
+   225→    {
+   226→      id: "automotive-mobility",
+   227→      code: "IEM-04",
+   228→      number: "04",
+   229→      name: "Automotive & Mobility",
+   230→      description: "Vehicles, components, EVs, and mobility solutions.",
+   231→      icon: "Car",
+   232→      color: "teal",
+   233→      categories: [
+   234→        {
+   235→          id: "electric-vehicles",
+   236→          code: "IEM-04-001",
+   237→          name: "Electric Vehicles",
+   238→          description: "EV manufacturing, batteries, and charging infrastructure.",
+   239→          products: [
+   240→            { name: "EV Batteries", type: "product", description: "Lithium-ion battery packs for EVs." },
+   241→            { name: "Charging Stations", type: "product", description: "AC and DC fast chargers." },
+   242→            { name: "EV Motors", type: "product", description: "Permanent magnet and induction motors." },
+   243→          ],
+   244→          services: [
+   245→            { name: "Charging Installation", type: "service", description: "EV charger installation and maintenance." },
+   246→            { name: "Battery Recycling", type: "service", description: "EV battery recycling and second-life services." },
+   247→          ],
+   248→          businessProfiles: [
+   249→            { name: "EVMotors India", type: "EV Manufacturer", location: "Bengaluru, India" },
+   250→            { name: "ChargePoint Solutions", type: "Charging Infrastructure", location: "San Francisco, USA" },
+   251→          ],
+   252→        },
+   253→        {
+   254→          id: "automotive-components",
+   255→          code: "IEM-04-002",
+   256→          name: "Automotive Components",
+   257→          description: "Parts and systems for ICE and electric vehicles.",
+   258→          products: [
+   259→            { name: "Engine Components", type: "product", description: "Pistons, crankshafts, and cylinder heads." },
+   260→            { name: "Brake Systems", type: "product", description: "Brake pads, calipers, and ABS modules." },
+   261→          ],
+   262→          services: [
+   263→            { name: "Tier-1 Supply", type: "service", description: "OEM component supply and JIT delivery." },
+   264→          ],
+   265→          businessProfiles: [
+   266→            { name: "AutoParts Manufacturing", type: "Tier-1 Supplier", location: "Chennai, India" },
+   267→          ],
+   268→        },
+   269→      ],
+   270→    },
+   271→    {
+   272→      id: "aerospace-defense",
+   273→      code: "IEM-05",
+   274→      number: "05",
+   275→      name: "Aerospace & Defense",
+   276→      description: "Aircraft, spacecraft, defense systems, and related technologies.",
+   277→      icon: "Plane",
+   278→      color: "blue",
+   279→      categories: [
+   280→        {
+   281→          id: "aircraft-manufacturing",
+   282→          code: "IEM-05-001",
+   283→          name: "Aircraft Manufacturing",
+   284→          description: "Commercial and military aircraft production.",
+   285→          products: [
+   286→            { name: "Aircraft Components", type: "product", description: "Fuselage, wing, and tail assemblies." },
+   287→            { name: "Avionics Systems", type: "product", description: "Flight control and navigation electronics." },
+   288→          ],
+   289→          services: [
+   290→            { name: "MRO Services", type: "service", description: "Maintenance, repair, and overhaul." },
+   291→          ],
+   292→          businessProfiles: [
+   293→            { name: "AeroTech Systems", type: "Aerospace Manufacturer", location: "Bengaluru, India" },
+   294→          ],
+   295→        },
+   296→      ],
+   297→    },
+   298→    {
+   299→      id: "industrial-automation",
+   300→      code: "IEM-06",
+   301→      number: "06",
+   302→      name: "Industrial Automation",
+   303→      description: "PLC, SCADA, robotics, and smart factory solutions.",
+   304→      icon: "Bot",
+   305→      color: "green",
+   306→      categories: [
+   307→        {
+   308→          id: "robotics",
+   309→          code: "IEM-06-001",
+   310→          name: "Robotics",
+   311→          description: "Industrial robots for welding, assembly, and material handling.",
+   312→          products: [
+   313→            { name: "Articulated Robots", type: "product", description: "6-axis industrial robotic arms." },
+   314→            { name: "Cobots", type: "product", description: "Collaborative robots for human-robot work." },
+   315→            { name: "End Effectors", type: "product", description: "Grippers and tooling for robots." },
+   316→          ],
+   317→          services: [
+   318→            { name: "Robot Integration", type: "service", description: "Turnkey robotic cell integration." },
+   319→            { name: "Programming & Commissioning", type: "service", description: "Robot programming and setup services." },
+   320→          ],
+   321→          businessProfiles: [
+   322→            { name: "RoboTech Solutions", type: "Robotics Integrator", location: "Pune, India" },
+   323→          ],
+   324→        },
+   325→        {
+   326→          id: "scada-plc",
+   327→          code: "IEM-06-002",
+   328→          name: "SCADA & PLC Systems",
+   329→          description: "Supervisory control and programmable logic controllers.",
+   330→          products: [
+   331→            { name: "PLC Controllers", type: "product", description: "Programmable logic controllers." },
+   332→            { name: "HMI Panels", type: "product", description: "Human-machine interface displays." },
+   333→          ],
+   334→          services: [
+   335→            { name: "Automation Upgrades", type: "service", description: "Legacy system modernization." },
+   336→          ],
+   337→          businessProfiles: [
+   338→            { name: "AutomationControls Ltd", type: "System Integrator", location: "Chennai, India" },
+   339→          ],
+   340→        },
+   341→      ],
+   342→    },
+   343→  ],
+   344→};
+   345→
+   346→// ============================================================
+   347→// ECOSYSTEM 02: INFORMATION TECHNOLOGY & ARTIFICIAL INTELLIGENCE
+   348→// ============================================================
+   349→
+   350→const technologyAI: Ecosystem = {
+   351→  id: "technology-ai",
+   352→  code: "ITA",
+   353→  number: "02",
+   354→  name: "Information Technology & Artificial Intelligence",
+   355→  shortName: "Technology & AI",
+   356→  tagline: "Digital • Data • Intelligence",
+   357→  description: "Technology, software, AI, data, cloud, digital infrastructure, and intelligent systems powering the modern economy.",
+   358→  icon: "Cpu",
+   359→  accent: "blue",
+   360→  image: "/segment-technology.jpg",
+   361→  categories: [
+   362→    {
+   363→      id: "software-saas",
+   364→      code: "ITA-01",
+   365→      number: "01",
+   366→      name: "Software & SaaS",
+   367→      description: "Enterprise software, cloud applications, and SaaS platforms.",
+   368→      icon: "Code2",
+   369→      color: "blue",
+   370→      categories: [
+   371→        {
+   372→          id: "erp-software",
+   373→          code: "ITA-01-001",
+   374→          name: "ERP Software",
+   375→          description: "Enterprise resource planning systems for business management.",
+   376→          products: [
+   377→            { name: "Cloud ERP Suite", type: "product", description: "Full-featured cloud ERP with modules." },
+   378→            { name: "ERP Mobile App", type: "product", description: "Mobile access to ERP functions." },
+   379→          ],
+   380→          services: [
+   381→            { name: "ERP Implementation", type: "service", description: "End-to-end ERP deployment and configuration." },
+   382→            { name: "ERP Customization", type: "service", description: "Custom module and workflow development." },
+   383→          ],
+   384→          businessProfiles: [
+   385→            { name: "TechERP Solutions", type: "SaaS Company", location: "Bengaluru, India" },
+   386→            { name: "CloudERP Inc", type: "Software Vendor", location: "Austin, USA" },
+   387→          ],
+   388→        },
+   389→        {
+   390→          id: "crm-software",
+   391→          code: "ITA-01-002",
+   392→          name: "CRM Software",
+   393→          description: "Customer relationship management and sales platforms.",
+   394→          products: [
+   395→            { name: "Sales CRM Platform", type: "product", description: "Pipeline and contact management SaaS." },
+   396→            { name: "Marketing Automation", type: "product", description: "Email and campaign automation tools." },
+   397→          ],
+   398→          services: [
+   399→            { name: "CRM Consulting", type: "service", description: "CRM strategy and implementation." },
+   400→            { name: "Data Migration", type: "service", description: "Legacy data migration to new CRM." },
+   401→          ],
+   402→          businessProfiles: [
+   403→            { name: "CRMHub Technologies", type: "SaaS Company", location: "Hyderabad, India" },
+   404→          ],
+   405→        },
+   406→        {
+   407→          id: "project-management",
+   408→          code: "ITA-01-003",
+   409→          name: "Project Management Software",
+   410→          description: "Task tracking, collaboration, and project planning tools.",
+   411→          products: [
+   412→            { name: "Project Tracker", type: "product", description: "Kanban and Gantt-based project tool." },
+   413→            { name: "Team Collaboration", type: "product", description: "Chat, file sharing, and wiki platform." },
+   414→          ],
+   415→          services: [
+   416→            { name: "PMO Setup", type: "service", description: "Project management office consulting." },
+   417→          ],
+   418→          businessProfiles: [
+   419→            { name: "ProjectFlow Systems", type: "SaaS Company", location: "Pune, India" },
+   420→          ],
+   421→        },
+   422→      ],
+   423→    },
+   424→    {
+   425→      id: "ai-machine-learning",
+   426→      code: "ITA-02",
+   427→      number: "02",
+   428→      name: "AI & Machine Learning",
+   429→      description: "Artificial intelligence, ML models, and intelligent automation.",
+   430→      icon: "Brain",
+   431→      color: "violet",
+   432→      categories: [
+   433→        {
+   434→          id: "generative-ai",
+   435→          code: "ITA-02-001",
+   436→          name: "Generative AI",
+   437→          description: "LLMs, image generation, and content creation AI.",
+   438→          products: [
+   439→            { name: "AI Chatbot Platform", type: "product", description: "LLM-powered conversational AI." },
+   440→            { name: "Image Generation API", type: "product", description: "Text-to-image generation service." },
+   441→          ],
+   442→          services: [
+   443→            { name: "AI Model Fine-tuning", type: "service", description: "Custom LLM training and fine-tuning." },
+   444→            { name: "AI Strategy Consulting", type: "service", description: "AI roadmap and use-case identification." },
+   445→          ],
+   446→          businessProfiles: [
+   447→            { name: "GenAI Labs", type: "AI Company", location: "Bengaluru, India" },
+   448→            { name: "OpenAI Solutions", type: "AI Platform", location: "San Francisco, USA" },
+   449→          ],
+   450→        },
+   451→        {
+   452→          id: "computer-vision",
+   453→          code: "ITA-02-002",
+   454→          name: "Computer Vision",
+   455→          description: "Image recognition, object detection, and visual analytics.",
+   456→          products: [
+   457→            { name: "Vision Inspection System", type: "product", description: "AI-based quality inspection for manufacturing." },
+   458→            { name: "Face Recognition SDK", type: "product", description: "Facial recognition API and SDK." },
+   459→          ],
+   460→          services: [
+   461→            { name: "Custom Vision Models", type: "service", description: "Domain-specific computer vision model training." },
+   462→          ],
+   463→          businessProfiles: [
+   464→            { name: "VisionAI Technologies", type: "AI Company", location: "Hyderabad, India" },
+   465→          ],
+   466→        },
+   467→      ],
+   468→    },
+   469→    {
+   470→      id: "cloud-computing",
+   471→      code: "ITA-03",
+   472→      number: "03",
+   473→      name: "Cloud Computing",
+   474→      description: "Cloud infrastructure, platforms, and managed services.",
+   475→      icon: "Cloud",
+   476→      color: "cyan",
+   477→      categories: [
+   478→        {
+   479→          id: "cloud-infrastructure",
+   480→          code: "ITA-03-001",
+   481→          name: "Cloud Infrastructure",
+   482→          description: "IaaS, compute, storage, and networking in the cloud.",
+   483→          products: [
+   484→            { name: "Virtual Machines", type: "product", description: "Scalable cloud compute instances." },
+   485→            { name: "Cloud Storage", type: "product", description: "Object and block storage services." },
+   486→          ],
+   487→          services: [
+   488→            { name: "Cloud Migration", type: "service", description: "Lift-and-shift and re-platforming services." },
+   489→            { name: "Cloud Architecture", type: "service", description: "Cloud design and optimization consulting." },
+   490→          ],
+   491→          businessProfiles: [
+   492→            { name: "CloudScale Services", type: "Cloud Provider", location: "Mumbai, India" },
+   493→          ],
+   494→        },
+   495→        {
+   496→          id: "devops-platform",
+   497→          code: "ITA-03-002",
+   498→          name: "DevOps & Platform Engineering",
+   499→          description: "CI/CD, containers, Kubernetes, and platform tooling.",
+   500→          products: [
+   501→            { name: "CI/CD Pipeline Tool", type: "product", description: "Automated build and deployment platform." },
+   502→            { name: "Container Registry", type: "product", description: "Docker image storage and scanning." },
+   503→          ],
+   504→          services: [
+   505→            { name: "DevOps Setup", type: "service", description: "CI/CD pipeline implementation." },
+   506→            { name: "Kubernetes Consulting", type: "service", description: "K8s architecture and migration." },
+   507→          ],
+   508→          businessProfiles: [
+   509→            { name: "DevOpsPro Solutions", type: "DevOps Company", location: "Pune, India" },
+   510→          ],
+   511→        },
+   512→      ],
+   513→    },
+   514→    {
+   515→      id: "cybersecurity",
+   516→      code: "ITA-04",
+   517→      number: "04",
+   518→      name: "Cybersecurity",
+   519→      description: "Security software, threat protection, and compliance.",
+   520→      icon: "ShieldCheck",
+   521→      color: "red",
+   522→      categories: [
+   523→        {
+   524→          id: "endpoint-security",
+   525→          code: "ITA-04-001",
+   526→          name: "Endpoint Security",
+   527→          description: "Antivirus, EDR, and device protection.",
+   528→          products: [
+   529→            { name: "EDR Platform", type: "product", description: "Endpoint detection and response software." },
+   530→            { name: "Mobile Device Management", type: "product", description: "MDM for enterprise devices." },
+   531→          ],
+   532→          services: [
+   533→            { name: "Security Audits", type: "service", description: "Endpoint security assessment." },
+   534→          ],
+   535→          businessProfiles: [
+   536→            { name: "SecureTech Solutions", type: "Security Company", location: "Gurugram, India" },
+   537→          ],
+   538→        },
+   539→        {
+   540→          id: "network-security",
+   541→          code: "ITA-04-002",
+   542→          name: "Network Security",
+   543→          description: "Firewalls, IDS/IPS, and network monitoring.",
+   544→          products: [
+   545→            { name: "Next-Gen Firewall", type: "product", description: "NGFW with deep packet inspection." },
+   546→            { name: "SIEM Platform", type: "product", description: "Security information and event management." },
+   547→          ],
+   548→          services: [
+   549→            { name: "Penetration Testing", type: "service", description: "Ethical hacking and vuln assessment." },
+   550→          ],
+   551→          businessProfiles: [
+   552→            { name: "NetGuard Technologies", type: "Security Company", location: "Bengaluru, India" },
+   553→          ],
+   554→        },
+   555→      ],
+   556→    },
+   557→    {
+   558→      id: "data-analytics",
+   559→      code: "ITA-05",
+   560→      number: "05",
+   561→      name: "Data & Analytics",
+   562→      description: "BI, data engineering, data warehouses, and analytics platforms.",
+   563→      icon: "BarChart3",
+   564→      color: "indigo",
+   565→      categories: [
+   566→        {
+   567→          id: "business-intelligence",
+   568→          code: "ITA-05-001",
+   569→          name: "Business Intelligence",
+   570→          description: "Dashboards, reporting, and data visualization.",
+   571→          products: [
+   572→            { name: "BI Dashboard", type: "product", description: "Interactive analytics dashboards." },
+   573→            { name: "Reporting Engine", type: "product", description: "Automated report generation." },
+   574→          ],
+   575→          services: [
+   576→            { name: "BI Implementation", type: "service", description: "Dashboard and KPI development." },
+   577→          ],
+   578→          businessProfiles: [
+   579→            { name: "InsightsTech", type: "Data Company", location: "Hyderabad, India" },
+   580→          ],
+   581→        },
+   582→        {
+   583→          id: "data-engineering",
+   584→          code: "ITA-05-002",
+   585→          name: "Data Engineering",
+   586→          description: "ETL/ELT pipelines, data lakes, and data platforms.",
+   587→          products: [
+   588→            { name: "Data Pipeline Tool", type: "product", description: "ETL/ELT automation platform." },
+   589→            { name: "Data Lake Storage", type: "product", description: "Scalable data lake infrastructure." },
+   590→          ],
+   591→          services: [
+   592→            { name: "Data Warehouse Setup", type: "service", description: "Warehouse design and migration." },
+   593→          ],
+   594→          businessProfiles: [
+   595→            { name: "DataEng Solutions", type: "Data Company", location: "Bengaluru, India" },
+   596→          ],
+   597→        },
+   598→      ],
+   599→    },
+   600→    {
+   601→      id: "iot",
+   602→      code: "ITA-06",
+   603→      number: "06",
+   604→      name: "Internet of Things (IoT)",
+   605→      description: "Connected devices, sensors, and IoT platforms.",
+   606→      icon: "Radio",
+   607→      color: "green",
+   608→      categories: [
+   609→        {
+   610→          id: "industrial-iot",
+   611→          code: "ITA-06-001",
+   612→          name: "Industrial IoT",
+   613→          description: "Connected factory equipment, sensors, and predictive maintenance.",
+   614→          products: [
+   615→            { name: "IoT Sensor Gateway", type: "product", description: "Edge gateway for industrial sensors." },
+   616→            { name: "Predictive Maintenance Platform", type: "product", description: "AI-based equipment health monitoring." },
+   617→          ],
+   618→          services: [
+   619→            { name: "IoT Deployment", type: "service", description: "End-to-end industrial IoT setup." },
+   620→          ],
+   621→          businessProfiles: [
+   622→            { name: "IIoT Solutions Ltd", type: "IoT Company", location: "Pune, India" },
+   623→          ],
+   624→        },
+   625→      ],
+   626→    },
+   627→  ],
+   628→};
+   629→
+   630→// ============================================================
+   631→// ECOSYSTEM 03: PROFESSIONAL, COMMERCIAL & BUSINESS SERVICES
+   632→// ============================================================
+   633→
+   634→const businessServices: Ecosystem = {
+   635→  id: "business-services",
+   636→  code: "PCB",
+   637→  number: "03",
+   638→  name: "Professional, Commercial & Business Services",
+   639→  shortName: "Business Services",
+   640→  tagline: "People • Capital • Services",
+   641→  description: "The global service economy covering professional expertise, commercial activity, financial services, and business services.",
+   642→  icon: "Briefcase",
+   643→  accent: "purple",
+   644→  image: "/segment-business.jpg",
+   645→  categories: [
+   646→    {
+   647→      id: "business-consulting",
+   648→      code: "PCB-01",
+   649→      number: "01",
+   650→      name: "Business Consulting",
+   651→      description: "Strategy, operations, and management consulting services.",
+   652→      icon: "Lightbulb",
+   653→      color: "purple",
+   654→      categories: [
+   655→        {
+   656→          id: "strategy-consulting",
+   657→          code: "PCB-01-001",
+   658→          name: "Strategy Consulting",
+   659→          description: "Business strategy, growth, and market entry advisory.",
+   660→          products: [
+   661→            { name: "Strategy Framework Templates", type: "product", description: "Ready-to-use business strategy frameworks." },
+   662→          ],
+   663→          services: [
+   664→            { name: "Growth Strategy Advisory", type: "service", description: "Market analysis and growth planning." },
+   665→            { name: "M&A Advisory", type: "service", description: "Merger and acquisition consulting." },
+   666→          ],
+   667→          businessProfiles: [
+   668→            { name: "Strategy Partners LLC", type: "Consulting Firm", location: "Mumbai, India" },
+   669→            { name: "Growth Advisory Group", type: "Consulting Firm", location: "New York, USA" },
+   670→          ],
+   671→        },
+   672→        {
+   673→          id: "operations-consulting",
+   674→          code: "PCB-01-002",
+   675→          name: "Operations Consulting",
+   676→          description: "Process optimization, lean, and supply chain advisory.",
+   677→          products: [
+   678→            { name: "Process Audit Toolkit", type: "product", description: "Operations assessment templates." },
+   679→          ],
+   680→          services: [
+   681→            { name: "Lean Implementation", type: "service", description: "Lean manufacturing and operations." },
+   682→            { name: "Process Reengineering", type: "service", description: "BPR and workflow optimization." },
+   683→          ],
+   684→          businessProfiles: [
+   685→            { name: "Ops Excellence Consulting", type: "Consulting Firm", location: "Pune, India" },
+   686→          ],
+   687→        },
+   688→      ],
+   689→    },
+   690→    {
+   691→      id: "finance-accounting",
+   692→      code: "PCB-02",
+   693→      number: "02",
+   694→      name: "Finance & Accounting",
+   695→      description: "Accounting, tax, audit, and financial advisory services.",
+   696→      icon: "Wallet",
+   697→      color: "green",
+   698→      categories: [
+   699→        {
+   700→          id: "accounting-services",
+   701→          code: "PCB-02-001",
+   702→          name: "Accounting Services",
+   703→          description: "Bookkeeping, payroll, and financial reporting.",
+   704→          products: [
+   705→            { name: "Accounting Software", type: "product", description: "Cloud bookkeeping and payroll platform." },
+   706→            { name: "Invoice Templates", type: "product", description: "Professional invoicing templates." },
+   707→          ],
+   708→          services: [
+   709→            { name: "Bookkeeping Services", type: "service", description: "Monthly bookkeeping and reconciliation." },
+   710→            { name: "Payroll Processing", type: "service", description: "End-to-end payroll management." },
+   711→          ],
+   712→          businessProfiles: [
+   713→            { name: "AccuCount Services", type: "Accounting Firm", location: "Delhi, India" },
+   714→          ],
+   715→        },
+   716→        {
+   717→          id: "tax-services",
+   718→          code: "PCB-02-002",
+   719→          name: "Tax Services",
+   720→          description: "Tax planning, filing, and compliance advisory.",
+   721→          products: [
+   722→            { name: "Tax Filing Software", type: "product", description: "GST and income tax e-filing tool." },
+   723→          ],
+   724→          services: [
+   725→            { name: "Tax Planning Advisory", type: "service", description: "Strategic tax optimization." },
+   726→            { name: "GST Compliance", type: "service", description: "GST registration and filing services." },
+   727→          ],
+   728→          businessProfiles: [
+   729→            { name: "TaxWise Consultants", type: "Tax Firm", location: "Mumbai, India" },
+   730→          ],
+   731→        },
+   732→        {
+   733→          id: "audit-assurance",
+   734→          code: "PCB-02-003",
+   735→          name: "Audit & Assurance",
+   736→          description: "Statutory audit, internal audit, and risk assurance.",
+   737→          products: [],
+   738→          services: [
+   739→            { name: "Statutory Audit", type: "service", description: "Annual statutory audit services." },
+   740→            { name: "Internal Audit", type: "service", description: "Ongoing internal audit and controls." },
+   741→          ],
+   742→          businessProfiles: [
+   743→            { name: "AuditPartners LLP", type: "Audit Firm", location: "Bengaluru, India" },
+   744→          ],
+   745→        },
+   746→      ],
+   747→    },
+   748→    {
+   749→      id: "legal-compliance",
+   750→      code: "PCB-03",
+   751→      number: "03",
+   752→      name: "Legal & Compliance",
+   753→      description: "Corporate law, IP, contracts, and regulatory compliance.",
+   754→      icon: "Scale",
+   755→      color: "indigo",
+   756→      categories: [
+   757→        {
+   758→          id: "corporate-law",
+   759→          code: "PCB-03-001",
+   760→          name: "Corporate Law",
+   761→          description: "Company formation, M&A legal, and corporate governance.",
+   762→          products: [
+   763→            { name: "Legal Document Templates", type: "product", description: "Contract and agreement templates." },
+   764→          ],
+   765→          services: [
+   766→            { name: "Company Incorporation", type: "service", description: "Business registration and structuring." },
+   767→            { name: "M&A Legal Advisory", type: "service", description: "Legal due diligence and deal support." },
+   768→          ],
+   769→          businessProfiles: [
+   770→            { name: "Corporate Legal Associates", type: "Law Firm", location: "Mumbai, India" },
+   771→          ],
+   772→        },
+   773→        {
+   774→          id: "intellectual-property",
+   775→          code: "PCB-03-002",
+   776→          name: "Intellectual Property",
+   777→          description: "Patents, trademarks, copyrights, and IP portfolio management.",
+   778→          products: [
+   779→            { name: "IP Management Software", type: "product", description: "Patent and trademark tracking tool." },
+   780→          ],
+   781→          services: [
+   782→            { name: "Patent Filing", type: "service", description: "Patent application and prosecution." },
+   783→            { name: "Trademark Registration", type: "service", description: "Trademark search and filing." },
+   784→          ],
+   785→          businessProfiles: [
+   786→            { name: "IPShield Legal", type: "IP Law Firm", location: "Bengaluru, India" },
+   787→          ],
+   788→        },
+   789→      ],
+   790→    },
+   791→    {
+   792→      id: "marketing-advertising",
+   793→      code: "PCB-04",
+   794→      number: "04",
+   795→      name: "Marketing & Advertising",
+   796→      description: "Digital marketing, branding, advertising, and creative services.",
+   797→      icon: "Megaphone",
+   798→      color: "rose",
+   799→      categories: [
+   800→        {
+   801→          id: "digital-marketing",
+   802→          code: "PCB-04-001",
+   803→          name: "Digital Marketing",
+   804→          description: "SEO, SEM, social media, and content marketing.",
+   805→          products: [
+   806→            { name: "Marketing Automation Tool", type: "product", description: "Email and social campaign platform." },
+   807→            { name: "SEO Analytics Dashboard", type: "product", description: "Rank tracking and SEO reporting." },
+   808→          ],
+   809→          services: [
+   810→            { name: "SEO Services", type: "service", description: "Search engine optimization campaigns." },
+   811→            { name: "Social Media Management", type: "service", description: "Content creation and community management." },
+   812→          ],
+   813→          businessProfiles: [
+   814→            { name: "DigitalWave Agency", type: "Digital Marketing Agency", location: "Gurugram, India" },
+   815→          ],
+   816→        },
+   817→        {
+   818→          id: "branding-creative",
+   819→          code: "PCB-04-002",
+   820→          name: "Branding & Creative",
+   821→          description: "Brand identity, design, video, and creative production.",
+   822→          products: [
+   823→            { name: "Brand Asset Library", type: "product", description: "Logo, color, and font asset packs." },
+   824→          ],
+   825→          services: [
+   826→            { name: "Brand Identity Design", type: "service", description: "Logo, brand guidelines, and visual identity." },
+   827→            { name: "Video Production", type: "service", description: "Corporate and promo video creation." },
+   828→          ],
+   829→          businessProfiles: [
+   830→            { name: "CreativeStudio Design", type: "Design Agency", location: "Mumbai, India" },
+   831→          ],
+   832→        },
+   833→      ],
+   834→    },
+   835→    {
+   836→      id: "healthcare-services",
+   837→      code: "PCB-05",
+   838→      number: "05",
+   839→      name: "Healthcare & Medical Services",
+   840→      description: "Hospitals, clinics, diagnostics, and healthcare management.",
+   841→      icon: "Stethoscope",
+   842→      color: "red",
+   843→      categories: [
+   844→        {
+   845→          id: "hospital-services",
+   846→          code: "PCB-05-001",
+   847→          name: "Hospital Services",
+   848→          description: "Multi-specialty hospitals and emergency care.",
+   849→          products: [
+   850→            { name: "Hospital Management Software", type: "product", description: "HIS for patient and ward management." },
+   851→          ],
+   852→          services: [
+   853→            { name: "Emergency Care", type: "service", description: "24/7 emergency and trauma services." },
+   854→            { name: "Telemedicine", type: "service", description: "Online doctor consultation." },
+   855→          ],
+   856→          businessProfiles: [
+   857→            { name: "CareWell Hospital", type: "Healthcare Provider", location: "Chennai, India" },
+   858→          ],
+   859→        },
+   860→        {
+   861→          id: "diagnostics",
+   862→          code: "PCB-05-002",
+   863→          name: "Diagnostic Services",
+   864→          description: "Pathology, radiology, and lab testing.",
+   865→          products: [
+   866→            { name: "Lab Test Packages", type: "product", description: "Health checkup and test packages." },
+   867→          ],
+   868→          services: [
+   869→            { name: "Pathology Testing", type: "service", description: "Blood, urine, and tissue testing." },
+   870→            { name: "Home Sample Collection", type: "service", description: "Doorstep blood sample collection." },
+   871→          ],
+   872→          businessProfiles: [
+   873→            { name: "DiagnosTech Labs", type: "Diagnostic Lab", location: "Bengaluru, India" },
+   874→          ],
+   875→        },
+   876→      ],
+   877→    },
+   878→    {
+   879→      id: "retail-ecommerce",
+   880→      code: "PCB-06",
+   881→      number: "06",
+   882→      name: "Retail & E-Commerce",
+   883→      description: "Online and offline retail, marketplaces, and commerce platforms.",
+   884→      icon: "ShoppingCart",
+   885→      color: "orange",
+   886→      categories: [
+   887→        {
+   888→          id: "ecommerce-platforms",
+   889→          code: "PCB-06-001",
+   890→          name: "E-Commerce Platforms",
+   891→          description: "Online stores, marketplaces, and D2C brands.",
+   892→          products: [
+   893→            { name: "E-Commerce Platform", type: "product", description: "Online store builder with payments." },
+   894→            { name: "Inventory Management Tool", type: "product", description: "Stock and order management software." },
+   895→          ],
+   896→          services: [
+   897→            { name: "Store Setup Services", type: "service", description: "E-commerce store design and launch." },
+   898→            { name: "Marketplace Listing", type: "service", description: "Amazon/Flipkart listing management." },
+   899→          ],
+   900→          businessProfiles: [
+   901→            { name: "ShopOnline Retail", type: "E-Commerce Company", location: "Bengaluru, India" },
+   902→          ],
+   903→        },
+   904→        {
+   905→          id: "retail-stores",
+   906→          code: "PCB-06-002",
+   907→          name: "Retail Stores",
+   908→          description: "Physical retail chains, franchises, and specialty stores.",
+   909→          products: [
+   910→            { name: "POS Software", type: "product", description: "Point-of-sale billing system." },
+   911→          ],
+   912→          services: [
+   913→            { name: "Retail Consulting", type: "service", description: "Store layout and merchandising." },
+   914→          ],
+   915→          businessProfiles: [
+   916→            { name: "RetailMart Chain", type: "Retail Chain", location: "Pune, India" },
+   917→          ],
+   918→        },
+   919→      ],
+   920→    },
+   921→  ],
+   922→};
+   923→
+   924→// ============================================================
+   925→// EXPORTS
+   926→// ============================================================
+   927→
+   928→export const ecosystems: Ecosystem[] = [industrial, technologyAI, businessServices];
+   929→
+   930→export function getEcosystem(id: string): Ecosystem | undefined {
+   931→  return ecosystems.find((e) => e.id === id);
+   932→}
+   933→
+   934→export function getCoreSector(
+   935→  ecosystemId: string,
+   936→  sectorId: string
+   937→): { ecosystem: Ecosystem; sector: CoreSector } | undefined {
+   938→  const ecosystem = getEcosystem(ecosystemId);
+   939→  if (!ecosystem) return undefined;
+   940→  const sector = ecosystem.categories.find((c) => c.id === sectorId);
+   941→  if (!sector) return undefined;
+   942→  return { ecosystem, sector };
+   943→}
+   944→
+   945→export function getCategory(
+   946→  ecosystemId: string,
+   947→  sectorId: string,
+   948→  categoryId: string
+   949→): { ecosystem: Ecosystem; sector: CoreSector; category: Category } | undefined {
+   950→  const result = getCoreSector(ecosystemId, sectorId);
+   951→  if (!result) return undefined;
+   952→  const category = result.sector.categories.find((c) => c.id === categoryId);
+   953→  if (!category) return undefined;
+   954→  return { ecosystem: result.ecosystem, sector: result.sector, category };
+   955→}
+   956→
+   957→export const taxonomyStats = {
+   958→  ecosystems: ecosystems.length,
+   959→  coreSectors: ecosystems.reduce((s, e) => s + e.categories.length, 0),
+   960→  categories: ecosystems.reduce(
+   961→    (s, e) => s + e.categories.reduce((ss, sec) => ss + sec.categories.length, 0),
+   962→    0
+   963→  ),
+   964→  products: ecosystems.reduce(
+   965→    (s, e) =>
+   966→      s +
+   967→      e.categories.reduce(
+   968→        (ss, sec) =>
+   969→          ss + sec.categories.reduce((sss, c) => sss + c.products.length, 0),
+   970→        0
+   971→      ),
+   972→    0
+   973→  ),
+   974→  services: ecosystems.reduce(
+   975→    (s, e) =>
+   976→      s +
+   977→      e.categories.reduce(
+   978→        (ss, sec) =>
+   979→          ss + sec.categories.reduce((sss, c) => sss + c.services.length, 0),
+   980→        0
+   981→      ),
+   982→    0
+   983→  ),
+   984→  businessProfiles: ecosystems.reduce(
+   985→    (s, e) =>
+   986→      s +
+   987→      e.categories.reduce(
+   988→        (ss, sec) =>
+   989→          ss + sec.categories.reduce((sss, c) => sss + c.businessProfiles.length, 0),
+   990→        0
+   991→      ),
+   992→    0
+   993→  ),
+   994→};
+   995→

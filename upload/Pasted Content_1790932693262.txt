@@ -1,0 +1,2133 @@
+WEBUOS Global Business Search Engine
+
+TAGLINE:
+World Enterprises Business Unified Operating System Connecting & Powering Business.
+
+PROJECT OBJECTIVE:
+
+Transform the existing WEBUOS landing page into a powerful, enterprise-grade global search engine and business discovery platform.
+
+The search experience should be inspired by the usability and simplicity of Google Search, but WEBUOS must NOT be a visual clone of Google.
+
+WEBUOS is specifically designed for BUSINESS DISCOVERY.
+
+Users must be able to search and discover:
+
+• Companies
+• Businesses
+• Products
+• Services
+• Industries
+• Technologies
+• AI companies
+• Manufacturers
+• Suppliers
+• Distributors
+• Wholesalers
+• Consultants
+• Professional service providers
+• Business categories
+• Industrial organizations
+• IT companies
+• AI companies
+• Commercial businesses
+• Business professionals
+• Business locations
+• Business opportunities
+
+The existing WEBUOS landing page is the primary visual reference and must be preserved as the design language.
+
+==================================================
+1. EXISTING WEBUOS VISUAL DIRECTION
+==================================================
+
+Use the existing attached WEBUOS UI as the visual foundation.
+
+Current landing page contains:
+
+• WEBUOS logo
+• Dark premium interface
+• Large centered WEBUOS logo
+• Tagline
+• Large global search bar
+• Voice search icon
+• Search button
+• Advanced Search button
+• Register / Signup button
+• Three ecosystem cards
+• Header navigation
+• ESUITE button
+• App launcher
+• Theme selector
+• Language selector
+• Sign In button
+
+Do NOT redesign the identity from scratch.
+
+Maintain:
+
+• Dark futuristic enterprise UI
+• Premium technology appearance
+• Subtle grid/background effects
+• Blue/cyan WEBUOS branding
+• Gold accent
+• Blue accent
+• Purple accent
+• Rounded cards
+• Thin borders
+• Minimal shadows
+• High readability
+• Professional enterprise appearance
+
+The search engine must feel like a natural extension of this landing page.
+
+==================================================
+2. CORE SEARCH EXPERIENCE
+==================================================
+
+The primary search bar must become the central search engine.
+
+Search placeholder:
+
+"Search companies, products, services or industries..."
+
+Users can type natural language queries.
+
+Examples:
+
+"steel manufacturers in Bangalore"
+
+"AI companies in India"
+
+"industrial automation companies"
+
+"ERP software companies"
+
+"electrical suppliers in Karnataka"
+
+"software development companies"
+
+"automobile manufacturers"
+
+"construction companies in Dubai"
+
+"cloud computing services"
+
+"machine learning companies"
+
+"industrial equipment suppliers"
+
+"best ERP companies"
+
+"companies manufacturing CNC machines"
+
+"IT companies in Bangalore"
+
+"AI startups in India"
+
+==================================================
+3. SEARCH QUERY UNDERSTANDING
+==================================================
+
+Create a search interpretation layer.
+
+The system should identify:
+
+• Search intent
+• Entity type
+• Industry
+• Category
+• Subcategory
+• Location
+• Country
+• State
+• City
+• Product
+• Service
+• Company
+• Technology
+• Business type
+• Keywords
+• Attributes
+• Filters
+
+Example:
+
+QUERY:
+
+"automobile component manufacturers in Bangalore"
+
+INTERPRET AS:
+
+Intent:
+Business Discovery
+
+Entity:
+Company
+
+Industry:
+Industrial Engineering & Manufacturing
+
+Category:
+Automotive
+
+Business Type:
+Manufacturer
+
+Location:
+Bangalore, Karnataka, India
+
+Keywords:
+automobile components
+
+The UI should use this interpretation to produce highly relevant results.
+
+==================================================
+4. SEARCH TYPES
+==================================================
+
+Support multiple search modes.
+
+A. GLOBAL SEARCH
+
+Search across the complete WEBUOS ecosystem.
+
+B. COMPANY SEARCH
+
+Search registered and indexed companies.
+
+C. PRODUCT SEARCH
+
+Search products and product catalogs.
+
+D. SERVICE SEARCH
+
+Search professional and commercial services.
+
+E. INDUSTRY SEARCH
+
+Search industries, sectors, categories and subcategories.
+
+F. TECHNOLOGY SEARCH
+
+Search technologies, software, AI tools, platforms and technology companies.
+
+G. LOCATION SEARCH
+
+Search businesses by:
+
+Country
+State
+Province
+City
+District
+Area
+PIN / ZIP code
+
+H. PEOPLE / PROFESSIONAL SEARCH
+
+Search business professionals, consultants, freelancers, experts and service providers where applicable.
+
+==================================================
+5. SEARCH RESULTS PAGE
+==================================================
+
+When the user submits a search, navigate to:
+
+/search?q=<query>
+
+The search results page must have a professional search-engine layout.
+
+HEADER:
+
+Left:
+
+WEBUOS logo
+
+Center:
+
+Search input containing the current query
+
+Right:
+
+• ESUITE
+• App Launcher
+• Theme
+• Language
+• Sign In
+
+Below header:
+
+Search navigation tabs:
+
+ALL
+COMPANIES
+PRODUCTS
+SERVICES
+INDUSTRIES
+TECHNOLOGY
+LOCATIONS
+
+Example:
+
+Search: "AI companies in Bangalore"
+
+Tabs:
+
+All | Companies | Products | Services | Industries | Technology | Locations
+
+==================================================
+6. SEARCH RESULT LAYOUT
+==================================================
+
+Desktop layout:
+
+LEFT:
+
+Main search results.
+
+RIGHT:
+
+Optional contextual information panel.
+
+LEFT WIDTH:
+
+Approximately 70%.
+
+RIGHT WIDTH:
+
+Approximately 30%.
+
+MAIN RESULT CARD:
+
+Each company result should support:
+
+• Company logo
+• Company name
+• Verification badge
+• Business type
+• Industry
+• Category
+• Location
+• Short description
+• Products
+• Services
+• Website
+• Contact option
+• Profile button
+• Save button
+• Share button
+
+Example:
+
+ABC Technologies Pvt Ltd
+
+✓ Verified Business
+
+Information Technology & Artificial Intelligence
+
+Software Development • AI • Cloud Computing
+
+Bangalore, Karnataka, India
+
+"Enterprise software and AI solutions provider..."
+
+[View Company] [Contact] [Save]
+
+==================================================
+7. RESULT TYPES
+==================================================
+
+Create different result cards depending on entity type.
+
+COMPANY RESULT:
+
+Logo
+Company Name
+Verification
+Industry
+Category
+Location
+Description
+Products
+Services
+CTA
+
+PRODUCT RESULT:
+
+Product Image
+Product Name
+Manufacturer
+Category
+Specifications
+Location
+Price / RFQ where available
+Availability
+CTA
+
+SERVICE RESULT:
+
+Service Name
+Provider
+Category
+Location
+Description
+Experience / capabilities
+CTA
+
+INDUSTRY RESULT:
+
+Industry Name
+Description
+Categories
+Companies
+Products
+Services
+CTA
+
+TECHNOLOGY RESULT:
+
+Technology Name
+Technology Type
+Providers
+Companies
+Use Cases
+Industries
+CTA
+
+LOCATION RESULT:
+
+Location
+Country
+State
+City
+Number of businesses
+Industries
+Popular companies
+CTA
+
+==================================================
+8. SEARCH RESULT RELEVANCE ENGINE
+==================================================
+
+Implement a relevance-ranking system.
+
+Ranking signals should include:
+
+1. Exact query match
+2. Entity match
+3. Search intent match
+4. Category match
+5. Industry match
+6. Location match
+7. Business verification
+8. Profile completeness
+9. Product/service relevance
+10. Text relevance
+11. Popularity
+12. Freshness
+13. User interaction signals
+14. Business quality signals
+
+Do NOT simply sort alphabetically.
+
+The system should calculate a relevance score internally.
+
+Example:
+
+relevance_score =
+query_match +
+entity_match +
+category_match +
+location_match +
+industry_match +
+quality_score +
+freshness_score
+
+The actual internal score does not need to be displayed to users.
+
+==================================================
+9. SEARCH AUTOCOMPLETE
+==================================================
+
+Implement Google-style autocomplete functionality, but customized for WEBUOS.
+
+When typing:
+
+"steel"
+
+Suggestions:
+
+Steel Manufacturers
+Steel Suppliers
+Steel Products
+Steel Companies
+Steel Fabricators
+Steel Distributors
+Steel Industry
+Steel Services
+
+When typing:
+
+"AI"
+
+Suggestions:
+
+AI Companies
+AI Products
+AI Services
+Artificial Intelligence
+Machine Learning
+AI Startups
+AI Software
+AI Consultants
+
+Show icons based on result type.
+
+Example:
+
+🏢 Company
+📦 Product
+🛠 Service
+🏭 Industry
+💻 Technology
+📍 Location
+
+==================================================
+10. SEARCH SUGGESTIONS
+==================================================
+
+Support:
+
+• Query suggestions
+• Related searches
+• Popular searches
+• Recent searches
+• Trending business searches
+
+Example:
+
+Related searches:
+
+AI companies in Bangalore
+AI startups in India
+AI software companies
+Machine learning companies
+AI consulting services
+
+==================================================
+11. ADVANCED SEARCH
+==================================================
+
+The existing "Advanced Search" button must open a professional advanced search interface.
+
+Filters:
+
+ENTITY TYPE
+
+□ Companies
+□ Products
+□ Services
+□ Industries
+□ Technologies
+
+BUSINESS TYPE
+
+□ Manufacturer
+□ Supplier
+□ Distributor
+□ Wholesaler
+□ Retailer
+□ Service Provider
+□ Consultant
+□ Freelancer
+□ Startup
+□ Enterprise
+
+ECOSYSTEM
+
+□ Industrial Engineering & Manufacturing
+□ Information Technology & Artificial Intelligence
+□ Professional, Commercial & Business Services
+
+LOCATION
+
+Country
+State / Province
+City
+District
+Postal Code
+
+INDUSTRY
+
+Dynamic industry selector.
+
+CATEGORY
+
+Dynamic category selector.
+
+VERIFICATION
+
+□ Verified Businesses
+□ Registered Businesses
+□ All Businesses
+
+BUSINESS SIZE
+
+□ Startup
+□ Small
+□ Medium
+□ Large
+□ Enterprise
+
+OTHER FILTERS:
+
+• Open / Active
+• Established year
+• Employee range
+• Product availability
+• Service availability
+• Online / Physical
+• Exporter
+• Importer
+
+Buttons:
+
+[Apply Filters]
+
+[Reset]
+
+==================================================
+12. THREE WEBUOS ECOSYSTEMS
+==================================================
+
+The existing three ecosystem cards must become search scopes.
+
+ECOSYSTEM 01:
+
+INDUSTRIAL ENGINEERING & MANUFACTURING
+
+Examples:
+
+Manufacturing
+Automotive
+Aerospace
+Industrial Equipment
+Mechanical Engineering
+Electrical Engineering
+Electronics
+Construction
+Energy
+Chemicals
+Materials
+Automation
+Logistics
+etc.
+
+ECOSYSTEM 02:
+
+INFORMATION TECHNOLOGY & ARTIFICIAL INTELLIGENCE
+
+Examples:
+
+Software
+Cloud
+Cybersecurity
+AI
+Machine Learning
+Data
+SaaS
+Web Development
+Mobile Development
+DevOps
+IT Services
+Robotics
+etc.
+
+ECOSYSTEM 03:
+
+PROFESSIONAL, COMMERCIAL & BUSINESS SERVICES
+
+Examples:
+
+Finance
+Accounting
+Legal
+Consulting
+Marketing
+Recruitment
+HR
+Real Estate
+Education
+Training
+Business Consulting
+Professional Services
+etc.
+
+Clicking an ecosystem must allow users to search only within that ecosystem.
+
+==================================================
+13. TAXONOMY SEARCH
+==================================================
+
+Use the existing WEBUOS taxonomy.
+
+Structure:
+
+Ecosystem
+    ↓
+Sector
+    ↓
+Category
+    ↓
+Subcategory
+    ↓
+Business Type
+    ↓
+Products / Services
+
+The search engine must understand this hierarchy.
+
+Example:
+
+Industrial Engineering & Manufacturing
+    ↓
+Automotive
+    ↓
+Automotive Components
+    ↓
+Engine Components
+    ↓
+Manufacturers
+    ↓
+Specific Products
+
+Users should be able to search at any level.
+
+==================================================
+14. BUSINESS PROFILE SEARCH RESULT
+==================================================
+
+Clicking a company result should open:
+
+/business/[slug]
+
+Company profile should contain:
+
+• Company logo
+• Company name
+• Verification status
+• Business type
+• Industry
+• Categories
+• About
+• Products
+• Services
+• Locations
+• Contact information
+• Website
+• Business hours
+• Certifications
+• Industries served
+• Markets served
+• Company size
+• Founded year
+• Social links
+• Documents where applicable
+• Reviews where applicable
+• Related companies
+• Similar businesses
+
+Primary CTAs:
+
+[Contact Business]
+
+[View Products]
+
+[View Services]
+
+[Save]
+
+[Share]
+
+==================================================
+15. PRODUCT SEARCH
+==================================================
+
+Create dedicated product discovery.
+
+Route:
+
+/search/products
+
+Product result should support:
+
+• Product image
+• Product name
+• Manufacturer
+• Brand
+• Category
+• Subcategory
+• Specifications
+• MOQ
+• Availability
+• Location
+• Seller
+• Related products
+• Request Quote
+
+Support:
+
+Search
+Filter
+Sort
+Compare
+Save
+Share
+Request Quote
+
+==================================================
+16. SERVICE SEARCH
+==================================================
+
+Route:
+
+/search/services
+
+Support:
+
+• Service provider
+• Service category
+• Service description
+• Location
+• Industry served
+• Service coverage
+• Pricing model
+• Availability
+• Verification
+• Contact
+
+==================================================
+17. INDUSTRY SEARCH
+==================================================
+
+Route:
+
+/search/industries
+
+Display:
+
+Industry
+Description
+Categories
+Subcategories
+Companies
+Products
+Services
+Technologies
+Locations
+
+==================================================
+18. LOCATION SEARCH
+==================================================
+
+Support geographic discovery.
+
+Example:
+
+"Manufacturers in Bangalore"
+
+Results should understand:
+
+Country:
+India
+
+State:
+Karnataka
+
+City:
+Bangalore
+
+Industry:
+Manufacturing
+
+Business Type:
+Manufacturer
+
+Display:
+
+• Map
+• Businesses
+• Industries
+• Products
+• Services
+
+Use map integration only where appropriate.
+
+==================================================
+19. SEARCH FILTER SIDEBAR
+==================================================
+
+Desktop:
+
+Sticky filter sidebar.
+
+Mobile:
+
+Filter button opens bottom sheet / drawer.
+
+Filters should update results dynamically.
+
+Do not reload the complete page unnecessarily.
+
+Use URL query parameters so searches are shareable.
+
+Example:
+
+/search?q=ai+companies&industry=technology&location=bangalore
+
+==================================================
+20. SORT OPTIONS
+==================================================
+
+Provide:
+
+Relevance
+Newest
+Recently Updated
+Most Complete
+Most Relevant
+Nearest
+A-Z
+
+Do not expose internal ranking formulas.
+
+==================================================
+21. SEARCH STATES
+==================================================
+
+Implement:
+
+Loading
+
+Skeleton loading
+
+Empty results
+
+No exact match
+
+Partial match
+
+Error
+
+Network failure
+
+No index available
+
+Restricted result
+
+Example empty state:
+
+"No businesses found for this search."
+
+Then:
+
+"Try a broader search or explore related categories."
+
+Show:
+
+Related Searches
+
+Popular Categories
+
+Nearby Businesses
+
+==================================================
+22. AI-ASSISTED SEARCH
+==================================================
+
+WEBUOS should eventually support semantic/natural-language search.
+
+Example:
+
+User:
+
+"I need a supplier of industrial automation equipment in Bangalore."
+
+The system should understand:
+
+Intent:
+Supplier discovery
+
+Industry:
+Industrial Engineering & Manufacturing
+
+Category:
+Industrial Automation
+
+Business Type:
+Supplier
+
+Location:
+Bangalore
+
+Then produce relevant businesses.
+
+Another example:
+
+"Find companies that manufacture CNC machines in Karnataka."
+
+Interpret:
+
+Business Type:
+Manufacturer
+
+Product:
+CNC Machines
+
+Location:
+Karnataka
+
+Return relevant companies.
+
+==================================================
+23. SEARCH ANSWER PANEL
+==================================================
+
+For suitable queries, provide an optional AI-generated summary above results.
+
+Example:
+
+Query:
+
+"AI companies in Bangalore"
+
+Summary:
+
+"Bangalore has a large ecosystem of companies working across artificial intelligence, machine learning, enterprise software and related technologies."
+
+Then:
+
+Relevant Companies
+Industries
+Services
+Technologies
+Locations
+
+Important:
+
+AI-generated information must be clearly distinguishable from verified business data.
+
+Do not fabricate company information.
+
+==================================================
+24. BUSINESS DATA TRUST
+==================================================
+
+Implement data-quality states:
+
+Verified
+Claimed
+Registered
+Unverified
+Pending Verification
+
+Use clear badges.
+
+Example:
+
+✓ Verified Business
+
+Do not allow the UI to imply verification where verification has not occurred.
+
+==================================================
+25. SEARCH ANALYTICS
+==================================================
+
+Track search events internally.
+
+Events:
+
+search_started
+search_submitted
+search_result_viewed
+company_opened
+product_opened
+service_opened
+filter_applied
+search_result_clicked
+save_business
+contact_business
+request_quote
+search_no_results
+search_refined
+
+Capture:
+
+• Search query
+• Timestamp
+• Entity type
+• Filters
+• Result position
+• Click position
+• Session ID
+• User ID when authenticated
+• Location where permitted
+
+Use analytics only for product improvement and relevance ranking.
+
+==================================================
+26. PERSONALIZED SEARCH
+==================================================
+
+For authenticated users, eventually support:
+
+• Recent searches
+• Saved searches
+• Saved businesses
+• Saved products
+• Saved services
+• Preferred industries
+• Preferred locations
+
+Do not make personalization mandatory.
+
+Guest users must be able to search normally.
+
+==================================================
+27. SEARCH HISTORY
+==================================================
+
+Authenticated users:
+
+Recent searches
+
+Saved searches
+
+Search alerts
+
+Example:
+
+Saved Search:
+
+"Industrial automation suppliers in Bangalore"
+
+Allow:
+
+[Run Search]
+
+[Edit]
+
+[Delete]
+
+==================================================
+28. SEARCH ALERTS
+==================================================
+
+Future feature.
+
+Users can save a search and receive notifications when matching businesses/products/services are added or updated.
+
+Example:
+
+"Notify me when new AI companies in Bangalore are added."
+
+==================================================
+29. SEO
+==================================================
+
+Every major search/discovery page must be SEO-friendly.
+
+Implement:
+
+Dynamic metadata
+Canonical URLs
+Open Graph
+Structured data
+Organization schema
+Product schema
+Service schema
+Breadcrumb schema
+LocalBusiness schema where applicable
+
+Do not index arbitrary user-generated query combinations blindly.
+
+Create controlled indexable taxonomy pages.
+
+==================================================
+30. URL ARCHITECTURE
+==================================================
+
+Recommended routes:
+
+/search
+
+/search?q=
+
+/search/companies
+
+/search/products
+
+/search/services
+
+/search/industries
+
+/search/technology
+
+/search/locations
+
+/search/advanced
+
+/business/[slug]
+
+/product/[slug]
+
+/service/[slug]
+
+/industry/[slug]
+
+/technology/[slug]
+
+/location/[slug]
+
+/business-taxonomy
+
+/business-taxonomy/[ecosystem]
+
+/business-taxonomy/[ecosystem]/[sector]
+
+==================================================
+31. DATABASE SEARCH MODEL
+==================================================
+
+Design the database so the search engine can scale.
+
+Core entities:
+
+User
+Organization
+Company
+BusinessProfile
+Industry
+Ecosystem
+Sector
+Category
+Subcategory
+Product
+ProductCategory
+Service
+ServiceCategory
+Technology
+Location
+Country
+State
+City
+BusinessLocation
+BusinessContact
+BusinessVerification
+BusinessDocument
+BusinessRelationship
+SearchQuery
+SearchEvent
+SavedSearch
+SearchHistory
+
+Relationships must be normalized and designed for high-volume search.
+
+==================================================
+32. SEARCH INDEX
+==================================================
+
+Do not rely only on PostgreSQL LIKE queries for a production search engine.
+
+Create a dedicated search indexing layer.
+
+Preferred architecture:
+
+PostgreSQL
+    ↓
+Data / Event Pipeline
+    ↓
+Search Index
+    ↓
+WEBUOS Search API
+    ↓
+Next.js Search UI
+
+The search layer should support:
+
+• Full-text search
+• Prefix search
+• Typo tolerance
+• Fuzzy matching
+• Filters
+• Facets
+• Ranking
+• Geo search
+• Synonyms
+• Autocomplete
+
+Typesense / OpenSearch / Elasticsearch can be considered.
+
+The implementation must remain replaceable so the search engine provider can be changed later.
+
+==================================================
+33. SEARCH API
+==================================================
+
+Create a clean search API.
+
+Example:
+
+GET /api/search?q=steel+manufacturers
+
+Parameters:
+
+q
+type
+ecosystem
+sector
+category
+subcategory
+country
+state
+city
+business_type
+verified
+page
+limit
+sort
+
+Example:
+
+GET /api/search?q=AI+companies&city=Bangalore&type=company
+
+Response:
+
+{
+  query,
+  interpreted_query,
+  filters,
+  total,
+  page,
+  limit,
+  results,
+  facets,
+  related_searches
+}
+
+==================================================
+34. AUTOCOMPLETE API
+==================================================
+
+Endpoint:
+
+GET /api/search/suggest?q=steel
+
+Return:
+
+companies
+products
+services
+industries
+technologies
+locations
+queries
+
+Use debouncing on the frontend.
+
+Do not call the API for every keystroke.
+
+==================================================
+35. SEARCH PERFORMANCE
+==================================================
+
+Target:
+
+Autocomplete:
+< 150ms where possible
+
+Search:
+< 500ms where possible
+
+Initial search page:
+fast first meaningful render
+
+Use:
+
+Debouncing
+Caching
+Pagination
+Cursor pagination where appropriate
+Index optimization
+Lazy loading
+Server-side filtering
+Result limits
+
+Do not load thousands of results into the browser.
+
+==================================================
+36. PAGINATION
+==================================================
+
+Support:
+
+Previous
+Next
+Page numbers where appropriate
+
+For high-volume datasets prefer cursor-based pagination.
+
+Example:
+
+/search?q=manufacturers&cursor=abc123
+
+==================================================
+37. RESPONSIVE DESIGN
+==================================================
+
+Desktop:
+
+Large search interface
+Sidebar filters
+Multi-column results
+
+Tablet:
+
+Reduced sidebar
+Compact filters
+
+Mobile:
+
+Compact header
+Search bar
+Filter drawer
+Single-column result cards
+Sticky search controls
+
+The existing WEBUOS visual identity must remain consistent across all screen sizes.
+
+==================================================
+38. HEADER SEARCH
+==================================================
+
+After leaving the landing page, the header must contain a compact search bar.
+
+Example:
+
+WEBUOS logo | Search companies, products, services... | Search | ESUITE | Apps | Theme | EN | Sign In
+
+The header search should remain available throughout the public discovery experience.
+
+==================================================
+39. VOICE SEARCH
+==================================================
+
+The microphone icon should support browser speech recognition where supported.
+
+Flow:
+
+Click microphone
+→ Request microphone permission
+→ Listen
+→ Convert speech to text
+→ Place text into search field
+→ Submit search
+
+Handle unsupported browsers gracefully.
+
+==================================================
+40. COMMAND / KEYBOARD SEARCH
+==================================================
+
+Support:
+
+/
+
+Focus search
+
+Ctrl + K
+
+Open global search
+
+Escape
+
+Close autocomplete
+
+Arrow Up / Down
+
+Navigate suggestions
+
+Enter
+
+Submit search
+
+==================================================
+41. SEARCH RESULT UX
+==================================================
+
+Avoid clutter.
+
+Each result should have clear hierarchy:
+
+TITLE
+Verification
+Category
+Location
+Description
+Relevant attributes
+Actions
+
+Do not display excessive metadata.
+
+Use progressive disclosure.
+
+==================================================
+42. RELATED SEARCHES
+==================================================
+
+At the bottom of results:
+
+Related searches
+
+Example:
+
+For:
+
+"industrial automation Bangalore"
+
+Show:
+
+Industrial automation companies Bangalore
+Industrial automation suppliers Bangalore
+Factory automation companies Bangalore
+PLC suppliers Bangalore
+Robotics companies Bangalore
+
+==================================================
+43. NO-RESULT INTELLIGENCE
+==================================================
+
+If no exact results exist:
+
+1. Correct spelling
+2. Find synonyms
+3. Broaden category
+4. Remove restrictive filters
+5. Suggest related searches
+6. Suggest nearby locations
+
+Example:
+
+"No exact matches for 'CNC machin supplier'."
+
+Suggestion:
+
+"Did you mean: CNC machine suppliers?"
+
+==================================================
+44. SYNONYMS
+==================================================
+
+Support business terminology synonyms.
+
+Examples:
+
+IT = Information Technology
+
+AI = Artificial Intelligence
+
+ML = Machine Learning
+
+ERP = Enterprise Resource Planning
+
+B2B = Business-to-Business
+
+Manufacturer = Manufacturing Company
+
+Supplier = Vendor
+
+Company = Business / Organization
+
+The synonym system must be configurable from an admin interface.
+
+==================================================
+45. ADMIN SEARCH MANAGEMENT
+==================================================
+
+Create admin capabilities for:
+
+Search synonyms
+Search redirects
+Popular searches
+Blocked queries
+Search ranking rules
+Featured businesses
+Featured products
+Search analytics
+Search errors
+No-result queries
+Taxonomy management
+
+Admin should be able to inspect:
+
+Top searches
+Zero-result searches
+High-click searches
+Low-click searches
+Search-to-contact conversion
+Search-to-profile conversion
+
+==================================================
+46. SECURITY
+==================================================
+
+Implement:
+
+Authentication where required
+Authorization
+Rate limiting
+Input validation
+Query sanitization
+API protection
+Abuse prevention
+Bot protection
+Audit logging
+
+Never expose:
+
+Internal database IDs unnecessarily
+Private business information
+Private user information
+Internal ranking logic
+Admin-only fields
+
+==================================================
+47. DATA PRIVACY
+==================================================
+
+Search history must be treated as user data.
+
+Provide mechanisms for:
+
+Clear history
+Delete saved searches
+Privacy settings
+
+Do not expose private search history publicly.
+
+==================================================
+48. FRONTEND TECHNOLOGY
+==================================================
+
+Use the existing project technology and architecture.
+
+Current project appears to use:
+
+Next.js
+React
+TypeScript
+Tailwind CSS
+Prisma
+PostgreSQL
+
+Do not unnecessarily replace the existing stack.
+
+Use reusable components.
+
+Suggested component structure:
+
+SearchEngine
+SearchBar
+SearchInput
+SearchButton
+VoiceSearch
+SearchAutocomplete
+SearchSuggestions
+SearchTabs
+SearchFilters
+FilterPanel
+SearchResults
+SearchResultCard
+CompanyResultCard
+ProductResultCard
+ServiceResultCard
+IndustryResultCard
+TechnologyResultCard
+LocationResultCard
+SearchPagination
+RelatedSearches
+SearchEmptyState
+SearchLoadingState
+SearchSummary
+SearchSidebar
+SearchHeader
+
+==================================================
+49. DESIGN SYSTEM
+==================================================
+
+Follow the existing WEBUOS design.
+
+Colors:
+
+WEBUOS Blue/Cyan:
+Primary brand
+
+Gold:
+Primary business / ESUITE accent
+
+Blue:
+Technology / IT ecosystem
+
+Purple:
+Professional / business services ecosystem
+
+Dark background:
+Primary UI
+
+Use semantic color tokens instead of hardcoded colors.
+
+Maintain accessibility.
+
+Minimum:
+
+WCAG AA where practical.
+
+==================================================
+50. SEARCH LANDING PAGE
+==================================================
+
+Preserve the current landing page structure.
+
+Hero:
+
+WEBUOS logo
+
+"World Enterprises Business Unified Operating System Connecting & Powering Business."
+
+Large search bar:
+
+Search companies, products, services or industries...
+
+Buttons:
+
+[Advanced Search]
+
+[Register / Signup]
+
+Then:
+
+03 Ecosystems
+
+01
+Industrial Engineering & Manufacturing
+
+02
+Information Technology & Artificial Intelligence
+
+03
+Professional, Commercial & Business Services
+
+Clicking search should transition into the search engine.
+
+==================================================
+51. GOOGLE-LIKE SIMPLICITY
+==================================================
+
+The search engine should follow these UX principles:
+
+• Extremely simple first interaction
+• Fast results
+• Clear ranking
+• Minimal visual noise
+• Strong autocomplete
+• Excellent typo handling
+• Useful filters
+• Useful related searches
+• Search refinement
+• Keyboard navigation
+• Mobile-first responsiveness
+
+But do NOT copy Google's branding, layout pixel-for-pixel, logo, proprietary UI or visual identity.
+
+WEBUOS must remain its own product.
+
+==================================================
+52. BUSINESS-FIRST DIFFERENTIATION
+==================================================
+
+The biggest difference from a generic search engine:
+
+WEBUOS understands BUSINESS ENTITIES.
+
+Example:
+
+Google-style:
+
+"ABC Manufacturing"
+
+WEBUOS should understand:
+
+Company
+Industry
+Sector
+Category
+Products
+Services
+Location
+Business Type
+Markets
+Capabilities
+Verification
+Relationships
+
+The search result should therefore be much more structured than a normal web search result.
+
+==================================================
+53. FUTURE WEB SEARCH
+==================================================
+
+Design the architecture so WEBUOS can later index public web pages.
+
+Future architecture:
+
+WEB CRAWLER
+↓
+Document Parser
+↓
+Content Extraction
+↓
+Normalization
+↓
+Entity Extraction
+↓
+Classification
+↓
+Deduplication
+↓
+Search Index
+↓
+Ranking
+↓
+WEBUOS Search
+
+Future indexed objects:
+
+Web Pages
+Companies
+Products
+Services
+Articles
+Documents
+Business Profiles
+Locations
+Technologies
+
+Do NOT implement a full web crawler initially unless explicitly required.
+
+Build the architecture so it can be added later.
+
+==================================================
+54. AI SEMANTIC SEARCH FUTURE
+==================================================
+
+The architecture should support future semantic retrieval.
+
+Potential pipeline:
+
+User Query
+↓
+Query Understanding
+↓
+Keyword Search
+↓
+Structured Filtering
+↓
+Semantic Retrieval
+↓
+Hybrid Ranking
+↓
+Result Generation
+
+Do not force vector search into the first implementation if it is unnecessary.
+
+The system should support a hybrid search architecture later.
+
+==================================================
+55. SEARCH QUALITY DASHBOARD
+==================================================
+
+Create internal metrics:
+
+Search volume
+Unique searches
+No-result rate
+Average result position clicked
+CTR
+Search refinement rate
+Search-to-profile rate
+Search-to-contact rate
+Search-to-RFQ rate
+Autocomplete usage
+Voice search usage
+
+Provide admin charts.
+
+==================================================
+56. DEVELOPMENT RULES
+==================================================
+
+IMPORTANT:
+
+1. Inspect the existing WEBUOS project before modifying code.
+
+2. Do NOT replace existing components unnecessarily.
+
+3. Reuse existing header, logo, theme, buttons and taxonomy components.
+
+4. Preserve the current landing page.
+
+5. Add the search engine as a new scalable module.
+
+6. Keep business taxonomy centralized.
+
+7. Avoid duplicated taxonomy definitions.
+
+8. Use TypeScript types everywhere.
+
+9. Use server-side validation.
+
+10. Use clean API contracts.
+
+11. Use reusable components.
+
+12. Keep search provider abstraction separate from UI.
+
+13. Do not hardcode business results.
+
+14. Create seed/demo data only where necessary.
+
+15. Make the system production-ready.
+
+==================================================
+57. DEVELOPMENT PHASES
+==================================================
+
+PHASE 1 — SEARCH UI
+
+Build:
+
+• Search page
+• Search header
+• Search input
+• Autocomplete
+• Tabs
+• Filters
+• Result cards
+• Pagination
+• Empty states
+• Loading states
+• Related searches
+
+PHASE 2 — SEARCH API
+
+Build:
+
+• Query API
+• Suggestion API
+• Filters
+• Pagination
+• Search response schema
+
+PHASE 3 — SEARCH INDEX
+
+Integrate:
+
+PostgreSQL
++
+Dedicated search engine
+
+Implement:
+
+• Full text
+• Fuzzy search
+• Prefix search
+• Facets
+• Ranking
+• Geo filtering
+
+PHASE 4 — BUSINESS ENTITY SEARCH
+
+Implement:
+
+Companies
+Products
+Services
+Industries
+Technologies
+Locations
+
+PHASE 5 — ADVANCED SEARCH
+
+Implement complete filtering system.
+
+PHASE 6 — SEARCH ANALYTICS
+
+Implement search event tracking.
+
+PHASE 7 — AI SEARCH
+
+Implement query interpretation and semantic/natural-language search.
+
+PHASE 8 — WEB SEARCH
+
+Prepare crawler/indexing architecture for future expansion.
+
+==================================================
+58. ACCEPTANCE CRITERIA
+==================================================
+
+The implementation is considered complete only when:
+
+✓ User can search from WEBUOS landing page.
+
+✓ Search navigates to a dedicated results page.
+
+✓ Query remains visible in search input.
+
+✓ Autocomplete works.
+
+✓ Search understands companies/products/services/industries.
+
+✓ Results are categorized.
+
+✓ Filters work.
+
+✓ URL contains searchable query parameters.
+
+✓ Search results can be shared.
+
+✓ Pagination works.
+
+✓ Empty state works.
+
+✓ Typo handling works.
+
+✓ Related searches work.
+
+✓ Mobile search works.
+
+✓ Voice search works where browser-supported.
+
+✓ Search result cards are reusable.
+
+✓ Company profile can be opened.
+
+✓ Product profile can be opened.
+
+✓ Service profile can be opened.
+
+✓ Taxonomy filtering works.
+
+✓ Search ranking is separated from UI.
+
+✓ Search engine provider can be replaced later.
+
+✓ Existing WEBUOS design remains intact.
+
+✓ Existing registration/login functionality is not broken.
+
+✓ Existing taxonomy pages continue working.
+
+✓ No unnecessary technology replacement is performed.
+
+==================================================
+59. FINAL PRODUCT VISION
+==================================================
+
+WEBUOS should ultimately become:
+
+A GLOBAL BUSINESS SEARCH ENGINE + BUSINESS DISCOVERY PLATFORM.
+
+Users should be able to enter one simple query and discover:
+
+COMPANIES
+PRODUCTS
+SERVICES
+INDUSTRIES
+TECHNOLOGIES
+BUSINESS PROFESSIONALS
+LOCATIONS
+BUSINESS OPPORTUNITIES
+
+The experience should feel as simple as:
+
+"Type → Search → Discover"
+
+while the underlying system is capable of enterprise-grade:
+
+Search
+Discovery
+Classification
+Taxonomy
+Filtering
+Ranking
+Business intelligence
+Entity resolution
+Geographic discovery
+AI-assisted query understanding
+Business profiles
+Product discovery
+Service discovery
+
+The final result must feel like a serious global technology platform, not a basic directory.
+
+WEBUOS should be positioned technically as:
+
+"Business Search Infrastructure for the Global Business Ecosystem."
+
+Do not stop at creating static screens.
+
+Build the complete search-engine foundation with clean separation between:
+
+UI
+Search API
+Query Understanding
+Search Provider
+Business Data
+Taxonomy
+Ranking
+Analytics
+Future AI Search
+
+One important architectural recommendation
+For WEBUOS, I would structure the search engine like this:
+                    WEBUOS SEARCH
+                          │
+                    ┌─────▼─────┐
+                    │ Search UI │
+                    └─────┬─────┘
+                          │
+                    Search API
+                          │
+                ┌─────────▼─────────┐
+                │ Query Understanding│
+                └─────────┬─────────┘
+                          │
+          ┌───────────────┼────────────────┐
+          ▼               ▼                ▼
+     Full Text        Taxonomy          Filters
+       Search          Search          & Facets
+          │               │                │
+          └───────────────┼────────────────┘
+                          ▼
+                   Hybrid Ranking
+                          │
+              ┌───────────┼───────────┐
+              ▼           ▼           ▼
+          Companies    Products    Services
+              │           │           │
+              └───────────┼───────────┘
+                          ▼
+                    Search Results

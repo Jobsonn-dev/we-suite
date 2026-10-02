@@ -1,0 +1,168 @@
+# WEBUOS Project — Work Log
+
+---
+Task ID: 1
+Agent: Main (Z.ai Code)
+Task: Setup foundation: copy WEBUOS design system (globals.css, colors, icons, taxonomy, theme), add Webuos.png logo, configure Prisma schema + seed business search data
+
+Work Log:
+- Inspected uploaded files: 2 identical text files (2132 lines spec), PDF (4 pages, design context), Webuos.png logo, landing page UI screenshot, tar archive of existing WEBUOS project
+- Used VLM to analyze the Webuos.png logo (globe + orbital ring + blue/purple gradient) and landing page UI (dark futuristic enterprise UI with hero, search bar, ecosystem cards)
+- Extracted tar file at /tmp/workspace-extract — found existing WEBUOS project with:
+  - Design system: globals.css (WEBUOS dark theme), colors.ts, icon-registry.tsx, use-theme.ts
+  - Components: brand/webuos-logo.tsx, landing/{hero,search-bar,webuos-acronym}.tsx, layout/{header,footer,page-shell,esuite-button,theme-toggle}.tsx
+  - Taxonomy data: 3 ecosystems (Industrial/Technology-ai/Business-services) with 18 sectors, 55 subcategories, products, services, business profiles
+- Copied design system files (lib, data, components/landing, components/layout, components/brand) from tar to /home/z/my-project/src/
+- Copied Webuos.png to /home/z/my-project/public/webuos-brand.png (used as the brand logo)
+- Copied segment images (industrial/technology/business) to public/
+- Wrote Prisma schema at /home/z/my-project/prisma/schema.prisma with models: User, SearchHistory, SavedBusiness, Company, Product, Service, Industry, Technology, Location, SearchEvent, SearchSynonym
+- Wrote seed script at /home/z/my-project/scripts/seed-search.ts that generates:
+  - 15 search synonyms (IT, AI, ML, ERP, Manufacturer, Supplier, etc.)
+  - 39 locations (cities, states, countries from a 20-city pool)
+  - 55 industries (from taxonomy sectors + subcategories)
+  - 20 technologies (AI, ML, Cloud, Kubernetes, Blockchain, IoT, etc.)
+  - 117 companies (real taxonomy businesses + 2 extra per subcategory, with location, business type, verification, certifications, etc.)
+  - 215 products (from taxonomy products)
+  - 198 services (from taxonomy services)
+- Ran `bun run db:push` to apply schema — successful
+- Ran `bun run db:seed` — created 15 synonyms, 39 locations, 55 industries, 20 technologies, 117 companies, 215 products, 198 services
+- Updated src/app/layout.tsx with WEBUOS metadata (title, description, keywords, OG, Twitter), set icon to /webuos-brand.png, added inline pre-hydration theme script to prevent FOUC
+- Updated src/app/page.tsx to render the WEBUOS landing page (Hero with logo + search + tagline + Advanced Search/Register buttons + 3 ecosystem cards + WebuosAcronym section)
+- Enhanced src/components/landing/search-bar.tsx with:
+  - Real autocomplete suggestions across companies, products, services, industries (8 max)
+  - Type-colored icons (company=blue, product=amber, service=purple, industry=orange, technology=cyan, location=emerald, query=neutral)
+  - Keyboard navigation (Arrow Up/Down, Enter, Escape)
+  - Global keyboard shortcuts: `/` and `Ctrl/Cmd+K` to focus search
+  - Voice search via Web Speech API (with graceful unsupported-browser alert)
+  - Recent searches + Trending searches chips in the empty-state dropdown
+  - Navigation to /search?q=… on submit
+- Updated header.tsx so header search also navigates to /search?q=
+
+Stage Summary:
+- WEBUOS design system fully migrated from tar to live project (dark theme, colors, icons, taxonomy, components)
+- Webuos.png logo integrated as the brand image at /public/webuos-brand.png and used by webuos-logo.tsx
+- Database schema + seed complete: 117 companies, 215 products, 198 services, 55 industries, 20 technologies, 39 locations, 15 synonyms ready for search
+- Landing page (Hero + acronym + ecosystem cards) wired up and ready to render
+- SearchBar enhanced with autocomplete, keyboard shortcuts, voice search, trending searches
+- Next phases (delegated to subagents): build /search page frontend, /api/search backend, /business/[slug] profile page
+
+---
+Task ID: 3
+Agent: Search Backend Subagent
+Task: Build search engine backend APIs
+
+Work Log:
+- Read prior worklog (Task 1) — foundation + design system + Prisma schema + seed data in place.
+- Inspected seeded DB (117 companies, 215 products, 198 services, 55 industries, 20 technologies, 39 locations, 15 synonyms) to confirm field names & sample values.
+- Created `src/lib/search-utils.ts` — shared types + utilities: `sanitizeQuery`, `tokenize`, `expandTokensWithSynonyms` (split on commas AND spaces so multi-word synonyms like "Manufacturing Company" yield two tokens), `normalizeBusinessType` (collapses raw types like "Contract Manufacturer" → "Manufacturer"), `computeRelevance` (exact + prefix + per-token + verification + popularity + freshness boosts, capped 0–100), `interpretQuery` (entity-type + business-type + industry + location + keywords with stop-word stripping, light stemming, and an alternate-spelling map for automobile→automotive / vehicle→automotive / machine→machinery, plus a city-alias map for Bangalore→Bengaluru, Bombay→Mumbai etc.), `buildRelatedSearches` (5 suggestions), `buildFacets` (ecosystem / business_type / country / city / verified), `getDemoUserId`, `sortResults`.
+- Created `src/lib/search/server.ts` — `runSearch(params)` function that holds the full hybrid-search algorithm. Both `/api/search` route AND `/search` page (built by parallel frontend agent) call this function so API & SSR results stay identical.
+- Created `src/app/api/search/route.ts` — main GET endpoint (validates type / sort / page / limit; calls `runSearch`; returns full SearchResponse JSON with `interpreted_query`, `filters`, `facets`, `related_searches`).
+- Created `src/app/api/search/suggest/route.ts` — GET endpoint returning up to 10 mixed-type suggestions (companies + products + services + industries + technologies + locations + 3 query-suffix expansions like "Ai Manufacturers").
+- Created `src/app/api/search/interpret/route.ts` — GET endpoint exposing the interpreted query object.
+- Created `src/app/api/search/events/route.ts` — POST endpoint that validates `event_type` against the 13-event whitelist and inserts into SearchEvent. Returns `{success:true}` or 400 on invalid input.
+- Created `src/app/api/businesses/[slug]/route.ts` — GET endpoint returning full company profile (40 fields incl. `social_links` parsed from JSON string, `industries_served`/`markets_served`/`certifications` split from CSV) + products + services + 5 related companies (same category, excluding self, ordered by popularity). Non-blocking view-counter increment.
+- Created `src/app/api/search/saved/route.ts` — GET (list demo user's saved searches, most-recent first, capped at 50) + POST (save a new search query to SearchHistory). Uses `getDemoUserId()` which lazily creates the `demo@webuos.com` user record.
+- All routes: `export const dynamic = "force-dynamic"`, `NextRequest` / `NextResponse`, `Cache-Control: no-store`.
+- Tuned industry matching algorithm — switched from "first match wins" to scored selection so "AI" in the query correctly resolves to "AI & Machine Learning" (not "Business Intelligence"). User-typed tokens count 30×, synonym-expansion matches count 5×, category-level industries get +5 bonus, first-word match adds +15.
+- Added entity_type fallback: when a business-type keyword (manufacturers, suppliers, …) is detected, entity_type defaults to "Company".
+- All curl sample tests pass with HTTP 200; invalid event_type returns 400; non-existent business slug returns 404; pagination, filters, sort options verified working.
+- Final `bun run lint` passes (3 pre-existing warnings in other agents' files — none in mine).
+
+Stage Summary:
+- 6 new API route handlers + 2 shared lib modules added (~1500 LOC).
+- Hybrid search ranks results across companies, products, services, industries, technologies, and locations; returns interpreted_query, facets, related_searches, and pagination.
+- `runSearch` shared between `/api/search` route and `/search` SSR page.
+- All spec'd sample curl tests pass:
+  - `GET /api/search?q=ai+companies+in+bangalore` → 200 (42 results, industry=AI & Machine Learning, location=Bengaluru, Karnataka, India)
+  - `GET /api/search?q=steel` → 200 (3 results)
+  - `GET /api/search/suggest?q=ai` → 200 (10 mixed suggestions)
+  - `GET /api/search/interpret?q=automobile+component+manufacturers+in+Bangalore` → 200 (industry=Automotive Components, business_type=Manufacturer)
+  - `GET /api/businesses/<slug>` → 200 (full profile + products + services + 5 related)
+- POST `/api/search/events` and `/api/search/saved` round-trip verified.
+
+---
+Task ID: 5
+Agent: Main (Z.ai Code) — Business Profile Page
+Task: Build /business/[slug] profile page with full company details, products, services, contact, certifications, related companies
+
+Work Log:
+- Inspected search results from prior subagents — backend (6 API routes) and frontend (search page + 6 result cards + filters + pagination + AI panel + empty/loading states) all working
+- Verified the businesses API returns full company profile with products, services, related companies
+- Built `/home/z/my-project/src/app/business/[slug]/page.tsx`:
+  - Server component that reads `params.slug` (Promise in Next.js 16)
+  - Calls `getBusinessProfile(slug)` which queries the DB directly (using `db` from `@/lib/db`) — same logic as the businesses API
+  - Increments company view count (non-blocking, best-effort)
+  - Fetches 5 related companies in the same category by popularity
+  - `generateMetadata` returns: dynamic title (`${name} — WEBUOS Business Profile`), description, canonical URL, OpenGraph, Twitter card, AND LocalBusiness JSON-LD structured data for SEO
+  - 404s via `notFound()` when slug doesn't exist
+- Built `/home/z/my-project/src/components/business/business-profile-client.tsx`:
+  - Sticky breadcrumb: Home / Search / Industry / Company Name
+  - Header card with ecosystem accent color border (gold/blue/purple), logo avatar (initials fallback), name, verified/claimed/pending badges, business_type/industry/category/location meta, star rating, description, quick stats (founded year, employees, business size, annual revenue)
+  - CTA buttons: Contact Business (toggles contact panel), View Products, View Services, Save (toggles bookmark state), Share (uses navigator.share or clipboard)
+  - Collapsible contact panel with phone/email/website/hours/address cards (each clickable to tel:/mailto:/external link)
+  - Tabs: Overview / Products / Services / About / Contact
+    - Overview: description card, featured products grid (4 cards), featured services list (5 items), right sidebar with business profile details, certifications, industries served, markets served, social links
+    - Products: full product cards grid with image placeholder, brand, category, MOQ, price range, availability, Request Quote button
+    - Services: service cards with description, industry served, coverage, pricing model, Inquire button
+    - About: extended company info, certifications grid, industries/markets badges
+    - Contact: phone/email/website/hours/address cards + Send Inquiry + Find Similar Businesses buttons
+  - Related companies section: 5 cards (avatar, verified badge, name, business_type, city, rating)
+  - All actions fire tracking events via POST /api/search/events
+  - Fully responsive: 1-col mobile, 2-3 col tablet, 3-5 col desktop
+  - Accessibility: ARIA labels, semantic HTML (article/section/nav), keyboard accessible buttons/links
+- Verified the page renders: `curl /business/generative-ai-labs-bengaluru-53` returns HTTP 200, 125KB, contains "Generative AI Labs", "Verified Business", "About", "Featured Products", "Featured Services", "Related Companies", "Certifications", "Industries Served", "Contact"
+- Fixed 4 lint warnings (unused eslint-disable directives + aria-expanded on textbox role)
+- Final lint run: 0 errors, 0 warnings
+
+Stage Summary:
+- Business profile page `/business/[slug]` is fully functional with tabs (Overview/Products/Services/About/Contact), contact panel, related companies, SEO metadata + LocalBusiness JSON-LD structured data
+- All links from search result cards (company, product, service) now resolve to a real, content-rich business profile page
+- The complete WEBUOS Global Business Discovery Platform is now functional: landing → search → results → business profile → related companies → search again (loop)
+
+---
+Task ID: 6
+Agent: Main (Z.ai Code) — Final Verification
+Task: Verify with Agent Browser: open / route, test search flow, verify mobile responsive, sticky footer, no runtime errors
+
+Work Log:
+- Used Agent Browser to navigate to `/` and snapshot interactive elements — confirmed landing page renders correctly with: WEBUOS logo (globe + orbital ring + blue/purple gradient text) in header, large hero search bar with mic icon + search button, Advanced Search + Register/Signup buttons, 3 ecosystem cards (Industrial/Technology & AI/Business Services), WEBUOS acronym section, footer with Ecosystems/Platform/Company links
+- Used VLM (vision chat) to verify the Webuos.png logo is properly integrated at the top of the page (top-left header) and as the large hero image in the center
+- Tested search flow: filled search input with "AI companies in Bangalore", verified autocomplete dropdown appeared with suggestions (AI companies, Companies in Bangalore, etc.), pressed Enter, navigated to /search?q=AI+companies+in+Bangalore
+- Verified search results page: tabs (All, Companies, Products, Services, Industries, Technology, Locations) visible with counts, filters sidebar (Ecosystem, Entity Type, Business Type, Business Size, Location, Verification, Sort), AI Overview panel with templated summary, 42 results found, "View Company" links on company result cards
+- Used VLM to verify the search results page is well-organized with proper 2-column layout (filters sidebar + results)
+- Clicked "View Company" button → navigated to /business/generative-ai-labs-bengaluru-53 → verified business profile page renders with: breadcrumb (Home/Search/AI & Machine Learning), company name "Generative AI Labs", Verified Business badge, business type/industry/category/location meta, star rating, tabs (Overview/Products/Services/About/Contact), Featured Products grid, Featured Services list, business profile sidebar, certifications, industries served, related companies section
+- Tested Tabs: Products tab shows product cards with image placeholders, brand, MOQ, price range, Request Quote buttons; Contact tab shows phone/email/website/hours/address cards
+- Tested mobile responsiveness (375x812 viewport): landing page stacks vertically with full-width search bar; search page has scrollable tabs + Filters button (replaces sidebar with a Sheet drawer); business profile page stacks tabs vertically
+- Verified sticky footer behavior: `<PageShell>` uses `flex min-h-screen flex-col` with `mt-auto` on footer — footer is naturally pushed down when content exceeds viewport (page body height was 5575px on landing, 1833px on search results), and sticks to bottom on shorter pages
+- Tested keyboard shortcuts: pressed `/` key → input[aria-label=Search] became the active element (correct focus behavior)
+- Tested theme toggle: clicked Theme button → dropdown showed Light / Dark / System Default options with descriptions
+- Verified dev.log shows all routes returning 200 with no errors
+- Fixed 2 minor issues: WebuosLogo image dimensions (added explicit width and height to prevent Next.js warning), added `data-scroll-behavior="smooth"` attribute to <html> element to silence Next.js scroll-behavior warning
+- Final `bun run lint` returns 0 errors, 0 warnings
+
+Stage Summary:
+- WEBUOS Global Business Discovery Platform is fully functional and verified end-to-end
+- Complete user flow works: Landing page (logo + hero search) → Search results (tabs, filters, AI overview, result cards) → Business profile (tabs, products, services, contact, related companies) → Back to search
+- All key features from the spec are implemented:
+  - ✓ Search from WEBUOS landing page → navigates to /search?q=...
+  - ✓ Query remains visible in search input
+  - ✓ Autocomplete with type-colored icons (company/product/service/industry/technology/location/query)
+  - ✓ Search understands companies/products/services/industries/technologies/locations
+  - ✓ Results are categorized with tabs
+  - ✓ Filters work (ecosystem, type, business type, size, location, verification, sort)
+  - ✓ URL contains searchable query parameters (shareable)
+  - ✓ Pagination works (Previous/Next/page numbers)
+  - ✓ Empty state works (with related searches and popular categories)
+  - ✓ Related searches at bottom of results
+  - ✓ Mobile search works (responsive with filter drawer)
+  - ✓ Voice search wired up (Web Speech API, graceful fallback)
+  - ✓ Search result cards are reusable (6 distinct card types)
+  - ✓ Company profile can be opened (/business/[slug])
+  - ✓ Taxonomy filtering works (3 ecosystems, 18 sectors, 55 subcategories)
+  - ✓ Search ranking is separated from UI (server.ts shared between API and SSR)
+  - ✓ Search engine provider can be replaced later (clean abstraction)
+  - ✓ Existing WEBUOS design remains intact (dark theme, colors, icons, logo)
+  - ✓ No unnecessary technology replacement
+- All routes (/, /search, /business/[slug]) verified via Agent Browser to render correctly with no runtime errors
+- Mobile responsive at 375px width (iPhone X-class) verified
+- Sticky footer behavior verified — no overlap, no floating gap, naturally pushed when content overflows
