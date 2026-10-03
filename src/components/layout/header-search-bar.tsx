@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search, Mic, ArrowRight, X, ChevronDown, ChevronUp,
-  Layers, Building2, Briefcase, Package, Cpu, MapPin,
+  Layers, Building2, Briefcase, Package, MapPin,
   Globe, Factory, TrendingUp, Users, Sparkles, Wrench, BarChart3,
   SlidersHorizontal, Network, FileText, type LucideIcon,
 } from "lucide-react";
@@ -554,10 +554,11 @@ export function HeaderSearchOptions() {
         )}
       </div>
 
-      {/* ── Advanced filters section (hidden by default, expands when "Advanced Search" is clicked) ── */}
+      {/* ── Advanced filters section (hidden by default, expands when "Advanced Search" is clicked) ──
+          No background container — dropdowns float transparently on the header background */}
       {showAdvanced && (
         <div
-          className="mt-1 flex flex-wrap items-center gap-1 rounded-lg border border-white/10 bg-[#131826]/80 p-2"
+          className="mt-1 flex flex-wrap items-center gap-0.5 pb-1"
           style={{ animation: "fadeIn .2s ease-out" }}
         >
           {/* Nature of Business */}
@@ -613,22 +614,6 @@ export function HeaderSearchOptions() {
             options={SORT_OPTIONS.filter((s) => s.key !== "relevance").map((s) => ({ value: s.key, label: s.label }))}
             onChange={(v) => updateFilter("sort", (v || "relevance") as SearchSort)}
           />
-
-          {/* Digital & AI quick toggle */}
-          <button
-            type="button"
-            onClick={() => updateFilter("digital_ai", !filters.digital_ai)}
-            className={cn(
-              "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all",
-              filters.digital_ai
-                ? "bg-cyan-500/20 text-cyan-300 shadow-sm ring-1 ring-cyan-400/40"
-                : "bg-transparent text-slate-300 hover:bg-white/10 hover:text-white",
-            )}
-            aria-pressed={filters.digital_ai}
-          >
-            <Cpu className="h-3.5 w-3.5" />
-            <span className="whitespace-nowrap">Digital &amp; AI</span>
-          </button>
         </div>
       )}
     </div>
