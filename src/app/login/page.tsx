@@ -20,7 +20,8 @@ export default function LoginPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    window.location.href = "/dashboard";
+    // After successful login, route to Profile Account
+    window.location.href = "/account";
   }
 
   function goToRegister(type: "employee" | "employer") {
@@ -241,7 +242,7 @@ export default function LoginPage() {
               {/* SSO */}
               <button
                 type="button"
-                onClick={() => { window.location.href = "/dashboard"; }}
+                onClick={() => { window.location.href = "/account"; }}
                 className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 text-sm font-medium text-foreground transition-all hover:bg-muted"
               >
                 Continue with Business SSO

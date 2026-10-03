@@ -646,3 +646,94 @@ Stage Summary:
 - Progress bar shows 1/6 (16%) complete — only communication verified
 - Mobile responsive: sidebar collapses to a floating bottom-left button that opens a section drawer
 - Fully functional navigation, animations (fadeIn, cardFadeIn, stepFadeIn, alertFadeIn), and styled with the existing WEBUOS dark theme + amber/emerald/cyan accent colors
+
+---
+Task ID: 13
+Agent: Main (Z.ai Code) — Login Routing + Profile Dropdown
+Task: Once registered, route to login (not directly to Profile Account). After login (enter credentials), route to Profile Account. Add a Profile dropdown on the landing page header with a "Profile Account" option that routes to /account.
+
+Work Log:
+- User requested 3 changes:
+  1. After registration completes → route to /login (instead of /account directly)
+  2. After login (enter credentials) → route to /account (Profile Account)
+  3. Add a Profile dropdown on the landing page header (referencing attached image pasted_image_1791060516300.png showing the WT avatar button in the top-right corner of the account header)
+- Analyzed the uploaded image via VLM: it shows the WEBUOS Profile Account top header bar with logo + "Profile Account" label + help icon + apps grid icon + notifications bell + WT avatar (blue gradient circle with "WT" initials). The user wants this same avatar button (with dropdown) added to the main site header.
+
+**Change 1 — Updated `/register/success/page.tsx`** (`handleContinue` function):
+- Changed from routing to `/account?email=...&phone=...` to routing to `/login`
+- Updated footer note from "You'll complete business verification next." to "Your communication details (email & phone) are verified. Sign in with your credentials to access your Profile Account."
+- Flow now: register → verify → success → login → account
+
+**Change 2 — Updated `/login/page.tsx`** (handleSubmit function):
+- Changed from `window.location.href = "/dashboard"` to `window.location.href = "/account"` (after successful login, route to Profile Account)
+- Also updated the "Continue with Business SSO" button: `window.location.href = "/dashboard"` → `"/account"` (consistent routing)
+- Both the email/password form submission and SSO button now route to /account
+
+**Change 3 — Created `/components/layout/profile-dropdown.tsx`** (new file, ~190 lines):
+- Exported `ProfileDropdown` component (variant="header" | "account") and `ProfileAvatar` (compact version without dropdown)
+- **Avatar trigger button:**
+  - h-9 w-9 rounded-full, gradient cyan→blue background, white "WT" initials, font-bold
+  - ring-2 ring-white/10 hover:ring-primary/40
+  - aria-label="Open profile menu", aria-expanded, aria-haspopup="menu"
+  - Click toggles dropdown open/close
+- **Dropdown menu** (w-72, rounded-2xl, border, bg-card, shadow-xl, dropdownFadeIn animation):
+  - **Profile summary card** at top: large WT avatar + "WEBUOS Tech & AI Services" + email + green "Verified" badge (with ShieldCheck icon) on a cyan/blue gradient background
+  - **Menu items:**
+    - **Profile Account** (primary, with UserCircle icon in primary-tinted square, subtitle "Manage your profile & business", chevron-right arrow, hover:bg-primary/10, links to /account)
+    - Communication (Mail icon, links to /account#communication)
+    - Business profile (Building2 icon, links to /account#business)
+    - Security & sign-in (ShieldCheck icon, links to /account#security)
+    - Dashboard (LayoutGrid icon, links to /dashboard)
+    - Divider
+    - **Sign in / Switch account** (primary button with LogOut icon in primary-filled square, subtitle "Use different credentials", links to /login)
+  - **Footer:** © 2026 WEBUOS · Profile Account
+- Outside-click and Escape key close the dropdown (via useEffect + document listeners)
+- All menu items have role="menuitem" for accessibility
+- Icon import: User, Settings, LogOut, ChevronDown, UserCircle, Bell, HelpCircle, LayoutGrid, ShieldCheck, Building2, Mail, Phone from lucide-react
+
+**Change 4 — Updated `/components/layout/header.tsx`:**
+- Imported `ProfileDropdown` from `@/components/layout/profile-dropdown`
+- Imported `User` icon from lucide-react (for mobile menu)
+- **Desktop nav** (lg+): Replaced `<Link href="/login">Sign In</Link>` with `<ProfileDropdown />` (avatar button with full dropdown)
+  - Nav now: ESuite pill + ESuite icon + ProfileDropdown avatar
+- **Mobile menu** (lg:hidden): Added a new "Profile Account" link (with User icon, routes to /account) above the existing "Sign In" link
+  - Mobile menu now: ESuite pill + English (EN) + Browse Ecosystems + **Profile Account** (new) + Sign In
+
+**Verification:**
+- `bun run lint`: 0 errors, 0 warnings
+- All routes return HTTP 200: /, /login, /register, /register/verify, /register/success, /account
+- Agent Browser end-to-end test (full flow):
+  - Opened `/register/verify?email=test@webuos.com&phone=+919876543210`
+  - Filled 6-digit email OTP (1s) + 6-digit phone OTP (2s)
+  - Clicked "Verify & continue" → navigated to `/register/success?email=...&phone=...` ✓
+  - Clicked "Continue to WEBUOS" → navigated to `/login` ✓ (was previously routing to /account)
+  - Filled login form (email=test@webuos.com, password=testpass123)
+  - Clicked "Sign in as Employer" → navigated to `/account` ✓ (was previously routing to /dashboard)
+- Agent Browser dropdown test:
+  - Opened `/` (home page)
+  - Clicked WT avatar button in top-right of header (ref=e14, "Open profile menu")
+  - Dropdown opened with all 6 menu items: Profile Account, Communication, Business profile, Security & sign-in, Dashboard, Sign in / Switch account ✓
+  - Profile summary card at top showing WT avatar + "WEBUOS Tech & AI Services" + email + green Verified badge ✓
+  - Clicked "Profile Account" → navigated to `/account` ✓
+- VLM verified dropdown design: white background with drop shadow, profile card at top with WT avatar + name + email + green Verified badge, list of menu items with icons (UserCircle for Profile Account, Mail for Communication, Building2 for Business profile, ShieldCheck for Security & sign-in, LayoutGrid for Dashboard, LogOut for Sign in / Switch account), bold primary items, gray subtitles, generous spacing ✓
+- VLM verified account page after login: dark header with WEBUOS logo + "Profile Account" + WT avatar, left sidebar with 12 nav items (Communication with green check, Business items with yellow dots), profile section with "WEBUOS Tech & AI Services" + email + green "Communication verified" badge, amber alert banner "Complete your business verification" with 1/6 progress, green Communication Details card (verified), 6 business verification step cards ✓
+- Mobile responsiveness (375x812):
+  - Home page header: hamburger menu + ESuite icon (ProfileDropdown avatar is hidden on mobile, replaced by hamburger menu link)
+  - Hamburger menu opens with: ESuite pill, English (EN), Browse Ecosystems, **Profile Account** (new link), Sign In ✓
+  - Clicked "Profile Account" in mobile menu → navigated to `/account` ✓
+- Dev server log: all routes 200, no errors, ~50ms render time
+- No browser console errors
+
+Stage Summary:
+- Complete registration → login → account flow now works:
+  - `/register` → `/register/verify` → `/register/success` → **`/login`** → **`/account`**
+- Success page "Continue to WEBUOS" button now routes to /login (instead of /account directly)
+- Login page handleSubmit + SSO button now route to /account (instead of /dashboard)
+- New ProfileDropdown component added to the site header:
+  - WT avatar button (cyan→blue gradient, "WT" initials) in top-right of header
+  - Click opens dropdown with: profile summary card (WT avatar + name + email + Verified badge), 6 menu items (Profile Account [primary], Communication, Business profile, Security & sign-in, Dashboard, Sign in / Switch account), copyright footer
+  - "Profile Account" menu item routes to /account
+- Mobile: hamburger menu now includes a "Profile Account" link (routes to /account) above the Sign In button
+- Outside-click + Escape key close the dropdown
+- Full accessibility: aria-label, aria-expanded, aria-haspopup, role="menu" + role="menuitem"
+- dropdownFadeIn animation (opacity 0→1, translateY -4→0, scale 0.98→1, 150ms)

@@ -66,11 +66,8 @@ export default function SuccessPage() {
   }, []);
 
   function handleContinue() {
-    // Route to Profile Account page
-    const params = new URLSearchParams();
-    if (email) params.set("email", email);
-    if (phone) params.set("phone", phone);
-    window.location.href = `/account${params.toString() ? `?${params.toString()}` : ""}`;
+    // Route to login page — user must sign in with credentials after registration
+    window.location.href = "/login";
   }
 
   return (
@@ -177,7 +174,7 @@ export default function SuccessPage() {
 
           {/* Footer note */}
           <p className="mt-6 text-xs text-slate-500">
-            Your communication details (email &amp; phone) are verified. You&apos;ll complete business verification next.
+            Your communication details (email &amp; phone) are verified. Sign in with your credentials to access your Profile Account.
           </p>
         </div>
       </main>

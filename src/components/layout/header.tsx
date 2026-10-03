@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Globe, Menu, X, Search, ArrowRight } from "lucide-react";
+import { Globe, Menu, X, Search, ArrowRight, User } from "lucide-react";
 import { WebuosLogo } from "@/components/brand/webuos-logo";
 import { ESuiteButton } from "@/components/layout/esuite-button";
+import { ProfileDropdown } from "@/components/layout/profile-dropdown";
 import { HeaderSearchInput, HeaderSearchOptions } from "@/components/layout/header-search-bar";
 import { cn } from "@/lib/utils";
 
@@ -101,11 +102,11 @@ export function Header() {
             </>
           )}
 
-          {/* Nav buttons — right side (ESuite, Apps, Sign In) */}
+          {/* Nav buttons — right side (ESuite, Apps, Profile dropdown) */}
           <nav className="hidden shrink-0 items-center gap-1 lg:flex">
             <ESuiteButton variant="pill" />
             <ESuiteButton variant="icon" />
-            <Link href="/login" className="inline-flex items-center rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Sign In</Link>
+            <ProfileDropdown />
           </nav>
 
           <button type="button" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-foreground hover:bg-muted lg:hidden" onClick={() => setMobileOpen(v => !v)} aria-label={mobileOpen ? "Close" : "Open menu"} aria-expanded={mobileOpen}>
@@ -140,6 +141,7 @@ export function Header() {
           </div>
           <button type="button" className="inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"><Globe className="h-4 w-4" /><span>English (EN)</span></button>
           <Link href="/business-taxonomy" className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted" onClick={() => setMobileOpen(false)}>Browse Ecosystems</Link>
+          <Link href="/account" className="inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted" onClick={() => setMobileOpen(false)}><User className="h-4 w-4" /> Profile Account</Link>
           <Link href="/login" className="inline-flex items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground" onClick={() => setMobileOpen(false)}>Sign In</Link>
         </nav>
       </div>
