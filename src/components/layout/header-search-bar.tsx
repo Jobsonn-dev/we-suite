@@ -130,17 +130,17 @@ export function HeaderSearchBar() {
 
   return (
     <div ref={ref} className="w-full">
-      {/* Search bar (pill-shaped, dark) — image 2 */}
+      {/* Search bar (pill-shaped, dark) — matches target image */}
       <form onSubmit={submit}>
         <div
           className={cn(
-            "relative flex items-center gap-1 rounded-full border bg-card pl-4 pr-1.5 py-1.5 transition-all sm:py-2",
+            "relative flex items-center gap-1 rounded-full border border-white/10 bg-[#1a1f2e] pl-4 pr-1.5 py-1.5 transition-all sm:py-2",
             focused
-              ? "border-primary/40 shadow-soft-lg ring-4 ring-primary/10"
-              : "border-border shadow-soft hover:border-primary/40 hover:shadow-soft-lg",
+              ? "border-cyan-400/50 shadow-[0_0_0_4px_rgba(34,211,238,0.12)] shadow-lg"
+              : "hover:border-white/20",
           )}
         >
-          <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
+          <Search className="h-5 w-5 shrink-0 text-slate-400" />
           <input
             ref={inputRef}
             type="text"
@@ -149,7 +149,7 @@ export function HeaderSearchBar() {
             onFocus={() => setFocused(true)}
             onBlur={() => setTimeout(() => setFocused(false), 150)}
             placeholder="Search companies, products, services or industries..."
-            className="flex-1 bg-transparent px-2 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-base"
+            className="flex-1 bg-transparent px-2 py-1.5 text-sm text-white placeholder:text-slate-400 focus:outline-none sm:text-base"
             aria-label="Search"
           />
           {query && (
@@ -159,7 +159,7 @@ export function HeaderSearchBar() {
                 setQuery("");
                 inputRef.current?.focus();
               }}
-              className="hidden rounded-full p-1.5 text-muted-foreground hover:bg-muted sm:inline-flex"
+              className="hidden rounded-full p-1.5 text-slate-400 hover:bg-white/10 hover:text-white sm:inline-flex"
               aria-label="Clear"
             >
               <X className="h-4 w-4" />
@@ -170,7 +170,7 @@ export function HeaderSearchBar() {
             onClick={startVoice}
             className={cn(
               "hidden rounded-full p-2 transition-colors sm:inline-flex",
-              listening ? "animate-pulse bg-red-500/15 text-red-500" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              listening ? "animate-pulse bg-red-500/20 text-red-400" : "text-slate-400 hover:bg-white/10 hover:text-white",
             )}
             aria-label="Voice search"
           >
@@ -180,7 +180,7 @@ export function HeaderSearchBar() {
             type="submit"
             disabled={!query.trim()}
             className={cn(
-              "inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 sm:px-5",
+              "inline-flex h-9 items-center gap-1.5 rounded-full bg-slate-600 px-4 text-sm font-semibold text-white transition-all hover:bg-slate-500 sm:px-5",
               !query.trim() && "cursor-not-allowed opacity-50",
             )}
           >
@@ -190,8 +190,8 @@ export function HeaderSearchBar() {
         </div>
       </form>
 
-      {/* Category filter bar — image 1 */}
-      <div className="mt-2 flex items-center gap-1 overflow-x-auto rounded-full border border-border bg-muted/40 p-1 scrollbar-thin">
+      {/* Category filter bar — matches target image */}
+      <div className="mt-1.5 flex items-center gap-1 overflow-x-auto rounded-full border border-white/10 bg-[#1a1f2e] p-1 scrollbar-thin">
         {CATEGORIES.map((cat) => {
           const Icon = cat.icon;
           const isActive = category === cat.key;
@@ -203,10 +203,8 @@ export function HeaderSearchBar() {
               className={cn(
                 "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all sm:text-[13px]",
                 isActive
-                  ? cat.key === "all"
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "bg-foreground text-background shadow-sm"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-400 hover:bg-white/10 hover:text-white",
               )}
               aria-pressed={isActive}
             >

@@ -397,3 +397,56 @@ Stage Summary:
 - Category filter bar: 7 tabs (All/Companies/Products/Services/Industries/Technology/Locations) with icons, "All" active by default with sparkle icon
 - Selecting a category immediately filters search results by type
 - Fully responsive: mobile shows compact search, desktop shows full search + categories
+
+---
+Task ID: 11
+Agent: Main (Z.ai Code) — Header Dark Theme Match
+Task: Update header search bar + category filter to match the target image (dark theme with medium-gray search button and inverted active "All" tab)
+
+Work Log:
+- User uploaded `pasted_image_1791011557603.png` (1844x174) showing the target header design
+- Used VLM to analyze the target image:
+  - Dark search bar background (`#1a1d24` range) with light gray text/icons
+  - Search button is **medium gray** (`#475569`/`#64748b`) — NOT solid black/dark
+  - Category filter bar on the same dark background
+  - Active "All" tab is **white/light** background with **dark** text (inverted)
+  - Inactive tabs: gray text on transparent background
+- Compared with current header (which used theme tokens that rendered light in light mode) — identified 4 differences:
+  1. Search bar background was light (should be dark)
+  2. Search button was solid black/dark (should be medium gray)
+  3. Category filter bar was on light background (should be dark)
+  4. Active "All" tab was dark bg + white text (should be inverted: white bg + dark text)
+
+**Updated `src/components/layout/header-search-bar.tsx`**:
+- Search bar container: changed from `bg-card border-border` to explicit `bg-[#1a1f2e] border-white/10`
+- Search icon: changed from `text-muted-foreground` to `text-slate-400`
+- Input text: changed from `text-foreground` to `text-white`, placeholder `text-slate-400`
+- Clear (X) button: `text-slate-400 hover:bg-white/10 hover:text-white`
+- Mic button: `text-slate-400 hover:bg-white/10 hover:text-white` (listening state: `bg-red-500/20 text-red-400`)
+- **Search button**: changed from `bg-primary text-primary-foreground` to `bg-slate-600 text-white hover:bg-slate-500` (medium gray, matching target)
+- Focus state: `border-cyan-400/50 shadow-[0_0_0_4px_rgba(34,211,238,0.12)]` (cyan ring on dark)
+- Category filter bar container: `bg-[#1a1f2e] border-white/10` (dark, matches search bar)
+- Active category tab: changed from `bg-primary text-primary-foreground` to `bg-white text-slate-900` (inverted: white background, dark text — matches target)
+- Inactive tabs: `text-slate-400 hover:bg-white/10 hover:text-white`
+
+**Updated `src/components/layout/header.tsx`** (Row 2 container):
+- Changed from `border-t border-border bg-background/95 backdrop-blur-md` to `border-t border-white/10 bg-[#0f1420]` (dark background for the entire search section)
+- Reduced padding from `py-3` to `py-2.5` for a more compact layout matching the target
+- Reduced gap between search bar and category bar from `mt-2` to `mt-1.5`
+
+**Verification:**
+- `bun run lint`: 0 errors, 0 warnings
+- All routes return HTTP 200: /, /search, /business/[slug]
+- Agent Browser + VLM verified the header now matches the target image:
+  - ✅ Dark search bar with light text/icons
+  - ✅ Medium-gray Search button (not solid black)
+  - ✅ Category filter bar on dark background
+  - ✅ Active "All" tab is white with dark text (inverted)
+  - ✅ Compact layout (tighter spacing between search bar and category bar)
+
+Stage Summary:
+- Header search bar + category filter bar now use explicit dark colors (not theme tokens) so they always match the target image regardless of light/dark mode
+- Search bar: dark `#1a1f2e` background, light text/icons, medium-gray `bg-slate-600` search button
+- Category filter bar: dark `#1a1f2e` background, active "All" tab is white `bg-white text-slate-900` (inverted)
+- Header Row 2 container: dark `#0f1420` background
+- Compact spacing (py-2.5, mt-1.5) for a tighter layout matching the target

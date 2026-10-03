@@ -125,10 +125,10 @@ export function Header() {
         </button>
       </div>
 
-      {/* Row 2: Full search bar + category filter bar (image 2 + image 1) */}
+      {/* Row 2: Full search bar + category filter bar (dark themed, matches target image) */}
       {showHeaderSearch && (
-        <div className="border-t border-border bg-background/95 backdrop-blur-md" style={{ animation: "fadeIn .2s ease-out" }}>
-          <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
+        <div className="border-t border-white/10 bg-[#0f1420]" style={{ animation: "fadeIn .2s ease-out" }}>
+          <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
             {/* Desktop/tablet: full search bar with category filter */}
             <div className="hidden md:block">
               <HeaderSearchBar />
