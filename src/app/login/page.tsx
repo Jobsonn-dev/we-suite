@@ -88,7 +88,7 @@ export default function LoginPage() {
                       Company • Commerce
                     </p>
                     <p className="text-base font-bold text-white">
-                      Business
+                      Organizations / Business
                     </p>
                     <p className="text-xs text-slate-400">
                       For companies, brands and commerce.

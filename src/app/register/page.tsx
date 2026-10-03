@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   ArrowLeft, Mail, Lock, Eye, EyeOff, ArrowRight, User, Building2,
-  Check, Search, Sparkles, UserPlus, Phone, Globe,
+  Check, Search, Sparkles, UserPlus, Phone, Globe, Store, ShoppingCart, ArrowLeftRight,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/page-shell";
 import { ecosystems } from "@/data/taxonomy";
@@ -28,6 +28,7 @@ export default function RegisterPage() {
   const [website, setWebsite] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [businessIntent, setBusinessIntent] = useState<"sell" | "buy" | "both">("both");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -121,7 +122,7 @@ export default function RegisterPage() {
                       Company • Commerce
                     </p>
                     <p className="text-base font-bold text-white">
-                      Business
+                      Organizations / Business
                     </p>
                     <p className="text-xs text-slate-400">
                       For companies, brands and commerce.
@@ -135,6 +136,97 @@ export default function RegisterPage() {
                 </button>
               </div>
             </div>
+
+            {/* Buy / Sell / Both cards — only for Organizations / Business */}
+            {accountType === "employer" && (
+              <div style={{ animation: "fadeIn .2s ease-out" }}>
+                <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-cyan-400/60">
+                  What will you do on WEBUOS?
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Sell */}
+                  <button
+                    type="button"
+                    onClick={() => setBusinessIntent("sell")}
+                    className={cn(
+                      "group relative flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all duration-200",
+                      businessIntent === "sell"
+                        ? "border-cyan-500/40 bg-cyan-500/10"
+                        : "border-white/10 bg-white/[0.03] hover:border-cyan-500/30 hover:bg-white/[0.06]"
+                    )}
+                  >
+                    <span className={cn(
+                      "inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
+                      businessIntent === "sell" ? "bg-cyan-500/20 text-cyan-400" : "bg-white/5 text-slate-400"
+                    )}>
+                      <Store className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <p className={cn("text-xs font-bold", businessIntent === "sell" ? "text-white" : "text-slate-300")}>
+                        Sell
+                      </p>
+                      <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                        List products & services to buyers
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Buy */}
+                  <button
+                    type="button"
+                    onClick={() => setBusinessIntent("buy")}
+                    className={cn(
+                      "group relative flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all duration-200",
+                      businessIntent === "buy"
+                        ? "border-cyan-500/40 bg-cyan-500/10"
+                        : "border-white/10 bg-white/[0.03] hover:border-cyan-500/30 hover:bg-white/[0.06]"
+                    )}
+                  >
+                    <span className={cn(
+                      "inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
+                      businessIntent === "buy" ? "bg-cyan-500/20 text-cyan-400" : "bg-white/5 text-slate-400"
+                    )}>
+                      <ShoppingCart className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <p className={cn("text-xs font-bold", businessIntent === "buy" ? "text-white" : "text-slate-300")}>
+                        Buy
+                      </p>
+                      <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                        Discover suppliers & partners
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Both */}
+                  <button
+                    type="button"
+                    onClick={() => setBusinessIntent("both")}
+                    className={cn(
+                      "group relative flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all duration-200",
+                      businessIntent === "both"
+                        ? "border-cyan-500/40 bg-cyan-500/10"
+                        : "border-white/10 bg-white/[0.03] hover:border-cyan-500/30 hover:bg-white/[0.06]"
+                    )}
+                  >
+                    <span className={cn(
+                      "inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
+                      businessIntent === "both" ? "bg-cyan-500/20 text-cyan-400" : "bg-white/5 text-slate-400"
+                    )}>
+                      <ArrowLeftRight className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <p className={cn("text-xs font-bold", businessIntent === "both" ? "text-white" : "text-slate-300")}>
+                        Both
+                      </p>
+                      <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                        Trade on both sides
+                      </p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
 
             <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
               Join the WEBUOS business ecosystem.
