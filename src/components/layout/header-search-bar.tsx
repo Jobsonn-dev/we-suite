@@ -471,10 +471,13 @@ export function HeaderSearchInput() {
 }
 
 // ════════════════════════════════════════════════════════════
-// PART 2: HeaderSearchOptions — the options row
+// PART 2: HeaderSearchOptions — the options rows
 // Goes in Row 2 (full width, left-aligned with the logo):
-//   All | Companies | Products | Services | Industries | Locations |
-//   Eco systems ▾ | Business Type ▾ | Business Size ▾ | Advanced Search
+//   Row 1: All | Companies | Products | Services | Industries | Locations |
+//          Eco systems ▾ | Business Type ▾ | Business Size ▾
+//   Row 2: Nature of Business ▾ | Core Sector ▾ | Categories ▾ |
+//          Country ▾ | City ▾ | Verification ▾ | Sort By ▾
+// All transparent, no backgrounds, no containers.
 // ════════════════════════════════════════════════════════════
 export function HeaderSearchOptions() {
   const {
@@ -484,7 +487,7 @@ export function HeaderSearchOptions() {
 
   return (
     <div className="w-full">
-      {/* ── Options row — single row, left-aligned with the logo ── */}
+      {/* ── Row 1: Category pills + 3 dropdowns ── */}
       <div className="flex items-center gap-0.5 overflow-x-auto pb-0.5 scrollbar-thin">
         {/* Category pills (no chevron, no background) */}
         {CATEGORY_PILLS.map((cat) => {
@@ -536,111 +539,84 @@ export function HeaderSearchOptions() {
           onChange={(v) => updateFilter("business_size", v)}
         />
 
-        {/* Advanced Search button (no background, expands section) */}
-        <button
-          type="button"
-          onClick={() => setShowAdvanced(!showAdvanced)}
-          className={cn(
-            "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors sm:text-[13px]",
-            showAdvanced
-              ? "text-cyan-400"
-              : "text-slate-400 hover:text-white",
-          )}
-          aria-expanded={showAdvanced}
-        >
-          <SlidersHorizontal className="h-3.5 w-3.5" />
-          <span className="whitespace-nowrap">Advanced Search</span>
-          {activeAdvancedCount > 0 && (
-            <span className="ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-cyan-950">
-              {activeAdvancedCount}
-            </span>
-          )}
-        </button>
-
-        {/* Clear button when advanced filters are active */}
+        {/* Clear button when filters are active */}
         {activeAdvancedCount > 0 && (
           <button
             type="button"
             onClick={resetFilters}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-red-500/15 px-3 py-1.5 text-xs font-medium text-red-400 transition-all hover:bg-red-500/25"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-red-400 transition-colors hover:text-red-300 sm:text-[13px]"
           >
             <X className="h-3.5 w-3.5" />
-            <span className="whitespace-nowrap">Clear</span>
+            <span className="whitespace-nowrap">Clear ({activeAdvancedCount})</span>
           </button>
         )}
       </div>
 
-      {/* ── Advanced filters section (hidden by default, expands when "Advanced Search" is clicked) ──
-          No background container — dropdowns float transparently on the header background */}
-      {showAdvanced && (
-        <div
-          className="mt-1 flex flex-wrap items-center gap-0.5 pb-1"
-          style={{ animation: "fadeIn .2s ease-out" }}
-        >
-          {/* Nature of Business */}
-          <FilterDropdown
-            icon={Briefcase}
-            value={filters.nature_of_business}
-            placeholder="Nature of Business"
-            options={NATURE_OF_BUSINESS.map((b) => ({ value: b, label: b }))}
-            onChange={(v) => updateFilter("nature_of_business", v)}
-          />
+      {/* ── Row 2: Advanced dropdown filters (always visible, no background) ── */}
+      <div className="flex items-center gap-0.5 overflow-x-auto pb-0.5 scrollbar-thin">
+        {/* Nature of Business */}
+        <FilterDropdown
+          icon={Briefcase}
+          value={filters.nature_of_business}
+          placeholder="Nature of Business"
+          options={NATURE_OF_BUSINESS.map((b) => ({ value: b, label: b }))}
+          onChange={(v) => updateFilter("nature_of_business", v)}
+        />
 
-          {/* Core Sector (cascading) */}
-          <FilterDropdown
-            icon={Factory}
-            value={filters.sector}
-            placeholder="Core Sector"
-            options={sectorOptions}
-            onChange={(v) => updateFilter("sector", v)}
-          />
+        {/* Core Sector (cascading) */}
+        <FilterDropdown
+          icon={Factory}
+          value={filters.sector}
+          placeholder="Core Sector"
+          options={sectorOptions}
+          onChange={(v) => updateFilter("sector", v)}
+        />
 
-          {/* Categories (cascading) */}
-          <FilterDropdown
-            icon={Package}
-            value={filters.category}
-            placeholder="Categories"
-            options={categoryOptions}
-            onChange={(v) => updateFilter("category", v)}
-          />
+        {/* Categories (cascading) */}
+        <FilterDropdown
+          icon={Package}
+          value={filters.category}
+          placeholder="Categories"
+          options={categoryOptions}
+          onChange={(v) => updateFilter("category", v)}
+        />
 
-          {/* Country */}
-          <FilterDropdown
-            icon={Globe}
-            value={filters.country}
-            placeholder="Country"
-            options={COUNTRIES.map((c) => ({ value: c, label: c }))}
-            onChange={(v) => updateFilter("country", v)}
-          />
+        {/* Country */}
+        <FilterDropdown
+          icon={Globe}
+          value={filters.country}
+          placeholder="Country"
+          options={COUNTRIES.map((c) => ({ value: c, label: c }))}
+          onChange={(v) => updateFilter("country", v)}
+        />
 
-          {/* City */}
-          <FilterDropdown
-            icon={MapPin}
-            value={filters.city}
-            placeholder="City"
-            options={CITIES.map((c) => ({ value: c, label: c }))}
-            onChange={(v) => updateFilter("city", v)}
-          />
+        {/* City */}
+        <FilterDropdown
+          icon={MapPin}
+          value={filters.city}
+          placeholder="City"
+          options={CITIES.map((c) => ({ value: c, label: c }))}
+          onChange={(v) => updateFilter("city", v)}
+        />
 
-          {/* Verification */}
-          <FilterDropdown
-            icon={BadgeCheck}
-            value={filters.verified}
-            placeholder="Verification"
-            options={VERIFICATION_OPTIONS}
-            onChange={(v) => updateFilter("verified", v)}
-          />
+        {/* Verification */}
+        <FilterDropdown
+          icon={BadgeCheck}
+          value={filters.verified}
+          placeholder="Verification"
+          options={VERIFICATION_OPTIONS}
+          onChange={(v) => updateFilter("verified", v)}
+        />
 
-          {/* Sort By */}
-          <FilterDropdown
-            icon={TrendingUp}
-            value={filters.sort === "relevance" ? "" : filters.sort}
-            placeholder="Sort By"
-            options={SORT_OPTIONS.filter((s) => s.key !== "relevance").map((s) => ({ value: s.key, label: s.label }))}
-            onChange={(v) => updateFilter("sort", (v || "relevance") as SearchSort)}
-          />
-        </div>
-      )}
+        {/* Sort By */}
+        <FilterDropdown
+          icon={TrendingUp}
+          value={filters.sort === "relevance" ? "" : filters.sort}
+          placeholder="Sort By"
+          options={SORT_OPTIONS.filter((s) => s.key !== "relevance").map((s) => ({ value: s.key, label: s.label }))}
+          onChange={(v) => updateFilter("sort", (v || "relevance") as SearchSort)}
+        />
+      </div>
     </div>
   );
 }
