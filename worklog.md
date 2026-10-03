@@ -331,3 +331,69 @@ Stage Summary:
   - Dashboard: Sign out → Back to Home
 - /business/create page still works, now uses PageShell wrapper instead of RegistrationLayout
 - Codebase is clean: no orphan imports, no broken links, lint passes
+
+---
+Task ID: 10
+Agent: Main (Z.ai Code) — Header Search Bar + Category Filter Bar
+Task: Add pill-shaped search bar (image 2) to header + category filter bar (image 1) below it
+
+Work Log:
+- User provided 2 images:
+  - Image 1 (`pasted_image_1791010596090.png`): horizontal category tab bar — dark rounded container with "All" (sparkle icon, highlighted active state) / Companies (building icon) / Products (box icon) / Services (wrench icon) / Industries (chart icon) / Technology (cpu icon) / Locations (pin icon)
+  - Image 2 (`pasted_image_1791010651734.png`): pill-shaped dark search bar — search icon left, placeholder "Search companies, products, services or industries...", mic icon right, "Search →" button right
+- Used VLM to analyze both images and extract exact layout, colors, icons, and styling
+
+**Created `src/components/layout/header-search-bar.tsx`** (new file):
+- Exported `HeaderSearchBar` component and `SearchCategory` type
+- **Search bar (image 2)**:
+  - Pill-shaped container (`rounded-full`) with dark `bg-card` background
+  - Search icon on the left (h-5 w-5)
+  - Text input with placeholder "Search companies, products, services or industries..."
+  - Clear (X) button when query present
+  - Microphone icon button (with red pulse animation when listening, uses Web Speech API)
+  - "Search" button with arrow on the right (bg-primary, disabled when empty)
+  - Focus state: ring-4 ring-primary/10 + border-primary/40 + shadow-soft-lg
+  - Keyboard shortcuts: `/` and `Cmd/Ctrl+K` to focus search
+- **Category filter bar (image 1)** below the search bar:
+  - Horizontal scrollable rounded container (`rounded-full`, `bg-muted/40`)
+  - 7 category tabs: All (Sparkles icon), Companies (Building2), Products (Package), Services (Wrench), Industries (BarChart3), Technology (Cpu), Locations (MapPin)
+  - Active "All" tab: highlighted with `bg-primary text-primary-foreground` + sparkle icon
+  - Inactive tabs: `text-muted-foreground hover:bg-muted`
+  - Clicking a category immediately re-searches with the new type filter (if there's a query)
+- Used `useSearchParams` to sync category from URL on mount (initial state, no effect needed → no lint warning)
+- Submitting search navigates to `/search?q=<query>&type=<category>`
+
+**Updated `src/components/layout/header.tsx`**:
+- Restructured header into 2 rows:
+  - **Row 1**: Logo (left) | compact mobile search (center, mobile only, hidden when scrolled) | Nav buttons (ESuite, Apps, Theme, Language) (right) + hamburger on mobile
+  - **Row 2** (appears on non-home pages OR when home page is scrolled > 350px):
+    - Border-top separator + `bg-background/95 backdrop-blur-md`
+    - Desktop/tablet: `<HeaderSearchBar />` (full search bar + category filter)
+    - Mobile: compact search input + submit button
+- Removed the old `HeaderSearch` component (the one with the quick-apps dropdown) — replaced by the new `HeaderSearchBar` with category filter
+- Kept the `MobileSearchBar` for the home page top (before scroll) — compact version with quick apps dropdown
+- Behavior:
+  - Landing page at top: clean header (logo + nav only), hero search bar is the main CTA
+  - Landing page scrolled > 350px OR any non-home page: header expands to show the search bar + category filter bar
+  - Smooth fadeIn animation when the second row appears
+
+**Verification:**
+- `bun run lint`: 0 errors, 0 warnings
+- All routes return HTTP 200: /, /search, /search?q=ai&type=company, /business/[slug]
+- Agent Browser + VLM verified:
+  - Search bar matches image 2: pill-shaped, search icon left, placeholder, mic icon, "Search →" button right ✓
+  - Category filter bar matches image 1: 7 tabs (All/Companies/Products/Services/Industries/Technology/Locations) with correct icons, "All" highlighted as active with sparkle icon ✓
+  - Clicking "Companies" category updates URL to `?type=company` ✓
+  - Submitting search with category navigates to `/search?q=<query>&type=<category>` ✓
+  - Mobile (375px): search bar visible and properly sized ✓
+  - Landing page top: header clean (no expanded search) ✓
+  - Landing page scrolled: header expands to show search + category bar ✓
+
+Stage Summary:
+- Header now has a 2-row layout on non-home pages (and on home when scrolled):
+  - Row 1: Logo + nav buttons (ESuite, Apps, Theme, Language)
+  - Row 2: Pill-shaped search bar (image 2) + category filter bar (image 1) below it
+- Search bar: pill-shaped, dark, search icon, placeholder, mic icon (voice search), "Search →" button, keyboard shortcuts
+- Category filter bar: 7 tabs (All/Companies/Products/Services/Industries/Technology/Locations) with icons, "All" active by default with sparkle icon
+- Selecting a category immediately filters search results by type
+- Fully responsive: mobile shows compact search, desktop shows full search + categories

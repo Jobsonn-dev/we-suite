@@ -1,134 +1,65 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { Globe, Menu, X, Search, ArrowRight, Mic } from "lucide-react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { Globe, Menu, X, Search, ArrowRight } from "lucide-react";
 import { WebuosLogo } from "@/components/brand/webuos-logo";
 import { ESuiteButton, esuiteApps } from "@/components/layout/esuite-button";
+import { HeaderSearchBar } from "@/components/layout/header-search-bar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
 // ============================================================
-// Header Search Bar
-// Compact search input + dropdown showing smaller app icons + names
+// Mobile search bar (compact, for mobile header)
 // ============================================================
-function HeaderSearch() {
-  const router = useRouter();
+function MobileSearchBar() {
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setFocused(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  // Filter apps for the dropdown
-  const filteredApps = query.trim()
-    ? esuiteApps.filter(
-        (a) =>
-          a.name.toLowerCase().includes(query.toLowerCase()) ||
-          a.desc.toLowerCase().includes(query.toLowerCase()),
-      )
-    : esuiteApps.slice(0, 8); // Show first 8 apps by default
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!query.trim()) return;
-    setFocused(false);
-    router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-  }
-
-  function openApp(href: string) {
-    setFocused(false);
-    setQuery("");
-    router.push(href);
+    window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
   }
 
   return (
-    <div ref={ref} className="relative w-full max-w-md">
+    <div className="relative w-full">
       <form onSubmit={submit} className="relative flex items-center">
         <Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground" />
         <input
-          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setFocused(true)}
           placeholder="Search companies, products, services..."
-          className="h-9 w-full rounded-full border border-border bg-muted/50 pl-10 pr-10 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+          className="h-9 w-full rounded-full border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
           aria-label="Search"
         />
-        <button
-          type="submit"
-          className="absolute right-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
-          aria-label="Submit search"
-        >
-          <ArrowRight className="h-3.5 w-3.5" />
-        </button>
       </form>
-
-      {/* Dropdown: smaller app icons + names */}
       {focused && (
-        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-2xl border border-border bg-popover shadow-soft-lg" style={{ animation: "fadeIn .15s ease-out" }}>
-          {/* Quick apps section */}
-          <div className="border-b border-border p-3">
-            <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {query.trim() ? `Matching apps (${filteredApps.length})` : "Quick apps"}
-            </p>
-            <div className="grid grid-cols-4 gap-1 sm:grid-cols-5">
-              {filteredApps.slice(0, 10).map((app) => {
-                const Icon = app.icon;
-                return (
-                  <button
-                    key={app.id}
-                    type="button"
-                    onClick={() => openApp(app.href)}
-                    title={app.desc}
-                    className="group flex flex-col items-center gap-1.5 rounded-lg px-1.5 py-2 transition-colors hover:bg-muted"
-                  >
-                    <span
-                      className={cn(
-                        "inline-flex h-9 w-9 items-center justify-center rounded-lg text-white shadow-sm transition-transform group-hover:scale-110",
-                        app.iconBg,
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </span>
-                    <span className="block w-full truncate text-center text-[10px] font-medium text-foreground/80 group-hover:text-foreground">
-                      {app.name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Search action footer */}
-          <div className="p-2">
-            <button
-              type="button"
-              onClick={() => {
-                setFocused(false);
-                if (query.trim()) router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-              }}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <Search className="h-4 w-4 text-muted-foreground" />
-              <span className="flex-1 truncate">
-                {query.trim() ? (
-                  <>Search WEBUOS for <span className="font-semibold text-foreground">&ldquo;{query}&rdquo;</span></>
-                ) : (
-                  <>Type to search the WEBUOS ecosystem</>
-                )}
-              </span>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
-            </button>
+        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-2xl border border-border bg-popover p-2 shadow-soft-lg" style={{ animation: "fadeIn .15s ease-out" }}>
+          <p className="mb-1.5 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Quick apps</p>
+          <div className="grid grid-cols-4 gap-1">
+            {esuiteApps.slice(0, 8).map((app) => {
+              const Icon = app.icon;
+              return (
+                <button
+                  key={app.id}
+                  type="button"
+                  onClick={() => {
+                    window.location.href = app.href;
+                  }}
+                  title={app.desc}
+                  className="group flex flex-col items-center gap-1 rounded-lg px-1 py-2 transition-colors hover:bg-muted"
+                >
+                  <span className={cn("inline-flex h-8 w-8 items-center justify-center rounded-lg text-white shadow-sm", app.iconBg)}>
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="block w-full truncate text-center text-[10px] font-medium text-foreground/80">{app.name}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -153,7 +84,8 @@ export function Header() {
     }
   }, [isHome]);
 
-  const showSearch = !isHome || scrolled;
+  // Show the expanded header search + category bar on non-home pages, or on home when scrolled
+  const showHeaderSearch = !isHome || scrolled;
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -163,19 +95,21 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
+      {/* Row 1: Logo | (compact search on mobile) | Nav buttons */}
       <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center" aria-label="WEBUOS home">
           <WebuosLogo size="md" />
         </Link>
 
-        <div className={cn("flex flex-1 items-center justify-center transition-opacity duration-300", showSearch ? "opacity-100" : "opacity-0 pointer-events-none")}>
-          <div className={cn("hidden w-full md:block", showSearch ? "block" : "hidden")}>
-            <HeaderSearch />
+        {/* Compact mobile search (only on home top, before scroll) */}
+        <div className={cn("flex flex-1 items-center justify-center md:hidden", showHeaderSearch ? "hidden" : "flex")}>
+          <div className="w-full max-w-xs">
+            <MobileSearchBar />
           </div>
-          <button type="button" onClick={() => setSearchOpen(true)} className={cn("inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground md:hidden", showSearch ? "flex" : "hidden")} aria-label="Search">
-            <Search className="h-4 w-4" />
-          </button>
         </div>
+
+        {/* Spacer on desktop when no search shown */}
+        <div className={cn("hidden flex-1 md:block", showHeaderSearch ? "hidden" : "block")} />
 
         <nav className="hidden shrink-0 items-center gap-1 md:flex">
           <ESuiteButton variant="pill" />
@@ -191,7 +125,28 @@ export function Header() {
         </button>
       </div>
 
-      {searchOpen && (
+      {/* Row 2: Full search bar + category filter bar (image 2 + image 1) */}
+      {showHeaderSearch && (
+        <div className="border-t border-border bg-background/95 backdrop-blur-md" style={{ animation: "fadeIn .2s ease-out" }}>
+          <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
+            {/* Desktop/tablet: full search bar with category filter */}
+            <div className="hidden md:block">
+              <HeaderSearchBar />
+            </div>
+            {/* Mobile: compact search input */}
+            <div className="md:hidden">
+              <form onSubmit={submit} className="flex items-center gap-2">
+                <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <input type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search companies, products, services..." className="h-10 flex-1 rounded-full border border-border bg-muted/50 px-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15" autoFocus />
+                <button type="submit" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"><ArrowRight className="h-4 w-4" /></button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile slide-down search overlay (alternative trigger) */}
+      {searchOpen && !showHeaderSearch && (
         <div className="absolute inset-x-0 top-0 z-50 border-b border-border bg-background p-4 md:hidden">
           <form onSubmit={submit} className="flex items-center gap-2">
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -202,6 +157,7 @@ export function Header() {
         </div>
       )}
 
+      {/* Mobile menu */}
       <div className={cn("border-t border-border bg-background md:hidden", mobileOpen ? "block" : "hidden")}>
         <nav className="flex flex-col gap-1 px-4 py-3">
           <div className="flex items-center gap-2 py-1">
