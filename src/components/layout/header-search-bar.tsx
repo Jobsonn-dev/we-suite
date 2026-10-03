@@ -6,7 +6,7 @@ import {
   Search, Mic, ArrowRight, X, ChevronDown, ChevronUp,
   Layers, Building2, Briefcase, Package, MapPin,
   Globe, Factory, TrendingUp, Users, Sparkles, Wrench, BarChart3,
-  SlidersHorizontal, Network, FileText, type LucideIcon,
+  SlidersHorizontal, Network, FileText, BadgeCheck, type LucideIcon,
 } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -41,6 +41,7 @@ interface FilterState {
   country: string;
   city: string;
   sort: SearchSort;
+  verified: string;
   digital_ai: boolean;
 }
 
@@ -64,6 +65,12 @@ const NATURE_OF_BUSINESS = [
 ];
 
 const BUSINESS_SIZES = ["Startup", "Small", "Medium", "Large", "Enterprise"];
+
+const VERIFICATION_OPTIONS = [
+  { value: "true", label: "Verified" },
+  { value: "claimed", label: "Claimed" },
+  { value: "registered", label: "Registered" },
+];
 
 const SORT_OPTIONS: { key: SearchSort; label: string }[] = [
   { key: "relevance", label: "Relevance" },
@@ -108,6 +115,7 @@ function useSearchFilters() {
     country: searchParams.get("country") ?? "",
     city: searchParams.get("city") ?? "",
     sort: initialSort,
+    verified: searchParams.get("verified") ?? "",
     digital_ai: searchParams.get("ecosystem") === "technology-ai",
   });
 
@@ -121,7 +129,8 @@ function useSearchFilters() {
     const country = searchParams.get("country");
     const city = searchParams.get("city");
     const sort = searchParams.get("sort");
-    return !!(eco || bType || nature || sector || cat || bSize || country || city || (sort && sort !== "relevance"));
+    const verified = searchParams.get("verified");
+    return !!(eco || bType || nature || sector || cat || bSize || country || city || (sort && sort !== "relevance") || verified);
   });
 
   const sectorOptions = useMemo(() => {
@@ -159,6 +168,7 @@ function useSearchFilters() {
     if (next.country) params.set("country", next.country);
     if (next.city) params.set("city", next.city);
     if (next.sort && next.sort !== "relevance") params.set("sort", next.sort);
+    if (next.verified) params.set("verified", next.verified);
     const qs = params.toString();
     router.push(qs ? `/search?${qs}` : "/search");
   }
@@ -204,6 +214,7 @@ function useSearchFilters() {
       country: "",
       city: "",
       sort: "relevance",
+      verified: "",
       digital_ai: false,
     };
     setFilters(cleared);
@@ -213,7 +224,7 @@ function useSearchFilters() {
   const activeAdvancedCount = [
     filters.ecosystem, filters.business_type, filters.nature_of_business,
     filters.business_size, filters.sector, filters.category,
-    filters.country, filters.city,
+    filters.country, filters.city, filters.verified,
   ].filter(Boolean).length
     + (filters.sort !== "relevance" ? 1 : 0)
     + (filters.digital_ai ? 1 : 0);
@@ -226,6 +237,7 @@ function useSearchFilters() {
 }
 
 // ── Pill dropdown WITH chevron (for Eco systems, Business Type, Business Size) ──
+// No background at all — fully transparent, no hover background
 function PillDropdown({
   value,
   placeholder,
@@ -247,12 +259,11 @@ function PillDropdown({
     <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
       <SelectTrigger
         className={cn(
-          "h-7 w-auto gap-1 rounded-full border-transparent bg-transparent px-2.5 py-1 text-xs font-medium transition-all focus:ring-0 focus:ring-offset-0 sm:text-[13px]",
-          // Style the default chevron
-          "[&_[data-slot=select-icon]_svg]:opacity-100 [&_[data-slot=select-icon]_svg]:text-slate-400 [&_[data-slot=select-icon]_svg]:size-3",
+          "h-7 w-auto gap-1 rounded-full border-transparent bg-transparent px-2.5 py-1 text-xs font-medium transition-colors focus:ring-0 focus:ring-offset-0 sm:text-[13px]",
+          "[&_[data-slot=select-icon]_svg]:opacity-100 [&_[data-slot=select-icon]_svg]:size-3",
           isActive
-            ? "bg-white text-slate-900 shadow-sm [&_[data-slot=select-icon]_svg]:text-slate-500"
-            : "text-slate-300 hover:bg-white/10 hover:text-white",
+            ? "text-white [&_[data-slot=select-icon]_svg]:text-cyan-400"
+            : "text-slate-300 [&_[data-slot=select-icon]_svg]:text-slate-400",
         )}
         aria-label={placeholder}
       >
@@ -278,6 +289,7 @@ function PillDropdown({
 }
 
 // ── Compact dropdown for advanced section ──
+// No background at all — fully transparent, no hover background
 function FilterDropdown({
   value,
   placeholder,
@@ -293,17 +305,21 @@ function FilterDropdown({
 }) {
   const selectedOption = options.find((o) => o.value === value);
   const displayLabel = selectedOption ? selectedOption.label : placeholder;
+  const isActive = !!value;
 
   return (
     <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
       <SelectTrigger
         className={cn(
-          "h-8 w-auto gap-1.5 rounded-full border-transparent bg-transparent px-3 py-1 text-xs font-medium text-white hover:bg-white/10 focus:ring-0 focus:ring-offset-0",
-          "[&_[data-slot=select-icon]_svg]:opacity-100 [&_[data-slot=select-icon]_svg]:text-slate-400 [&_[data-slot=select-icon]_svg]:size-3",
+          "h-7 w-auto gap-1 rounded-full border-transparent bg-transparent px-2.5 py-1 text-xs font-medium transition-colors focus:ring-0 focus:ring-offset-0 sm:text-[13px]",
+          "[&_[data-slot=select-icon]_svg]:opacity-100 [&_[data-slot=select-icon]_svg]:size-3",
+          isActive
+            ? "text-white [&_[data-slot=select-icon]_svg]:text-cyan-400"
+            : "text-slate-300 [&_[data-slot=select-icon]_svg]:text-slate-400",
         )}
         aria-label={placeholder}
       >
-        {Icon && <Icon className="size-3.5 shrink-0 text-slate-300" />}
+        {Icon && <Icon className="size-3.5 shrink-0" />}
         <span className="whitespace-nowrap">{displayLabel}</span>
       </SelectTrigger>
       <SelectContent className="max-h-72 border-white/10 bg-[#1a1f2e] text-white">
@@ -470,7 +486,7 @@ export function HeaderSearchOptions() {
     <div className="w-full">
       {/* ── Options row — single row, left-aligned with the logo ── */}
       <div className="flex items-center gap-0.5 overflow-x-auto pb-0.5 scrollbar-thin">
-        {/* Category pills (no chevron) */}
+        {/* Category pills (no chevron, no background) */}
         {CATEGORY_PILLS.map((cat) => {
           const Icon = cat.icon;
           const isActive = filters.type === cat.key;
@@ -480,14 +496,14 @@ export function HeaderSearchOptions() {
               type="button"
               onClick={() => selectCategory(cat.key)}
               className={cn(
-                "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all sm:text-[13px]",
+                "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors sm:text-[13px]",
                 isActive
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white",
+                  ? "text-white"
+                  : "text-slate-400 hover:text-white",
               )}
               aria-pressed={isActive}
             >
-              <Icon className="h-3.5 w-3.5" />
+              <Icon className={cn("h-3.5 w-3.5", isActive && "text-cyan-400")} />
               <span className="whitespace-nowrap">{cat.label}</span>
             </button>
           );
@@ -520,15 +536,15 @@ export function HeaderSearchOptions() {
           onChange={(v) => updateFilter("business_size", v)}
         />
 
-        {/* Advanced Search button (no chevron, expands section) */}
+        {/* Advanced Search button (no background, expands section) */}
         <button
           type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
           className={cn(
-            "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all sm:text-[13px]",
+            "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors sm:text-[13px]",
             showAdvanced
-              ? "bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-400/40"
-              : "text-slate-300 hover:bg-white/10 hover:text-white",
+              ? "text-cyan-400"
+              : "text-slate-400 hover:text-white",
           )}
           aria-expanded={showAdvanced}
         >
@@ -604,6 +620,15 @@ export function HeaderSearchOptions() {
             placeholder="City"
             options={CITIES.map((c) => ({ value: c, label: c }))}
             onChange={(v) => updateFilter("city", v)}
+          />
+
+          {/* Verification */}
+          <FilterDropdown
+            icon={BadgeCheck}
+            value={filters.verified}
+            placeholder="Verification"
+            options={VERIFICATION_OPTIONS}
+            onChange={(v) => updateFilter("verified", v)}
           />
 
           {/* Sort By */}
