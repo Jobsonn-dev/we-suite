@@ -11,7 +11,7 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
 // ============================================================
-// Mobile search bar (compact, for mobile header)
+// Mobile compact search bar (for home page top, before scroll)
 // ============================================================
 function MobileSearchBar() {
   const [query, setQuery] = useState("");
@@ -32,6 +32,7 @@ function MobileSearchBar() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setFocused(true)}
+          onBlur={() => setTimeout(() => setFocused(false), 150)}
           placeholder="Search companies, products, services..."
           className="h-9 w-full rounded-full border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
           aria-label="Search"
@@ -69,7 +70,6 @@ function MobileSearchBar() {
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const pathname = usePathname();
   const isHome = pathname === "/";
@@ -84,7 +84,7 @@ export function Header() {
     }
   }, [isHome]);
 
-  // Show the expanded header search + category bar on non-home pages, or on home when scrolled
+  // Show the search + categories inside the header on non-home pages, or on home when scrolled
   const showHeaderSearch = !isHome || scrolled;
 
   function submit(e: React.FormEvent) {
@@ -94,68 +94,64 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
-      {/* Row 1: Logo | (compact search on mobile) | Nav buttons */}
-      <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex shrink-0 items-center" aria-label="WEBUOS home">
-          <WebuosLogo size="md" />
-        </Link>
+    <header
+      className={cn(
+        "sticky top-0 z-50 bg-background/85 backdrop-blur-md",
+        // When search is shown, the header becomes a cohesive dark block containing everything
+        showHeaderSearch ? "bg-[#0f1420] border-b border-white/10" : "border-b border-border",
+      )}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Single cohesive header row: Logo | Search+Categories (center) | Nav buttons */}
+        <div className={cn("flex items-center gap-3", showHeaderSearch ? "py-2.5" : "h-[60px]")}>
+          <Link href="/" className="flex shrink-0 items-center self-start pt-1" aria-label="WEBUOS home">
+            <WebuosLogo size="md" />
+          </Link>
 
-        {/* Compact mobile search (only on home top, before scroll) */}
-        <div className={cn("flex flex-1 items-center justify-center md:hidden", showHeaderSearch ? "hidden" : "flex")}>
-          <div className="w-full max-w-xs">
-            <MobileSearchBar />
-          </div>
-        </div>
-
-        {/* Spacer on desktop when no search shown */}
-        <div className={cn("hidden flex-1 md:block", showHeaderSearch ? "hidden" : "block")} />
-
-        <nav className="hidden shrink-0 items-center gap-1 md:flex">
-          <ESuiteButton variant="pill" />
-          <ESuiteButton variant="icon" />
-          <ThemeToggle />
-          <button type="button" className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="Language">
-            <Globe className="h-4 w-4" /><span>EN</span>
-          </button>
-        </nav>
-
-        <button type="button" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-foreground hover:bg-muted md:hidden" onClick={() => setMobileOpen(v => !v)} aria-label={mobileOpen ? "Close" : "Open menu"} aria-expanded={mobileOpen}>
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-      </div>
-
-      {/* Row 2: Full search bar + category filter bar (dark themed, matches target image) */}
-      {showHeaderSearch && (
-        <div className="border-t border-white/10 bg-[#0f1420]" style={{ animation: "fadeIn .2s ease-out" }}>
-          <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
-            {/* Desktop/tablet: full search bar with category filter */}
-            <div className="hidden md:block">
+          {/* Inline search bar + categories — part of the header row itself, not below it */}
+          {showHeaderSearch ? (
+            <div className="hidden flex-1 md:block">
               <HeaderSearchBar />
             </div>
-            {/* Mobile: compact search input */}
-            <div className="md:hidden">
-              <form onSubmit={submit} className="flex items-center gap-2">
-                <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-                <input type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search companies, products, services..." className="h-10 flex-1 rounded-full border border-border bg-muted/50 px-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15" autoFocus />
-                <button type="submit" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"><ArrowRight className="h-4 w-4" /></button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+          ) : (
+            <>
+              {/* Compact mobile search on home top */}
+              <div className="flex flex-1 items-center justify-center md:hidden">
+                <div className="w-full max-w-xs">
+                  <MobileSearchBar />
+                </div>
+              </div>
+              {/* Spacer on desktop */}
+              <div className="hidden flex-1 md:block" />
+            </>
+          )}
 
-      {/* Mobile slide-down search overlay (alternative trigger) */}
-      {searchOpen && !showHeaderSearch && (
-        <div className="absolute inset-x-0 top-0 z-50 border-b border-border bg-background p-4 md:hidden">
-          <form onSubmit={submit} className="flex items-center gap-2">
-            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-            <input type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search..." className="h-10 flex-1 rounded-full border border-border bg-muted/50 px-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15" autoFocus />
-            <button type="submit" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"><ArrowRight className="h-4 w-4" /></button>
-            <button type="button" onClick={() => setSearchOpen(false)} className="inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted"><X className="h-4 w-4" /></button>
-          </form>
+          {/* Nav buttons — same row as logo and search */}
+          <nav className="hidden shrink-0 items-center gap-1 self-start pt-1 md:flex">
+            <ESuiteButton variant="pill" />
+            <ESuiteButton variant="icon" />
+            <ThemeToggle />
+            <button type="button" className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="Language">
+              <Globe className="h-4 w-4" /><span>EN</span>
+            </button>
+          </nav>
+
+          <button type="button" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-foreground hover:bg-muted md:hidden" onClick={() => setMobileOpen(v => !v)} aria-label={mobileOpen ? "Close" : "Open menu"} aria-expanded={mobileOpen}>
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
-      )}
+
+        {/* Mobile search input (when header search is shown) — still inside the header */}
+        {showHeaderSearch && (
+          <div className="pb-3 md:hidden">
+            <form onSubmit={submit} className="flex items-center gap-2">
+              <Search className="h-4 w-4 shrink-0 text-slate-400" />
+              <input type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search companies, products, services..." className="h-10 flex-1 rounded-full border border-white/10 bg-[#1a1f2e] px-4 text-sm text-white placeholder:text-slate-400 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20" autoFocus />
+              <button type="submit" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-600 text-white hover:bg-slate-500"><ArrowRight className="h-4 w-4" /></button>
+            </form>
+          </div>
+        )}
+      </div>
 
       {/* Mobile menu */}
       <div className={cn("border-t border-border bg-background md:hidden", mobileOpen ? "block" : "hidden")}>
