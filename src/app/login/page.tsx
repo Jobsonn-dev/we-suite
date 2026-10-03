@@ -45,75 +45,55 @@ export default function LoginPage() {
           </div>
 
           <div className="relative z-10 space-y-6">
-            {/* "Don't have an account?" text + Register/Signup buttons */}
+            {/* Registration cards — matching attached image design */}
             <div>
               <p className="mb-3 text-sm text-slate-400">
                 Don't have an account?{" "}
                 <span className="font-semibold text-cyan-400">Register / Signup</span>
               </p>
-              <div className="grid grid-cols-2 gap-3">
-                {/* Employee button — routes to register?type=employee */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* PEOPLE • ROLES card — routes to register?type=employee */}
                 <button
                   type="button"
                   onClick={() => goToRegister("employee")}
-                  className={cn(
-                    "group relative flex flex-col items-start gap-2 rounded-xl border p-4 transition-all duration-200",
-                    accountType === "employee"
-                      ? "border-cyan-500/40 bg-cyan-500/10 shadow-lg shadow-cyan-500/10"
-                      : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/20"
-                  )}
+                  className="group relative flex flex-col items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition-all duration-200 hover:border-cyan-500/30 hover:bg-white/[0.06]"
                 >
-                  <span className={cn(
-                    "inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
-                    accountType === "employee" ? "bg-cyan-500/20 text-cyan-400" : "bg-white/5 text-slate-400"
-                  )}>
-                    <User className="h-5 w-5" />
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/5 text-slate-400 transition-colors group-hover:bg-cyan-500/15 group-hover:text-cyan-400">
+                    <User className="h-6 w-6" />
                   </span>
-                  <div className="text-left">
-                    <p className={cn("text-sm font-semibold", accountType === "employee" ? "text-white" : "text-slate-300")}>
-                      Employee
+                  <div className="text-left space-y-1">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                      People • Roles
                     </p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      Job seeker / Professional
+                    <p className="text-base font-bold text-white">
+                      Employee / Employer
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      For individuals and people-centric roles.
                     </p>
                   </div>
-                  {accountType === "employee" && (
-                    <span className="absolute right-3 top-3 inline-flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500 text-cyan-950">
-                      <Check className="h-3 w-3" />
-                    </span>
-                  )}
                 </button>
 
-                {/* Employer button — routes to register?type=employer */}
+                {/* COMPANY • COMMERCE card — routes to register?type=employer */}
                 <button
                   type="button"
                   onClick={() => goToRegister("employer")}
-                  className={cn(
-                    "group relative flex flex-col items-start gap-2 rounded-xl border p-4 transition-all duration-200",
-                    accountType === "employer"
-                      ? "border-cyan-500/40 bg-cyan-500/10 shadow-lg shadow-cyan-500/10"
-                      : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/20"
-                  )}
+                  className="group relative flex flex-col items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition-all duration-200 hover:border-cyan-500/30 hover:bg-white/[0.06]"
                 >
-                  <span className={cn(
-                    "inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
-                    accountType === "employer" ? "bg-cyan-500/20 text-cyan-400" : "bg-white/5 text-slate-400"
-                  )}>
-                    <Building2 className="h-5 w-5" />
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/5 text-slate-400 transition-colors group-hover:bg-cyan-500/15 group-hover:text-cyan-400">
+                    <Building2 className="h-6 w-6" />
                   </span>
-                  <div className="text-left">
-                    <p className={cn("text-sm font-semibold", accountType === "employer" ? "text-white" : "text-slate-300")}>
-                      Employer
+                  <div className="text-left space-y-1">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                      Company • Commerce
                     </p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      Company / Organization
+                    <p className="text-base font-bold text-white">
+                      Business
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      For companies, brands and commerce.
                     </p>
                   </div>
-                  {accountType === "employer" && (
-                    <span className="absolute right-3 top-3 inline-flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500 text-cyan-950">
-                      <Check className="h-3 w-3" />
-                    </span>
-                  )}
                 </button>
               </div>
             </div>
