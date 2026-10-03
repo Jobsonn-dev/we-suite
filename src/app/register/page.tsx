@@ -32,8 +32,11 @@ export default function RegisterPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Demo: navigate to dashboard
-    window.location.href = "/dashboard";
+    // Route to verification page
+    const params = new URLSearchParams();
+    if (email) params.set("email", email);
+    if (phone) params.set("phone", phone);
+    window.location.href = `/register/verify${params.toString() ? `?${params.toString()}` : ""}`;
   }
 
   return (
