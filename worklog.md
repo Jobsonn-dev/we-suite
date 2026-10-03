@@ -527,3 +527,122 @@ Stage Summary:
 - Dark theme throughout with `bg-[#131826]` cards, `border-white/5` borders, cyan-400 accents, uppercase section headers
 - Stagger fadeInUp animation on each section for premium feel
 - All discovery data sourced from existing backend (no schema/API changes)
+
+---
+Task ID: 12
+Agent: Main (Z.ai Code) — Profile Account Section (Post-OTP Verification Flow)
+Task: After OTP verify & continue, route to next page (success), then on "Continue to WEBUOS" route to Profile Account page (Google-manage-account-style). The Profile Account shows communication details as VERIFIED but business details NOT yet verified (need to complete) — referencing PPT steps 8-15 (GSTN, business details, industry hierarchy, bank details, vendor validation)
+
+Work Log:
+- User provided 2 images + 1 PowerPoint (Registration Manual.pptx):
+  - `pasted_image_1791058592016.png` (934x588): WEBUOS account creation success page — green checkmark + "Account created successfully" + "Welcome to WEBUOS. Your account is ready." + "✦ EXPLORE THE THREE ECOSYSTEMS ✦" amber header + 3 ecosystem cards (Industrial 01 amber, Technology & AI 02 blue, Business Services 03 purple) + "Continue to WEBUOS →" white button
+  - `pasted_image_1791058909980.png` (1879x813): Google Account dashboard dark mode — header with Google Account logo + help/apps/profile icons; left sidebar with 10 nav items (Home, Payments & subscriptions, Personal info, Security & sign-in, Google password, Linked apps, Data & privacy, People & sharing, Family, Account storage); main content with large profile picture + name + email + search bar + 5 quick access buttons + critical red security alert banner
+  - `Registration Manual.pptx` (17 slides): Registration process flow — Step 1-7 (user registration + OTP verify), Step 8-9 (GSTN submission — auto-fetch company info: GST No, Company Name, Company Code, Company Type, Listing Date, PAN, Tax Payer Type, MSME Reg, Established Year, IEC, Industrial Scale + Bill-to/Shipping Address), Step 10 (Company business details — Nature of Business checkboxes, Geographical Service Area, Supply Capabilities, Industries Sector), Step 11-12 (Industry Hierarchy — Main-core / Category / Sub-Category 3-column selection), Step 13 (Bank Details — IFSC, Account No, Swift Code, Bank Name, District, Address, Account Type, IBAN, City, MICR No, Branch, State, Company Name, Confirm Account No), Step 14 (Legal Documents — MSME certificate, IEC, cancelled cheque, PAN card, GST certificate), Step 15 (Vendor Dashboard — wait for admin approval)
+
+**Change 1 — Updated `/register/verify/page.tsx`** (handleVerify function):
+- Changed from `window.location.href = "/dashboard"` to route to `/register/success?email=...&phone=...` (preserves email+phone params from URL)
+- The "Verify & continue" button now correctly navigates to the new success page
+
+**Change 2 — Created `/register/success/page.tsx`** (new file, ~190 lines):
+- Exact replica of image 1:
+  - Dark navy background (#0a0e1a) with cyan + purple glow accents + grid pattern
+  - Top bar: WEBUOS logo (left) + "Back to home" link (right)
+  - Centered content with fadeIn animation (translate-y-4 → 0, opacity 0 → 100, 700ms)
+  - **Bright green success circle** (h-24 w-24, bg-emerald-500, shadow glow) with white Check icon (strokeWidth 3) + animate-ping outer ring
+  - **"Account created successfully"** heading (text-4xl/5xl, bold)
+  - **"Welcome to WEBUOS. Your account is ready."** subtitle (slate-400)
+  - **"✦ EXPLORE THE THREE ECOSYSTEMS ✦"** amber header (text-amber-400, uppercase, tracking-[0.25em]) with Sparkles icons on both sides
+  - **3 ecosystem cards** in grid (1 col mobile, 3 col sm+):
+    - Industrial (01 amber, Factory icon, "Build • Produce • Operate", links to /business-taxonomy/industrial)
+    - Technology & AI (02 blue, Cpu icon, "Digital • Data • Intelligence", links to /business-taxonomy/technology-ai)
+    - Business Services (03 purple, ShoppingBag icon, "People • Capital • Services", links to /business-taxonomy/business-services)
+    - Each card: hover -translate-y-1, border color transitions, group-hover scale on icon, "Explore →" link with arrow translate
+    - Staggered cardFadeIn animation (120ms × idx)
+  - **"Continue to WEBUOS →"** button (h-14, bg-white, dark text, rounded-2xl, shadow-lg, hover bg-slate-100) — routes to `/account?email=...&phone=...`
+  - Footer note: "Your communication details (email & phone) are verified. You'll complete business verification next."
+
+**Change 3 — Created `/account/page.tsx`** (server entry, ~20 lines):
+- Wraps `<AccountDashboard />` in `<Suspense>` with loading fallback (because it uses `useSearchParams`)
+- Sets metadata: "Profile Account — WEBUOS"
+
+**Change 4 — Created `/components/account/account-dashboard.tsx`** (new file, ~540 lines):
+- Google-manage-account-style dashboard with WEBUOS branding, structured exactly like image 2:
+
+**Top header bar:**
+- Sticky (top-0 z-40), dark bg with backdrop-blur
+- Left: WEBUOS logo (sm size) + "Profile Account" text (hidden on mobile)
+- Right: Help (HelpCircle), Apps (Grid3x3), Notifications (Bell with amber dot), Profile avatar (gradient cyan→blue, "WT" initials, ring-2 ring-white/20)
+
+**Left sidebar (hidden on mobile, w-64 on lg+):**
+- Sticky, 12 nav items in a vertical list, each with colored icon + label
+- Items: Home (blue), Personal info (emerald), Communication (emerald + green Check), Business profile (amber + yellow dot), GSTN & Company (amber + yellow dot), Industry hierarchy (amber + yellow dot), Bank details (amber + yellow dot), Legal documents (amber + yellow dot), Security & sign-in (blue), Data & privacy (orange), People & sharing (pink), Account storage (purple)
+- Active item: bg-cyan-500/10 + ring-1 ring-cyan-500/30 + bold white text
+- Inactive: hover:bg-white/5
+- Bottom: "Back to WEBUOS" link (LogOut icon)
+
+**Main content:**
+- Profile section: large avatar (h-24 w-24 gradient cyan→blue, "WT" initials, ring-4 ring-white/10) with edit (Settings) button overlay + name "WEBUOS Tech & AI Services" + email "webuostech@gmail.com" + green "Communication verified" badge (border-emerald + bg-emerald + Check icon)
+- Search bar: "Search Profile Account" placeholder, rounded-full, magnifying glass icon left
+- 8 Quick access pills: Email (emerald), Phone (emerald), Business profile (amber), GSTN details (amber), Bank details (amber), Documents (amber), Activity (blue), Security (blue)
+- **Amber verification alert banner** (border-amber + gradient bg):
+  - AlertTriangle icon in amber circle
+  - "Complete your business verification" heading
+  - "Your communication details are verified, but your business profile is incomplete. Complete the remaining 5 steps to unlock the vendor dashboard and start listing on WEBUOS." description
+  - Progress bar: 1/6 steps (16%), gradient amber-500 → amber-400
+  - "Start verification →" primary amber button + "View requirements" secondary button
+  - alertFadeIn animation
+- **Communication Details section** (border-emerald + bg-emerald/[0.04]):
+  - Header with Mail icon + "COMMUNICATION DETAILS" + green "VERIFIED" badge
+  - 2-column grid: Email (left) + Phone (right), each with icon + label + value + "Verified via OTP at sign-up" subtext + green Check icon
+- **Business verification section:**
+  - "Business verification" heading + subtitle + amber "5 pending" badge
+  - 6 step cards (one VERIFIED, 5 NOT STARTED), each with:
+    - Icon + step number + status badge (Verified / Not started)
+    - Title + subtitle
+    - Field chips list (e.g., "GST Number", "Company name", "PAN", "Tax payer type", "Company address" for GSTN step)
+    - CTA button: "View details" (verified) or "Start GSTN verification / Add business details / Select hierarchy / Add bank details / Upload documents" (amber, dark text)
+    - StepCard staggered stepFadeIn animation (80ms × idx)
+- 3 help cards at bottom: Registration guide (blue), Privacy policy (orange), WEBUOS ecosystem (cyan, links to /business-taxonomy)
+- Copyright footer
+
+**Mobile support (MobileSectionNav sub-component):**
+- Fixed bottom-left floating button (lg:hidden) shows active section name + icon
+- Click opens bottom-sheet drawer with 2-col grid of all 12 nav items
+- Tap a section to switch activeNav and close drawer
+
+**PPT step mapping (in VERIFY_STEPS array):**
+- Step 7 — Communication details — VERIFIED (email + phone OTP)
+- Step 8-9 — GSTN & Company info — NOT STARTED (GST Number, Company name, PAN, Tax payer type, Company address)
+- Step 10 — Company business details — NOT STARTED (Nature of business, Geographical service area, Supply capabilities, Industries sector)
+- Step 11-12 — Industry hierarchy — NOT STARTED (Main-core, Category, Sub-category)
+- Step 13 — Bank details — NOT STARTED (IFSC code, Account number, Bank name, Branch, Account type)
+- Step 14-15 — Legal documents & vendor validation — NOT STARTED (MSME certificate, IEC registration, Cancelled cheque, PAN card, GST certificate)
+
+**Verification:**
+- `bun run lint`: 0 errors, 0 warnings
+- All routes return HTTP 200: /register/verify, /register/success, /account
+- Agent Browser verified end-to-end flow:
+  - Opened `/register/verify?email=test@webuos.com&phone=+919876543210`
+  - Filled 6-digit email OTP (1s) → email card turned green + "Verified" badge
+  - Filled 6-digit phone OTP (2s) → phone card turned green + "Verified" badge
+  - Button changed from "Enter both codes to continue" (disabled) → "Verify & continue" (enabled)
+  - Clicked "Verify & continue" → navigated to `/register/success?email=test@webuos.com&phone=+919876543210`
+  - Clicked "Continue to WEBUOS" → navigated to `/account?email=test@webuos.com&phone=+919876543210`
+- VLM verified success page matches image 1: dark bg, bright green checkmark, "Account created successfully", "Welcome to WEBUOS. Your account is ready.", "EXPLORE THE THREE ECOSYSTEMS" amber header, 3 cards (Industrial 01 amber, Technology & AI 02 blue, Business Services 03 purple), "Continue to WEBUOS →" white button ✓
+- VLM verified account dashboard matches image 2 (Google account layout): dark header with logo + help/apps/notifications/profile icons, left sidebar with 12 nav items (Communication has green check, Business items have yellow dots), profile section with avatar + name + email + "Communication verified" badge, search bar, 8 quick access pills, amber verification alert banner with progress bar + Start verification button, green Communication Details card (email + phone verified), Business verification section with 6 step cards (1 verified + 5 not started), help cards ✓
+- Mobile responsive verified (375x812):
+  - Success page: cards stack vertically, all text readable, button touch-friendly ✓
+  - Account page: sidebar hidden, mobile section nav button visible at bottom-left, opens drawer with all 12 nav items in 2-col grid ✓
+- Dev server log: no errors, all routes 200, ~50ms render time
+- No browser console errors
+
+Stage Summary:
+- Complete post-OTP-verification flow implemented: /register/verify → /register/success → /account
+- Success page is an exact visual match to image 1 (green checkmark + 3 ecosystem cards + Continue button)
+- Profile Account dashboard follows Google-manage-account layout (image 2): header + left sidebar nav + main content with profile section, search, quick access, alert banner, verified communication details, pending business verification steps
+- Communication details (email + phone) shown as VERIFIED (green, with checkmarks) — because OTP was just verified
+- Business verification shows 5 PPT steps as NOT STARTED (amber, with Start buttons): GSTN, Business details, Industry Hierarchy, Bank Details, Legal Documents
+- Each step card lists the specific fields required (extracted from PPT slides 8-15)
+- Progress bar shows 1/6 (16%) complete — only communication verified
+- Mobile responsive: sidebar collapses to a floating bottom-left button that opens a section drawer
+- Fully functional navigation, animations (fadeIn, cardFadeIn, stepFadeIn, alertFadeIn), and styled with the existing WEBUOS dark theme + amber/emerald/cyan accent colors

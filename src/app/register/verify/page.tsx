@@ -128,8 +128,11 @@ export default function VerifyPage() {
   }
 
   function handleVerify() {
-    // Demo: navigate to dashboard
-    window.location.href = "/dashboard";
+    // Route to success page after OTP verification
+    const params = new URLSearchParams();
+    if (rawEmail) params.set("email", rawEmail);
+    if (rawPhone) params.set("phone", rawPhone);
+    window.location.href = `/register/success${params.toString() ? `?${params.toString()}` : ""}`;
   }
 
   const bothVerified = emailVerified && phoneVerified;
