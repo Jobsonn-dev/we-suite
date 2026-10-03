@@ -47,8 +47,16 @@ export default function RegisterPage() {
           <div className="pointer-events-none absolute inset-0 bg-grid opacity-[0.05]" />
 
           <div className="relative z-10 flex items-center justify-between">
-            <Link href="/" className="text-sm font-medium text-slate-400 hover:text-white inline-flex items-center gap-1.5 transition-colors">
-              <ArrowLeft className="h-4 w-4" /> Back to WEBUOS
+            <Link href="/login" className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3 transition-all duration-200 hover:border-cyan-500/30 hover:bg-white/[0.06]">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-slate-400 transition-colors group-hover:bg-cyan-500/15 group-hover:text-cyan-400">
+                <ArrowLeft className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                  Return
+                </p>
+                <p className="text-sm font-bold text-white">Back to Sign In</p>
+              </div>
             </Link>
           </div>
 
@@ -269,43 +277,12 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Return to login — same card style */}
-          <div className="relative z-10">
-            <Link
-              href="/login"
-              className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 transition-all duration-200 hover:border-cyan-500/30 hover:bg-white/[0.06]"
-            >
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-slate-400 transition-colors group-hover:bg-cyan-500/15 group-hover:text-cyan-400">
-                <ArrowLeft className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
-                  Return
-                </p>
-                <p className="text-sm font-bold text-white">Back to Login</p>
-              </div>
-            </Link>
-          </div>
+          {/* No duplicate Back to Login here — it's at the top now */}
         </aside>
 
-        {/* Right form panel — top-aligned, wider */}
+        {/* Right form panel — top-aligned, wider, full width */}
         <main className="flex flex-1 flex-col bg-background px-4 pt-8 sm:px-8 lg:px-12 lg:pt-12">
-          <div className="w-full max-w-lg">
-            {/* Back to Login card */}
-            <Link
-              href="/login"
-              className="group mb-6 flex items-center gap-3 rounded-2xl border border-border bg-muted/30 px-5 py-4 transition-all duration-200 hover:border-primary/30 hover:bg-muted/50"
-            >
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors group-hover:bg-primary/10 group-hover:text-primary">
-                <ArrowLeft className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
-                  Return
-                </p>
-                <p className="text-sm font-bold text-foreground">Back to Login</p>
-              </div>
-            </Link>
+          <div className="w-full">
 
             <div className="mb-8 text-center lg:text-left">
               <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
