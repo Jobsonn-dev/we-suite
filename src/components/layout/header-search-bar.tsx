@@ -190,8 +190,8 @@ export function HeaderSearchBar() {
         </div>
       </form>
 
-      {/* Category filter bar — matches target image */}
-      <div className="mt-1.5 flex items-center gap-1 overflow-x-auto rounded-full border border-white/10 bg-[#1a1f2e] p-1 scrollbar-thin">
+      {/* Category filter bar — floating pills, no container background */}
+      <div className="mt-1.5 flex items-center gap-1 overflow-x-auto p-1 scrollbar-thin">
         {CATEGORIES.map((cat) => {
           const Icon = cat.icon;
           const isActive = category === cat.key;
