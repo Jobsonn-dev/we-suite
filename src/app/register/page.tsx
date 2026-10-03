@@ -288,8 +288,8 @@ export default function RegisterPage() {
           </div>
         </aside>
 
-        {/* Right form panel */}
-        <main className="flex flex-1 items-center justify-center bg-background px-4 py-10 sm:px-6 lg:px-8">
+        {/* Right form panel — top-aligned, not centered */}
+        <main className="flex flex-1 flex-col bg-background px-4 pt-8 sm:px-6 lg:px-8 lg:pt-12">
           <div className="w-full max-w-md">
             {/* Mobile back link + account type */}
             <div className="mb-6 flex items-center justify-between">
@@ -334,47 +334,25 @@ export default function RegisterPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Row 1: Full Name + Company/Organization Name (2 columns) */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {/* Full Name */}
-                <div className="space-y-1.5">
-                  <label htmlFor="name" className="text-sm font-medium text-foreground">Full Name</label>
-                  <div className="relative">
-                    <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      id="name"
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="John Doe"
-                      className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
-                    />
-                  </div>
-                </div>
-
-                {/* Company / Organization Name */}
-                <div className="space-y-1.5">
-                  <label htmlFor="companyName" className="text-sm font-medium text-foreground">
-                    {accountType === "employee" ? "Company / Organization Name" : "Company / Organization Name"}
-                  </label>
-                  <div className="relative">
-                    <Building2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      id="companyName"
-                      type="text"
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="Acme Industries"
-                      className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
-                    />
-                  </div>
+              {/* Row 1: Full Name (full width) */}
+              <div className="space-y-1.5">
+                <label htmlFor="name" className="text-sm font-medium text-foreground">Full Name</label>
+                <div className="relative">
+                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    id="name"
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="John Doe"
+                    className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                  />
                 </div>
               </div>
 
-              {/* Row 2: Email + Phone (2 columns) */}
+              {/* Row 2: Email + Phone No (2 columns) */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {/* Email */}
                 <div className="space-y-1.5">
                   <label htmlFor="email" className="text-sm font-medium text-foreground">Email</label>
                   <div className="relative">
@@ -391,7 +369,6 @@ export default function RegisterPage() {
                   </div>
                 </div>
 
-                {/* Phone */}
                 <div className="space-y-1.5">
                   <label htmlFor="phone" className="text-sm font-medium text-foreground">Phone No</label>
                   <div className="relative">
@@ -408,9 +385,24 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Row 3: Password + Confirm Password (2 columns) */}
+              {/* Row 3: Company / Organization Name (full width) */}
+              <div className="space-y-1.5">
+                <label htmlFor="companyName" className="text-sm font-medium text-foreground">Company / Organization Name</label>
+                <div className="relative">
+                  <Building2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    id="companyName"
+                    type="text"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="Acme Industries"
+                    className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                  />
+                </div>
+              </div>
+
+              {/* Row 4: Password + Confirm Password (2 columns) */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {/* Password */}
                 <div className="space-y-1.5">
                   <label htmlFor="password" className="text-sm font-medium text-foreground">Password</label>
                   <div className="relative">
@@ -434,7 +426,6 @@ export default function RegisterPage() {
                   </div>
                 </div>
 
-                {/* Confirm Password */}
                 <div className="space-y-1.5">
                   <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">Confirm Password</label>
                   <div className="relative">
