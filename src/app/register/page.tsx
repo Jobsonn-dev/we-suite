@@ -288,41 +288,24 @@ export default function RegisterPage() {
           </div>
         </aside>
 
-        {/* Right form panel — top-aligned, not centered */}
-        <main className="flex flex-1 flex-col bg-background px-4 pt-8 sm:px-6 lg:px-8 lg:pt-12">
-          <div className="w-full max-w-md">
-            {/* Mobile back link + account type */}
-            <div className="mb-6 flex items-center justify-between">
-              <Link href="/" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground lg:hidden">
-                <ArrowLeft className="h-4 w-4" /> Back to WEBUOS
-              </Link>
-              <div className="ml-auto flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setAccountType("employee")}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
-                    accountType === "employee"
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <User className="h-3.5 w-3.5" /> Employee
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAccountType("employer")}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
-                    accountType === "employer"
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <Building2 className="h-3.5 w-3.5" /> Employer
-                </button>
+        {/* Right form panel — top-aligned, wider */}
+        <main className="flex flex-1 flex-col bg-background px-4 pt-8 sm:px-8 lg:px-12 lg:pt-12">
+          <div className="w-full max-w-lg">
+            {/* Back to Login card */}
+            <Link
+              href="/login"
+              className="group mb-6 flex items-center gap-3 rounded-2xl border border-border bg-muted/30 px-5 py-4 transition-all duration-200 hover:border-primary/30 hover:bg-muted/50"
+            >
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors group-hover:bg-primary/10 group-hover:text-primary">
+                <ArrowLeft className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                  Return
+                </p>
+                <p className="text-sm font-bold text-foreground">Back to Login</p>
               </div>
-            </div>
+            </Link>
 
             <div className="mb-8 text-center lg:text-left">
               <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -457,6 +440,24 @@ export default function RegisterPage() {
                   After registration you'll verify your email and phone with a one-time code.
                 </p>
               </div>
+
+              {/* Terms & Conditions checkbox */}
+              <label className="flex items-start gap-2.5 cursor-pointer pt-1">
+                <input
+                  type="checkbox"
+                  required
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-border"
+                />
+                <span className="text-sm text-muted-foreground">
+                  I agree to the{" "}
+                  <span className="font-medium text-primary hover:underline cursor-pointer">Terms &amp; Conditions</span>
+                  {" "}and{" "}
+                  <span className="font-medium text-primary hover:underline cursor-pointer">Privacy Policy</span>
+                  {" "}of WEBUOS. I understand that my business information will be indexed in the global business discovery platform and may be visible to buyers, suppliers, and partners worldwide.
+                </span>
+              </label>
 
               {/* Submit */}
               <button
