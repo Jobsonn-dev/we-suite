@@ -153,6 +153,17 @@ export interface SearchFacets {
   verified: { verified: number; claimed: number; registered: number };
 }
 
+export interface DiscoveryData {
+  related_companies: SearchResult[];
+  similar_businesses: SearchResult[];
+  nearby_businesses: SearchResult[];
+  trending_searches: string[];
+  related_industries: { name: string; count: number }[];
+  recommended_categories: { name: string; count: number }[];
+  knowledge_panel: SearchResult | null;
+  explore_more: { label: string; query: string; icon: string }[];
+}
+
 export interface SearchResponse {
   query: string;
   interpreted_query: InterpretedQuery;
@@ -168,6 +179,7 @@ export interface SearchResponse {
   results: SearchResult[];
   facets: SearchFacets;
   related_searches: string[];
+  discovery: DiscoveryData;
 }
 
 // ------------------------------------------------------------

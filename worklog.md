@@ -450,3 +450,80 @@ Stage Summary:
 - Category filter bar: dark `#1a1f2e` background, active "All" tab is white `bg-white text-slate-900` (inverted)
 - Header Row 2 container: dark `#0f1420` background
 - Compact spacing (py-2.5, mt-1.5) for a tighter layout matching the target
+
+---
+Task ID: 3-4
+Agent: Main (Z.ai Code) — Search 60/40 Layout + Discovery Panel
+Task: Upgrade the WEBUOS search results page to a premium 60/40 layout with a sticky Intelligent Discovery Panel on the right
+
+Work Log:
+- Pre-work: Read prior worklog (Tasks 1–11) — confirmed the search page (`/search`), `search-client.tsx`, and `lib/search/server.ts` already produce a `discovery` payload (knowledge_panel, related_companies, similar_businesses, nearby_businesses, trending_searches, related_industries, recommended_categories, explore_more). No backend changes were needed.
+- Inspected `src/lib/search-utils.ts` for the `DiscoveryData` interface and confirmed field shapes (`knowledge_panel: SearchResult | null`, `related_companies: SearchResult[]`, etc.).
+- Inspected `src/components/search/results/result-card.tsx` and the existing `company-result-card.tsx` to match dark-theme styling (`bg-[#131826]`, `border-white/5`, cyan accents, `BadgeCheck`, `Star`).
+
+**Created `src/components/search/discovery-panel.tsx`** (new file, ~330 lines):
+- Exports `DiscoveryPanel` — a premium dark-themed Intelligent Discovery Panel that consumes the `DiscoveryData` payload.
+- **Business Knowledge Panel** (top, only when `knowledge_panel.type === "company"`):
+  - Premium card: `bg-gradient-to-br from-[#131826] to-[#0f1422]` with `border-cyan-500/20` + `shadow-[0_0_30px_rgba(34,211,238,0.08)]` subtle glow
+  - Initials avatar in cyan/blue gradient ring + verification badge next to company name
+  - Rating row (Star + rating + review count)
+  - Meta rows: Industry (Network icon), Location (MapPin icon), Website (Globe icon, clickable external link)
+  - CTA row: full-width "View Company" (cyan) + icon-only "Contact" button
+  - Subtle background blur accents (top-right cyan glow, bottom-left blue glow)
+- **Related Companies** section (max 5): compact avatar + name + verified badge + business_type · location, navigates to `/business/[slug]`
+- **Similar Businesses** section (max 5): same compact layout
+- **Nearby Businesses** section (max 5): city/country shown prominently in cyan + business_type appended
+- **Trending Searches** section: clickable chips → `/search?q=...`
+- **Related Industries** section: chips with count badges → `/search?q=...&type=industry`
+- **Explore More** section: 2-column cards with Lucide icon + label, parsed the backend's pseudo-format `"<query> type=<type>"` via regex into proper `/search?q=...&type=...` URLs
+- **Design system**:
+  - Dark theme: `bg-[#131826]` cards, `border-white/5` borders
+  - Cyan accents for headers/interactive elements
+  - Section headers: `text-[11px] font-bold uppercase tracking-wider text-cyan-400/60` with icon prefix
+  - Each section has a `border-white/5` divider
+  - Hover effects: `group-hover` arrow translate, cyan border/text transitions
+  - Stagger animation: each section animates with `discoveryFadeIn .45s ease-out {60ms × index}` (fade + translateY)
+  - Custom keyframes via `style jsx`
+  - `scrollbar-thin` (defined in globals.css) used on the parent scroll container
+  - Returns `null` if all discovery sections are empty
+- Type narrowing: filtered each `SearchResult[]` to `Extract<SearchResult, { type: "company" }>` for safe access to company fields
+- Icon map: Lucide `Building2`, `Package`, `Wrench`, `BarChart3`, `Cpu`, `MapPin`, `Network`, `TrendingUp`, `Sparkles`, `Compass` → mapped from string names returned by backend
+
+**Updated `src/components/search/search-client.tsx`**:
+- Added `initialDiscovery: DiscoveryData` to the `Props` interface
+- Switched the type imports for `DiscoveryData` from `@/lib/search-utils` (kept existing `Facets`, `InterpretedQuery`, `SearchResult`, `SearchParams`, `SearchResponse`, `ResultType` imports aligned)
+- Imported the new `DiscoveryPanel` component
+- Restructured the page body into a **60/40 grid**: `grid grid-cols-1 gap-6 lg:grid-cols-[1fr,400px]`
+  - **Left column (60%)**: All existing primary content unchanged — quick stats bar, active filter chips, AI Overview panel, result cards (with fadeInUp stagger), pagination, related searches
+  - **Right column (40%)**: `<aside className="hidden lg:block">` wrapping a sticky scroll container (`sticky top-[180px] max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin pr-1`) holding the new `<DiscoveryPanel discovery={initialDiscovery} query={query} />`
+  - Hidden on mobile/tablet, shown on lg+ breakpoint
+- Preserved all existing animations and behavior (URL sync, fetch-on-filter-change, etc.)
+
+**Updated `src/app/search/page.tsx`**:
+- Passed `initialDiscovery={data.discovery}` to the `<SearchClient />` instance (alongside the existing props)
+
+**Verification:**
+- `bun run lint`: 0 errors, 0 warnings
+- `curl -s "http://localhost:3000/search?q=ai"` → HTTP 200, response size ~230 KB, render time ~150 ms
+- Confirmed all 6 discovery section headings render in the server-rendered HTML for `?q=manufacturing`:
+  - "Related Companies" ✓
+  - "Similar Businesses" ✓
+  - "Nearby Businesses" ✓
+  - "Trending Searches" ✓
+  - "Related Industries" ✓
+  - "Explore More" ✓
+- Confirmed knowledge panel renders (1× `bg-gradient-to-br from-[#131826]` + 1× `shadow-[0_0_30px_rgba(34,211,238,0.08)]` glow signature) for `?q=AI`
+- Confirmed grid layout container class `lg:grid-cols-[1fr,400px]` is present in the HTML
+- Confirmed `discoveryFadeIn` keyframes are emitted
+- No new packages installed; only existing imports (`lucide-react`, `next/link`, `cn` from `@/lib/utils`) used
+- Did NOT modify `src/lib/search/server.ts`, `src/lib/search-utils.ts`, header components, or result-card components — as required
+- Dev server log shows no errors/warnings after the changes
+
+Stage Summary:
+- Search results page upgraded from full-width single-column to premium **60/40 grid layout**
+- Left (60%): all existing primary results content (stats bar, filter chips, AI Overview, result cards, pagination, related searches) — unchanged behavior
+- Right (40%): new sticky Intelligent Discovery Panel (`sticky top-[180px]`, hidden on mobile/tablet, `scrollbar-thin` for compact scrollable area)
+- Discovery Panel includes 7 distinct sections: Business Knowledge Panel (premium glow card), Related Companies, Similar Businesses, Nearby Businesses, Trending Searches (chips), Related Industries (chips with counts), Explore More (icon+label grid)
+- Dark theme throughout with `bg-[#131826]` cards, `border-white/5` borders, cyan-400 accents, uppercase section headers
+- Stagger fadeInUp animation on each section for premium feel
+- All discovery data sourced from existing backend (no schema/API changes)

@@ -23,6 +23,7 @@ import {
   tokenize,
   VALID_ENTITY_TYPES,
   VALID_SORTS,
+  type DiscoveryData,
   type EntityType,
   type InterpretedQuery,
   type SearchResponse,
@@ -601,6 +602,84 @@ export async function runSearch(params: SearchParams): Promise<SearchResponse> {
   const topResults = sorted.slice(0, 5).map((r) => ({ name: r.name, type: r.type }));
   const related_searches = buildRelatedSearches(interpreted, topResults);
 
+  // ----------------------------------------------------------
+  // Build Discovery Data (40% panel)
+  // ----------------------------------------------------------
+
+  // Knowledge panel — if the top result is a company with high relevance, use it
+  const knowledgePanel = pageResults.find(r => r.type === "company" && r.relevance_score > 70) ?? null;
+
+  // Related companies — same industry/category as top results, not in current page
+  const topIndustries = new Set(pageResults.filter(r => r.type === "company").map(r => r.industry).filter(Boolean));
+  const topCategories = new Set(pageResults.filter(r => r.type === "company").map(r => r.category).filter(Boolean));
+  const currentPageIds = new Set(pageResults.map(r => r.id));
+
+  const relatedCompanies = sorted
+    .filter(r => r.type === "company" && !currentPageIds.has(r.id) &&
+      (r.industry && topIndustries.has(r.industry) || r.category && topCategories.has(r.category)))
+    .slice(0, 5);
+
+  // Similar businesses — same business_type as top companies
+  const topBusinessTypes = new Set(pageResults.filter(r => r.type === "company").map(r => r.business_type).filter(Boolean));
+  const similarBusinesses = sorted
+    .filter(r => r.type === "company" && !currentPageIds.has(r.id) && !relatedCompanies.includes(r) &&
+      r.business_type && topBusinessTypes.has(r.business_type))
+    .slice(0, 5);
+
+  // Nearby businesses — same city/country as top results
+  const topCities = new Set(pageResults.filter(r => r.city).map(r => r.city));
+  const topCountries = new Set(pageResults.filter(r => r.country).map(r => r.country));
+  const nearbyBusinesses = sorted
+    .filter(r => r.type === "company" && !currentPageIds.has(r.id) && !relatedCompanies.includes(r) && !similarBusinesses.includes(r) &&
+      ((r.city && topCities.has(r.city)) || (r.country && topCountries.has(r.country))))
+    .slice(0, 5);
+
+  // Trending searches — based on the interpreted query
+  const trendingSearches: string[] = [
+    `${query} manufacturers`,
+    `${query} suppliers`,
+    `${query} companies in India`,
+    `best ${query} companies`,
+    `${query} near me`,
+  ].filter(s => !s.includes("undefined")).slice(0, 5);
+
+  // Related industries
+  const allIndustries = await db.industry.findMany({
+    where: interpreted.industry ? { name: { contains: interpreted.industry } } : {},
+    select: { name: true, companyCount: true },
+    take: 5,
+    orderBy: { companyCount: "desc" },
+  });
+  const relatedIndustries = allIndustries.map(i => ({ name: i.name, count: i.companyCount }));
+
+  // Recommended categories from taxonomy
+  const { ecosystems: allEcosystems } = await import("@/data/taxonomy");
+  const queryLower = query.toLowerCase();
+  const matchingCategories = allEcosystems
+    .flatMap(e => e.categories.flatMap(s => s.categories))
+    .filter(c => c.name.toLowerCase().includes(queryLower) || c.products.some(p => p.name.toLowerCase().includes(queryLower)))
+    .slice(0, 5)
+    .map(c => ({ name: c.name, count: c.businessProfiles.length }));
+
+  // Explore more cards
+  const exploreMore = [
+    { label: "Companies", query: `${query} type=company`, icon: "Building2" },
+    { label: "Products", query: `${query} type=product`, icon: "Package" },
+    { label: "Services", query: `${query} type=service`, icon: "Wrench" },
+    { label: "Industries", query: `${query} type=industry`, icon: "BarChart3" },
+  ];
+
+  const discovery: DiscoveryData = {
+    related_companies: relatedCompanies,
+    similar_businesses: similarBusinesses,
+    nearby_businesses: nearbyBusinesses,
+    trending_searches: trendingSearches,
+    related_industries: relatedIndustries,
+    recommended_categories: matchingCategories,
+    knowledge_panel: knowledgePanel,
+    explore_more: exploreMore,
+  };
+
   return {
     query,
     interpreted_query: interpreted,
@@ -616,5 +695,6 @@ export async function runSearch(params: SearchParams): Promise<SearchResponse> {
     results: pageResults,
     facets,
     related_searches,
+    discovery,
   };
 }

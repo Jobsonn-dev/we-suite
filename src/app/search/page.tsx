@@ -104,6 +104,7 @@ export default async function SearchPage({
         facets={data.facets as never}
         totalPages={data.total_pages}
         total={data.total}
+        initialDiscovery={data.discovery}
       />
     </PageShell>
   );

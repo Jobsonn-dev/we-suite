@@ -14,9 +14,11 @@ import { ResultCard } from "@/components/search/results/result-card";
 import { SearchPagination } from "@/components/search/search-pagination";
 import { EmptyState } from "@/components/search/empty-state";
 import { LoadingState } from "@/components/search/loading-state";
+import { DiscoveryPanel } from "@/components/search/discovery-panel";
 import {
   Facets, InterpretedQuery, SearchResult, SearchParams, SearchResponse, ResultType,
-} from "@/lib/search/server";
+  DiscoveryData,
+} from "@/lib/search-utils";
 
 interface Props {
   initialQuery: string;
@@ -27,6 +29,7 @@ interface Props {
   facets: Facets;
   totalPages: number;
   total: number;
+  initialDiscovery: DiscoveryData;
 }
 
 function buildUrl(q: string, params: Record<string, string | number | undefined>): string {
@@ -56,6 +59,7 @@ export function SearchClient({
   facets: initialFacets,
   totalPages: initialTotalPages,
   total: initialTotal,
+  initialDiscovery,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -263,104 +267,118 @@ export function SearchClient({
   return (
     <div className="min-h-screen bg-[#0a0e1a] text-white">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* Quick stats bar */}
-        <div ref={resultsTopRef} className="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm">
-          <div className="text-slate-400">
-            {!loading && (
-              <span>
-                <span className="font-semibold text-white">{total.toLocaleString()}</span>{" "}
-                {total === 1 ? "result" : "results"}
-                {query && <> for &ldquo;<span className="font-medium text-cyan-400">{query}</span>&rdquo;</>}
-                {interpreted.city && <> in <span className="font-medium text-white">{interpreted.city}</span></>}
-              </span>
-            )}
-            {loading && <span className="italic text-slate-500">Searching…</span>}
-          </div>
-          <div className="flex items-center gap-2">
-            {interpreted.intent !== "General" && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-medium text-cyan-400">
-                <Sparkles className="h-3 w-3" /> {interpreted.intent}
-              </span>
-            )}
-            <span className="hidden text-xs text-slate-500 sm:inline">Page {filters.page ?? 1} of {totalPages}</span>
-          </div>
-        </div>
-
-        {/* Active filter chips */}
-        {activeFilters.length > 0 && (
-          <div className="mb-4 flex flex-wrap items-center gap-2">
-            {activeFilters.map((f) => (
-              <button
-                key={f.key}
-                type="button"
-                onClick={() => removeFilter(f.param)}
-                className="group inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-300 transition-all hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-400"
-              >
-                <span className="text-slate-500">{f.label}:</span>
-                <span>{f.value}</span>
-                <X className="h-3 w-3 text-slate-500 transition-colors group-hover:text-red-400" />
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={onResetAll}
-              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-red-400 transition-colors hover:text-red-300"
-            >
-              <X className="h-3 w-3" /> Clear all
-            </button>
-          </div>
-        )}
-
-        {/* AI Overview panel */}
-        <AiAnswerPanel query={query} interpreted={interpreted} results={results} />
-
-        {/* Results / Loading / Empty */}
-        {loading ? (
-          <LoadingState count={5} />
-        ) : results.length === 0 ? (
-          <EmptyState query={query} relatedSearches={related_searches} onReset={onResetAll} />
-        ) : (
-          <div className="space-y-3">
-            {results.map((r, idx) => (
-              <div
-                key={`${r.type}-${r.id}-${idx}`}
-                style={{ animation: `fadeInUp .3s ease-out ${idx * 0.05}s both` }}
-              >
-                <ResultCard result={r} query={query} />
+        {/* 60/40 grid: primary results (left) + sticky discovery panel (right) */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr] xl:grid-cols-[2fr_1fr]">
+          {/* ===================== LEFT COLUMN (60%) ===================== */}
+          <div className="min-w-0">
+            {/* Quick stats bar */}
+            <div ref={resultsTopRef} className="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm">
+              <div className="text-slate-400">
+                {!loading && (
+                  <span>
+                    <span className="font-semibold text-white">{total.toLocaleString()}</span>{" "}
+                    {total === 1 ? "result" : "results"}
+                    {query && <> for &ldquo;<span className="font-medium text-cyan-400">{query}</span>&rdquo;</>}
+                    {interpreted.city && <> in <span className="font-medium text-white">{interpreted.city}</span></>}
+                  </span>
+                )}
+                {loading && <span className="italic text-slate-500">Searching…</span>}
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {!loading && results.length > 0 && (
-          <SearchPagination
-            page={filters.page ?? 1}
-            totalPages={totalPages}
-            onChange={onPageChange}
-          />
-        )}
-
-        {/* Related searches */}
-        {!loading && related_searches.length > 0 && results.length > 0 && (
-          <div className="mt-8 space-y-3 border-t border-white/10 pt-6">
-            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              <TrendingUp className="h-3 w-3" /> Related searches
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {related_searches.map((r) => (
-                <Link
-                  key={r}
-                  href={`/search?q=${encodeURIComponent(r)}`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 transition-all hover:border-cyan-400/30 hover:bg-cyan-500/5 hover:text-cyan-400"
-                >
-                  {r}
-                  <ArrowRight className="h-3 w-3" />
-                </Link>
-              ))}
+              <div className="flex items-center gap-2">
+                {interpreted.intent !== "General" && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-medium text-cyan-400">
+                    <Sparkles className="h-3 w-3" /> {interpreted.intent}
+                  </span>
+                )}
+                <span className="hidden text-xs text-slate-500 sm:inline">Page {filters.page ?? 1} of {totalPages}</span>
+              </div>
             </div>
+
+            {/* Active filter chips */}
+            {activeFilters.length > 0 && (
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                {activeFilters.map((f) => (
+                  <button
+                    key={f.key}
+                    type="button"
+                    onClick={() => removeFilter(f.param)}
+                    className="group inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-300 transition-all hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-400"
+                  >
+                    <span className="text-slate-500">{f.label}:</span>
+                    <span>{f.value}</span>
+                    <X className="h-3 w-3 text-slate-500 transition-colors group-hover:text-red-400" />
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={onResetAll}
+                  className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-red-400 transition-colors hover:text-red-300"
+                >
+                  <X className="h-3 w-3" /> Clear all
+                </button>
+              </div>
+            )}
+
+            {/* AI Overview panel */}
+            <AiAnswerPanel query={query} interpreted={interpreted} results={results} />
+
+            {/* Results / Loading / Empty */}
+            {loading ? (
+              <LoadingState count={5} />
+            ) : results.length === 0 ? (
+              <EmptyState query={query} relatedSearches={related_searches} onReset={onResetAll} />
+            ) : (
+              <div className="space-y-3">
+                {results.map((r, idx) => (
+                  <div
+                    key={`${r.type}-${r.id}-${idx}`}
+                    style={{ animation: `fadeInUp .3s ease-out ${idx * 0.05}s both` }}
+                  >
+                    <ResultCard result={r} query={query} />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {!loading && results.length > 0 && (
+              <SearchPagination
+                page={filters.page ?? 1}
+                totalPages={totalPages}
+                onChange={onPageChange}
+              />
+            )}
+
+            {/* Related searches */}
+            {!loading && related_searches.length > 0 && results.length > 0 && (
+              <div className="mt-8 space-y-3 border-t border-white/10 pt-6">
+                <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <TrendingUp className="h-3 w-3" /> Related searches
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {related_searches.map((r) => (
+                    <Link
+                      key={r}
+                      href={`/search?q=${encodeURIComponent(r)}`}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 transition-all hover:border-cyan-400/30 hover:bg-cyan-500/5 hover:text-cyan-400"
+                    >
+                      {r}
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* ===================== RIGHT COLUMN (40%) ===================== */}
+          {/* Sticky Intelligent Discovery Panel — hidden on mobile/tablet, shown on lg+ */}
+          <aside className="hidden lg:block">
+            <div className="sticky top-[180px] max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin pr-1">
+              <DiscoveryPanel discovery={initialDiscovery} query={query} />
+            </div>
+          </aside>
+        </div>
       </div>
 
       {/* Animations */}

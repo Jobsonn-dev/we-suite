@@ -1,0 +1,1027 @@
+     1→// ============================================================
+     2→// WEBUOS Search Engine — Shared utilities & types
+     3→// Used by all /api/search* and /api/businesses routes
+     4→// ============================================================
+     5→
+     6→import { db } from "@/lib/db";
+     7→
+     8→// ------------------------------------------------------------
+     9→// Public types — response shapes returned by the search APIs
+    10→// ------------------------------------------------------------
+    11→
+    12→export type EntityType =
+    13→  | "company"
+    14→  | "product"
+    15→  | "service"
+    16→  | "industry"
+    17→  | "technology"
+    18→  | "location";
+    19→
+    20→export type SortOption =
+    21→  | "relevance"
+    22→  | "newest"
+    23→  | "recently_updated"
+    24→  | "most_complete"
+    25→  | "nearest"
+    26→  | "az";
+    27→
+    28→export interface InterpretedQuery {
+    29→  intent: string;
+    30→  entity_type: string | null;
+    31→  industry: string | null;
+    32→  location: string | null;
+    33→  business_type: string | null;
+    34→  keywords: string[];
+    35→  // Extended (used internally — surfaced in /api/search/interpret)
+    36→  country?: string | null;
+    37→  state?: string | null;
+    38→  city?: string | null;
+    39→  category?: string | null;
+    40→}
+    41→
+    42→export interface CompanyResult {
+    43→  type: "company";
+    44→  id: string;
+    45→  slug: string;
+    46→  name: string;
+    47→  description: string | null;
+    48→  verified: boolean;
+    49→  claimed: boolean;
+    50→  business_type: string;
+    51→  ecosystem: string | null;
+    52→  industry: string | null;
+    53→  category: string | null;
+    54→  location: string | null;
+    55→  city: string | null;
+    56→  country: string | null;
+    57→  rating: number;
+    58→  review_count: number;
+    59→  product_count: number;
+    60→  service_count: number;
+    61→  website: string | null;
+    62→  relevance_score: number;
+    63→  logo: string | null;
+    64→}
+    65→
+    66→export interface ProductResult {
+    67→  type: "product";
+    68→  id: string;
+    69→  slug: string;
+    70→  name: string;
+    71→  description: string | null;
+    72→  company_id: string;
+    73→  company_name: string | null;
+    74→  brand: string | null;
+    75→  category: string | null;
+    76→  subcategory: string | null;
+    77→  price_range: string | null;
+    78→  availability: string | null;
+    79→  location: string | null;
+    80→  relevance_score: number;
+    81→}
+    82→
+    83→export interface ServiceResult {
+    84→  type: "service";
+    85→  id: string;
+    86→  slug: string;
+    87→  name: string;
+    88→  description: string | null;
+    89→  company_id: string;
+    90→  company_name: string | null;
+    91→  category: string | null;
+    92→  industry_served: string | null;
+    93→  coverage: string | null;
+    94→  pricing_model: string | null;
+    95→  location: string | null;
+    96→  relevance_score: number;
+    97→}
+    98→
+    99→export interface IndustryResult {
+   100→  type: "industry";
+   101→  id: string;
+   102→  slug: string;
+   103→  name: string;
+   104→  description: string | null;
+   105→  ecosystem: string | null;
+   106→  company_count: number;
+   107→  product_count: number;
+   108→  service_count: number;
+   109→  relevance_score: number;
+   110→}
+   111→
+   112→export interface TechnologyResult {
+   113→  type: "technology";
+   114→  id: string;
+   115→  slug: string;
+   116→  name: string;
+   117→  description: string | null;
+   118→  type_field: string | null;
+   119→  providers: string[];
+   120→  use_cases: string[];
+   121→  industries: string[];
+   122→  company_count: number;
+   123→  relevance_score: number;
+   124→}
+   125→
+   126→export interface LocationResult {
+   127→  type: "location";
+   128→  id: string;
+   129→  slug: string;
+   130→  name: string;
+   131→  type_field: string;
+   132→  country: string | null;
+   133→  state: string | null;
+   134→  city: string | null;
+   135→  business_count: number;
+   136→  industries: string[];
+   137→  relevance_score: number;
+   138→}
+   139→
+   140→export type SearchResult =
+   141→  | CompanyResult
+   142→  | ProductResult
+   143→  | ServiceResult
+   144→  | IndustryResult
+   145→  | TechnologyResult
+   146→  | LocationResult;
+   147→
+   148→export interface SearchFacets {
+   149→  ecosystems: { id: string; name: string; count: number }[];
+   150→  business_types: { name: string; count: number }[];
+   151→  countries: { name: string; count: number }[];
+   152→  cities: { name: string; count: number }[];
+   153→  verified: { verified: number; claimed: number; registered: number };
+   154→}
+   155→
+   156→export interface DiscoveryData {
+   157→  related_companies: SearchResult[];
+   158→  similar_businesses: SearchResult[];
+   159→  nearby_businesses: SearchResult[];
+   160→  trending_searches: string[];
+   161→  related_industries: { name: string; count: number }[];
+   162→  recommended_categories: { name: string; count: number }[];
+   163→  knowledge_panel: SearchResult | null;
+   164→  explore_more: { label: string; query: string; icon: string }[];
+   165→}
+   166→
+   167→export interface SearchResponse {
+   168→  query: string;
+   169→  interpreted_query: InterpretedQuery;
+   170→  filters: {
+   171→    type: string;
+   172→    ecosystem: string | null;
+   173→    country: string | null;
+   174→  };
+   175→  total: number;
+   176→  page: number;
+   177→  limit: number;
+   178→  total_pages: number;
+   179→  results: SearchResult[];
+   180→  facets: SearchFacets;
+   181→  related_searches: string[];
+   182→  discovery: DiscoveryData;
+   183→}
+   184→
+   185→// ------------------------------------------------------------
+   186→// Constants & lookup tables
+   187→// ------------------------------------------------------------
+   188→
+   189→export const CANONICAL_BUSINESS_TYPES = [
+   190→  "Manufacturer",
+   191→  "Supplier",
+   192→  "Distributor",
+   193→  "Wholesaler",
+   194→  "Service Provider",
+   195→  "Consultant",
+   196→  "Startup",
+   197→  "Enterprise",
+   198→] as const;
+   199→
+   200→export const BUSINESS_SIZE_OPTIONS = [
+   201→  "Startup",
+   202→  "Small",
+   203→  "Medium",
+   204→  "Large",
+   205→  "Enterprise",
+   206→] as const;
+   207→
+   208→export const VALID_ENTITY_TYPES: EntityType[] = [
+   209→  "company",
+   210→  "product",
+   211→  "service",
+   212→  "industry",
+   213→  "technology",
+   214→  "location",
+   215→];
+   216→
+   217→export const VALID_SORTS: SortOption[] = [
+   218→  "relevance",
+   219→  "newest",
+   220→  "recently_updated",
+   221→  "most_complete",
+   222→  "nearest",
+   223→  "az",
+   224→];
+   225→
+   226→export const VALID_EVENT_TYPES = [
+   227→  "search_started",
+   228→  "search_submitted",
+   229→  "search_result_viewed",
+   230→  "company_opened",
+   231→  "product_opened",
+   232→  "service_opened",
+   233→  "filter_applied",
+   234→  "search_result_clicked",
+   235→  "save_business",
+   236→  "contact_business",
+   237→  "request_quote",
+   238→  "search_no_results",
+   239→  "search_refined",
+   240→] as const;
+   241→
+   242→export const ECOSYSTEM_NAMES: Record<string, string> = {
+   243→  industrial: "Industrial Engineering & Manufacturing",
+   244→  "technology-ai": "Information Technology & Artificial Intelligence",
+   245→  "business-services": "Professional, Commercial & Business Services",
+   246→};
+   247→
+   248→// City aliases — handle legacy/alternative spellings that map to a
+   249→// canonical name stored in the Location table.
+   250→const CITY_ALIASES: Record<string, string> = {
+   251→  bangalore: "Bengaluru",
+   252→  bombay: "Mumbai",
+   253→  madras: "Chennai",
+   254→  calcutta: "Kolkata",
+   255→  bangalorecity: "Bengaluru",
+   256→  gurgaon: "Gurugram",
+   257→};
+   258→
+   259→// ------------------------------------------------------------
+   260→// Query sanitization & tokenization
+   261→// ------------------------------------------------------------
+   262→
+   263→export function sanitizeQuery(q: string | null | undefined): string {
+   264→  if (!q) return "";
+   265→  let s = String(q).trim();
+   266→  // Limit to 200 chars per spec
+   267→  if (s.length > 200) s = s.slice(0, 200);
+   268→  // Strip control chars
+   269→  s = s.replace(/[\u0000-\u001f\u007f]/g, " ");
+   270→  return s.trim();
+   271→}
+   272→
+   273→export function tokenize(query: string): string[] {
+   274→  if (!query) return [];
+   275→  const stop = new Set([
+   276→    "the",
+   277→    "and",
+   278→    "for",
+   279→    "of",
+   280→    "in",
+   281→    "near",
+   282→    "around",
+   283→    "to",
+   284→    "with",
+   285→    "a",
+   286→    "an",
+   287→    "is",
+   288→    "are",
+   289→    "by",
+   290→    "at",
+   291→    "on",
+   292→    "or",
+   293→    "vs",
+   294→    "vs.",
+   295→    "&",
+   296→    "-",
+   297→  ]);
+   298→  return query
+   299→    .toLowerCase()
+   300→    .split(/[^a-z0-9]+/i)
+   301→    .map((t) => t.trim())
+   302→    .filter((t) => t.length > 0 && !stop.has(t));
+   303→}
+   304→
+   305→/**
+   306→ * Expand a token list using synonyms (loaded from DB).
+   307→ * Returns a de-duplicated list of all known variants — the original tokens
+   308→ * plus any synonym expansions. Each synonym string is split on BOTH commas
+   309→ * AND whitespace so multi-word synonyms like "Manufacturing Company" yield
+   310→ * two separate terms ("manufacturing", "company").
+   311→ *
+   312→ * Example: ["ai", "companies"] → ["ai", "companies", "artificial", "intelligence", "machine", "learning", "ml"]
+   313→ */
+   314→export function expandTokensWithSynonyms(
+   315→  tokens: string[],
+   316→  synonyms: { term: string; synonyms: string }[],
+   317→): string[] {
+   318→  const out = new Set<string>(tokens);
+   319→  for (const t of tokens) {
+   320→    const lc = t.toLowerCase();
+   321→    const match = synonyms.find((s) => s.term.toLowerCase() === lc);
+   322→    if (match) {
+   323→      match.synonyms
+   324→        .split(/[, ]+/)
+   325→        .map((s) => s.trim().toLowerCase())
+   326→        .filter(Boolean)
+   327→        .forEach((s) => out.add(s));
+   328→    }
+   329→  }
+   330→  return Array.from(out);
+   331→}
+   332→
+   333→// ------------------------------------------------------------
+   334→// Business type normalization (for facets & filtering)
+   335→// ------------------------------------------------------------
+   336→
+   337→/**
+   338→ * Map a raw businessType string (e.g. "Contract Manufacturer") to one of
+   339→ * the 8 canonical WEBUOS business types.
+   340→ */
+   341→export function normalizeBusinessType(raw: string | null | undefined): string | null {
+   342→  if (!raw) return null;
+   343→  const s = raw.toLowerCase();
+   344→  if (s.includes("manufacturer")) return "Manufacturer";
+   345→  if (s.includes("supplier")) return "Supplier";
+   346→  if (s.includes("distributor")) return "Distributor";
+   347→  if (s.includes("wholesaler") || s.includes("wholesale")) return "Wholesaler";
+   348→  if (s.includes("consultant") || s.includes("consulting") || s.includes("law firm") || s.includes("ip law")) {
+   349→    return "Consultant";
+   350→  }
+   351→  if (s.includes("startup")) return "Startup";
+   352→  if (s.includes("enterprise") || s.includes("retail chain") || s.includes("e-commerce")) {
+   353→    return "Enterprise";
+   354→  }
+   355→  if (s.includes("service") || s.includes("agency") || s.includes("provider") || s.includes("lab") || s.includes("integrator") || s.includes("contractor") || s.includes("builder") || s.includes("charging") || s.includes("printing") || s.includes("epc")) {
+   356→    return "Service Provider";
+   357→  }
+   358→  // Fall back to "Enterprise" for anything company-like
+   359→  if (s.includes("company") || s.includes("firm") || s.includes("vendor")) {
+   360→    return "Enterprise";
+   361→  }
+   362→  return raw;
+   363→}
+   364→
+   365→// ------------------------------------------------------------
+   366→// Relevance scoring
+   367→// ------------------------------------------------------------
+   368→
+   369→export function computeRelevance(opts: {
+   370→  query: string;
+   371→  tokens: string[];
+   372→  name: string | null;
+   373→  description?: string | null;
+   374→  otherText?: string;
+   375→  verified?: boolean;
+   376→  claimed?: boolean;
+   377→  registered?: boolean;
+   378→  popularity?: number;
+   379→  createdAt?: Date;
+   380→  companyCount?: number;
+   381→}): number {
+   382→  let score = 0;
+   383→  const q = opts.query.toLowerCase().trim();
+   384→  const name = (opts.name ?? "").toLowerCase();
+   385→  const desc = (opts.description ?? "").toLowerCase();
+   386→  const other = (opts.otherText ?? "").toLowerCase();
+   387→
+   388→  // Exact full-query match in name (highest boost)
+   389→  if (q && name === q) score += 35;
+   390→  else if (q && name.includes(q)) score += 25;
+   391→
+   392→  // Exact full-query match in description
+   393→  if (q && desc.includes(q)) score += 12;
+   394→  else if (q && other.includes(q)) score += 8;
+   395→
+   396→  // Prefix match
+   397→  if (q && name.startsWith(q)) score += 20;
+   398→
+   399→  // Per-token matching
+   400→  for (const t of opts.tokens) {
+   401→    if (!t) continue;
+   402→    if (name === t) score += 8;
+   403→    else if (name.includes(t)) score += 6;
+   404→    if (desc.includes(t)) score += 3;
+   405→    if (other.includes(t)) score += 2;
+   406→  }
+   407→
+   408→  // Verification boost
+   409→  if (opts.verified) score += 10;
+   410→  else if (opts.claimed) score += 6;
+   411→  else if (opts.registered) score += 2;
+   412→
+   413→  // Popularity boost (0..15)
+   414→  if (typeof opts.popularity === "number") {
+   415→    score += Math.min(15, opts.popularity * 15);
+   416→  }
+   417→  // Company count boost (industries, technologies, locations)
+   418→  if (typeof opts.companyCount === "number") {
+   419→    score += Math.min(10, opts.companyCount * 0.3);
+   420→  }
+   421→
+   422→  // Freshness boost — up to +5 for items created in last 90 days
+   423→  if (opts.createdAt) {
+   424→    const ageDays = (Date.now() - opts.createdAt.getTime()) / 86_400_000;
+   425→    if (ageDays < 90) score += 5 * (1 - ageDays / 90);
+   426→  }
+   427→
+   428→  return Math.max(0, Math.min(100, Math.round(score)));
+   429→}
+   430→
+   431→// ------------------------------------------------------------
+   432→// Query interpretation (used by /api/search/interpret AND /api/search)
+   433→// ------------------------------------------------------------
+   434→
+   435→interface IndustryLookup {
+   436→  id: string;
+   437→  name: string;
+   438→  ecosystemId: string | null;
+   439→  sectorId: string | null;
+   440→  categoryId: string | null;
+   441→}
+   442→
+   443→interface LocationLookup {
+   444→  id: string;
+   445→  name: string;
+   446→  type: string;
+   447→  country: string | null;
+   448→  state: string | null;
+   449→  city: string | null;
+   450→  slug: string;
+   451→}
+   452→
+   453→/**
+   454→ * Detect business-type keyword in a token list.
+   455→ * Returns the canonical business type or null.
+   456→ */
+   457→export function detectBusinessType(tokens: string[]): string | null {
+   458→  const t = new Set(tokens.map((x) => x.toLowerCase()));
+   459→  // exact keyword matches
+   460→  if (t.has("manufacturer") || t.has("manufacturers") || t.has("manufacturing")) {
+   461→    return "Manufacturer";
+   462→  }
+   463→  if (t.has("supplier") || t.has("suppliers") || t.has("vendor") || t.has("vendors")) {
+   464→    return "Supplier";
+   465→  }
+   466→  if (t.has("distributor") || t.has("distributors")) return "Distributor";
+   467→  if (t.has("wholesaler") || t.has("wholesalers") || t.has("wholesale")) {
+   468→    return "Wholesaler";
+   469→  }
+   470→  if (t.has("consultant") || t.has("consultants") || t.has("consulting")) {
+   471→    return "Consultant";
+   472→  }
+   473→  if (t.has("startup") || t.has("startups")) return "Startup";
+   474→  if (t.has("enterprise") || t.has("enterprises")) return "Enterprise";
+   475→  if (t.has("retailer") || t.has("retailers")) return "Service Provider";
+   476→  return null;
+   477→}
+   478→
+   479→/**
+   480→ * Detect an entity-type keyword ("companies", "products", etc.).
+   481→ */
+   482→export function detectEntityType(tokens: string[]): string | null {
+   483→  const t = new Set(tokens.map((x) => x.toLowerCase()));
+   484→  if (t.has("company") || t.has("companies") || t.has("firm") || t.has("firms") || t.has("business") || t.has("businesses")) {
+   485→    return "company";
+   486→  }
+   487→  if (t.has("product") || t.has("products")) return "product";
+   488→  if (t.has("service") || t.has("services") || t.has("provider") || t.has("providers")) {
+   489→    return "service";
+   490→  }
+   491→  if (t.has("industry") || t.has("industries") || t.has("sector")) return "industry";
+   492→  if (t.has("technology") || t.has("technologies") || t.has("tech")) {
+   493→    return "technology";
+   494→  }
+   495→  if (t.has("location") || t.has("locations") || t.has("place") || t.has("places")) {
+   496→    return "location";
+   497→  }
+   498→  return null;
+   499→}
+   500→
+   501→/**
+   502→ * Resolve an alias (e.g. "bangalore" -> "Bengaluru") using a small known list.
+   503→ */
+   504→export function resolveCityAlias(name: string): string {
+   505→  return CITY_ALIASES[name.toLowerCase()] ?? name;
+   506→}
+   507→
+   508→/**
+   509→ * Build a RegExp that matches `name` as a whole word, case-insensitive.
+   510→ * Falls back to substring match if the name contains non-word chars.
+   511→ */
+   512→function buildWholeWordRegex(name: string): RegExp {
+   513→  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+   514→  // Only treat as whole word if the name is alphanumeric-only
+   515→  if (/^[a-zA-Z0-9 ]+$/.test(name)) {
+   516→    return new RegExp(`\\b${escaped}\\b`, "i");
+   517→  }
+   518→  return new RegExp(escaped, "i");
+   519→}
+   520→
+   521→/**
+   522→ * Interpret a raw search query. Loads industries/locations/synonyms from DB
+   523→ * and produces an `InterpretedQuery` object describing the user's intent.
+   524→ *
+   525→ * @param rawQuery  user query string (will be sanitized)
+   526→ * @param ctx       pre-loaded industry & location & synonym lookups (avoid re-querying)
+   527→ */
+   528→export async function interpretQuery(
+   529→  rawQuery: string,
+   530→  ctx?: {
+   531→    industries?: IndustryLookup[];
+   532→    locations?: LocationLookup[];
+   533→    synonyms?: { term: string; synonyms: string }[];
+   534→  },
+   535→): Promise<InterpretedQuery> {
+   536→  const query = sanitizeQuery(rawQuery);
+   537→  const industries = ctx?.industries ?? (await db.industry.findMany({
+   538→    select: {
+   539→      id: true,
+   540→      name: true,
+   541→      ecosystemId: true,
+   542→      sectorId: true,
+   543→      categoryId: true,
+   544→    },
+   545→  }));
+   546→  const locations =
+   547→    ctx?.locations ??
+   548→    (await db.location.findMany({
+   549→      select: {
+   550→        id: true,
+   551→        name: true,
+   552→        type: true,
+   553→        country: true,
+   554→        state: true,
+   555→        city: true,
+   556→        slug: true,
+   557→      },
+   558→    }));
+   559→  const synonyms = ctx?.synonyms ?? (await db.searchSynonym.findMany());
+   560→
+   561→  // 1) Tokenize & expand with synonyms
+   562→  const baseTokens = tokenize(query);
+   563→  const expanded = expandTokensWithSynonyms(baseTokens, synonyms);
+   564→
+   565→  // 2) Detect entity type — fall back to "company" if a business-type keyword
+   566→  //    is present (manufacturers, suppliers, distributors, etc.)
+   567→  let entity_type = detectEntityType(baseTokens);
+   568→  const business_type = detectBusinessType(baseTokens);
+   569→  if (!entity_type && business_type) entity_type = "company";
+   570→
+   571→  // 4) Detect industry — score each industry by how well its name overlaps
+   572→  //    with the query's expanded token set. Direct user-token matches (the
+   573→  //    word the user actually typed) beat synonym-expansion matches. More
+   574→  //    word overlap is better. Category-level (specific) industries beat
+   575→  //    sector-level (general) ones.
+   576→  let industry: string | null = null;
+   577→  let matchedIndustryRecord: IndustryLookup | null = null;
+   578→  let bestIndustryScore = 0;
+   579→  const baseTokenSet = new Set(baseTokens.map((t) => t.toLowerCase()));
+   580→  // Light stemming — strip common suffixes so "components" matches "component",
+   581→  // "manufacturing" matches "manufacturer", etc.
+   582→  const stem = (w: string) =>
+   583→    w
+   584→      .replace(/(ies)$/i, "y")
+   585→      .replace(/(ing)$/i, "")
+   586→      .replace(/(es)$/i, "")
+   587→      .replace(/(s)$/i, "");
+   588→  const stemmedBase = new Set(baseTokens.map((t) => stem(t.toLowerCase())));
+   589→  const stemmedExpanded = new Set(expanded.map((t) => stem(t)));
+   590→  // Known alternate spellings map (user token → industry word)
+   591→  const altMap: Record<string, string> = {
+   592→    automobile: "automotive",
+   593→    automobiles: "automotive",
+   594→    vehicle: "automotive",
+   595→    vehicles: "automotive",
+   596→    machine: "machinery",
+   597→    machines: "machinery",
+   598→  };
+   599→  const altBase = new Set(
+   600→    baseTokens
+   601→      .map((t) => altMap[t.toLowerCase()])
+   602→      .filter(Boolean),
+   603→  );
+   604→  for (const ind of industries) {
+   605→    const regex = buildWholeWordRegex(ind.name);
+   606→    const inQuery = regex.test(query);
+   607→    const nameWords = ind.name
+   608→      .toLowerCase()
+   609→      .split(/[^a-z0-9]+/)
+   610→      .filter((w) => w.length >= 2);
+   611→    let directMatches = 0;
+   612→    let synonymMatches = 0;
+   613→    for (const w of nameWords) {
+   614→      if (baseTokenSet.has(w) || altBase.has(w)) directMatches++;
+   615→      else if (
+   616→        stemmedBase.has(stem(w)) ||
+   617→        expanded.includes(w) ||
+   618→        stemmedExpanded.has(stem(w))
+   619→      )
+   620→        synonymMatches++;
+   621→    }
+   622→    if (!inQuery && directMatches === 0 && synonymMatches === 0) continue;
+   623→
+   624→    let score = 0;
+   625→    if (inQuery) score += 50;
+   626→    score += directMatches * 30;
+   627→    score += synonymMatches * 5;
+   628→    if (ind.categoryId) score += 5;
+   629→    const firstWord = nameWords[0];
+   630→    if (firstWord && (baseTokenSet.has(firstWord) || altBase.has(firstWord)))
+   631→      score += 15;
+   632→
+   633→    if (score > bestIndustryScore) {
+   634→      bestIndustryScore = score;
+   635→      matchedIndustryRecord = ind;
+   636→      industry = ind.name;
+   637→    }
+   638→  }
+   639→
+   640→  // If no industry matched, try matching the ecosystem name
+   641→  if (!industry) {
+   642→    for (const [ecoId, ecoName] of Object.entries(ECOSYSTEM_NAMES)) {
+   643→      const regex = buildWholeWordRegex(ecoName);
+   644→      if (regex.test(query)) {
+   645→        industry = ecoName;
+   646→        break;
+   647→      }
+   648→      // Try shorter aliases like "industrial", "technology", "ai", "business"
+   649→      const alias: Record<string, string[]> = {
+   650→        industrial: ["industrial", "manufacturing", "factory"],
+   651→        "technology-ai": ["technology", "tech", "software", "ai", "ml", "cloud", "cyber", "iot", "data"],
+   652→        "business-services": ["business", "consulting", "finance", "legal", "marketing", "retail"],
+   653→      };
+   654→      const aliases = alias[ecoId] ?? [];
+   655→      if (aliases.some((a) => expanded.includes(a) || baseTokens.includes(a))) {
+   656→        industry = ecoName;
+   657→        break;
+   658→      }
+   659→    }
+   660→  }
+   661→
+   662→  // 5) Detect location — match location names as whole words in the query
+   663→  let location: string | null = null;
+   664→  let country: string | null = null;
+   665→  let state: string | null = null;
+   666→  let city: string | null = null;
+   667→
+   668→  let matchedLocation: LocationLookup | null = null;
+   669→  // First, try matching against the canonical names
+   670→  for (const loc of locations) {
+   671→    const regex = buildWholeWordRegex(loc.name);
+   672→    if (regex.test(query)) {
+   673→      matchedLocation = loc;
+   674→      break;
+   675→    }
+   676→  }
+   677→  // If no canonical match, try the alias map (e.g. bangalore -> Bengaluru)
+   678→  if (!matchedLocation) {
+   679→    for (const t of baseTokens) {
+   680→      const alias = CITY_ALIASES[t.toLowerCase()];
+   681→      if (alias) {
+   682→        const found = locations.find(
+   683→          (l) => l.name.toLowerCase() === alias.toLowerCase(),
+   684→        );
+   685→        if (found) {
+   686→          matchedLocation = found;
+   687→          break;
+   688→        }
+   689→      }
+   690→    }
+   691→  }
+   692→
+   693→  if (matchedLocation) {
+   694→    const parts: string[] = [];
+   695→    if (matchedLocation.type === "Country") {
+   696→      country = matchedLocation.country;
+   697→      parts.push(country!);
+   698→    } else if (matchedLocation.type === "State") {
+   699→      state = matchedLocation.state;
+   700→      country = matchedLocation.country;
+   701→      if (state) parts.push(state);
+   702→      if (country) parts.push(country);
+   703→    } else {
+   704→      // City
+   705→      city = matchedLocation.city;
+   706→      state = matchedLocation.state;
+   707→      country = matchedLocation.country;
+   708→      if (city) parts.push(city);
+   709→      if (state) parts.push(state);
+   710→      if (country) parts.push(country);
+   711→    }
+   712→    if (parts.length > 0) location = parts.join(", ");
+   713→  }
+   714→
+   715→  // 6) Determine intent
+   716→  let intent = "General Information";
+   717→  if (entity_type === "product") intent = "Product Discovery";
+   718→  else if (entity_type === "service") intent = "Service Discovery";
+   719→  else if (entity_type === "industry") intent = "Industry Research";
+   720→  else if (entity_type === "location") intent = "Location Research";
+   721→  else if (entity_type === "technology") intent = "Technology Research";
+   722→  else if (entity_type === "company" || business_type || industry) {
+   723→    intent = "Business Discovery";
+   724→  } else if (city || state || country) {
+   725→    intent = "Business Discovery";
+   726→  }
+   727→
+   728→  // 7) Keywords — strip out stop-words, location names, business-type
+   729→  //    keywords, entity-type keywords and "in"-like particles so we're
+   730→  //    left with the meaningful content keywords.
+   731→  const allStop = new Set<string>([
+   732→    "company",
+   733→    "companies",
+   734→    "firm",
+   735→    "firms",
+   736→    "business",
+   737→    "businesses",
+   738→    "product",
+   739→    "products",
+   740→    "service",
+   741→    "services",
+   742→    "provider",
+   743→    "providers",
+   744→    "industry",
+   745→    "industries",
+   746→    "sector",
+   747→    "technology",
+   748→    "technologies",
+   749→    "tech",
+   750→    "location",
+   751→    "locations",
+   752→    "place",
+   753→    "places",
+   754→    "manufacturer",
+   755→    "manufacturers",
+   756→    "manufacturing",
+   757→    "supplier",
+   758→    "suppliers",
+   759→    "vendor",
+   760→    "vendors",
+   761→    "distributor",
+   762→    "distributors",
+   763→    "wholesaler",
+   764→    "wholesalers",
+   765→    "wholesale",
+   766→    "consultant",
+   767→    "consultants",
+   768→    "consulting",
+   769→    "startup",
+   770→    "startups",
+   771→    "enterprise",
+   772→    "enterprises",
+   773→    "retailer",
+   774→    "retailers",
+   775→  ]);
+   776→  const matchedLocationNames = new Set<string>();
+   777→  if (matchedLocation) {
+   778→    matchedLocation.name
+   779→      .toLowerCase()
+   780→      .split(/\s+/)
+   781→      .forEach((w) => matchedLocationNames.add(w));
+   782→    if (matchedLocation.country)
+   783→      matchedLocationNames.add(matchedLocation.country.toLowerCase());
+   784→    if (matchedLocation.state)
+   785→      matchedLocationNames.add(matchedLocation.state.toLowerCase());
+   786→    if (matchedLocation.city)
+   787→      matchedLocationNames.add(matchedLocation.city.toLowerCase());
+   788→  }
+   789→  // Inverse alias map — if the user typed "bangalore" but it resolved to
+   790→  // "Bengaluru", also strip "bangalore" from keywords.
+   791→  for (const t of baseTokens) {
+   792→    const alias = CITY_ALIASES[t.toLowerCase()];
+   793→    if (
+   794→      alias &&
+   795→      matchedLocation &&
+   796→      matchedLocation.name.toLowerCase() === alias.toLowerCase()
+   797→    ) {
+   798→      matchedLocationNames.add(t.toLowerCase());
+   799→    }
+   800→  }
+   801→  const keywords = baseTokens.filter(
+   802→    (t) => !allStop.has(t) && !matchedLocationNames.has(t),
+   803→  );
+   804→
+   805→  return {
+   806→    intent,
+   807→    entity_type: entity_type
+   808→      ? entity_type.charAt(0).toUpperCase() + entity_type.slice(1)
+   809→      : null,
+   810→    industry,
+   811→    location,
+   812→    business_type,
+   813→    country,
+   814→    state,
+   815→    city,
+   816→    category: matchedIndustryRecord?.categoryId ?? null,
+   817→    keywords,
+   818→  };
+   819→}
+   820→
+   821→// ------------------------------------------------------------
+   822→// Related-search generation
+   823→// ------------------------------------------------------------
+   824→
+   825→/**
+   826→ * Build up to 5 related-search suggestions based on the interpreted query
+   827→ * and the actual results returned.
+   828→ */
+   829→export function buildRelatedSearches(
+   830→  interpreted: InterpretedQuery,
+   831→  topResults: { name: string; type: string }[],
+   832→): string[] {
+   833→  const out = new Set<string>();
+   834→  const kw = interpreted.keywords[0] ?? "";
+   835→  const kwCap = kw ? kw.charAt(0).toUpperCase() + kw.slice(1) : "";
+   836→  const country = interpreted.country;
+   837→
+   838→  // 1) "{keyword} startups {country}"
+   839→  if (kw && country) {
+   840→    out.add(`${kwCap} startups ${country}`);
+   841→  }
+   842→  // 2) "{keyword} companies"
+   843→  if (kw) {
+   844→    out.add(`${kwCap} companies`);
+   845→  }
+   846→  // 3) "{industry or ecosystem fragment} companies"
+   847→  if (interpreted.industry) {
+   848→    const frag = interpreted.industry.split(/[&\-,]/)[0].trim();
+   849→    if (frag && frag.toLowerCase() !== kw.toLowerCase()) {
+   850→      out.add(`${frag} companies`);
+   851→    }
+   852→  }
+   853→  // 4) "{keyword} consulting services"
+   854→  if (kw) {
+   855→    out.add(`${kwCap} consulting services`);
+   856→  }
+   857→  // 5) "{keyword} software companies"
+   858→  if (kw) {
+   859→    out.add(`${kwCap} software companies`);
+   860→  }
+   861→  // 6) "{top-result-name}-style" — based on top company
+   862→  for (const r of topResults) {
+   863→    if (r.type === "company" && r.name && !r.name.toLowerCase().includes(kw)) {
+   864→      const shortName = r.name.split(/\s+/).slice(0, 2).join(" ");
+   865→      out.add(`Companies like ${shortName}`);
+   866→    }
+   867→    if (out.size >= 5) break;
+   868→  }
+   869→
+   870→  // Always ensure we have at least 5 entries by adding category-based suggestions
+   871→  if (kw && out.size < 5) {
+   872→    out.add(`${kwCap} distributors`);
+   873→  }
+   874→  if (kw && out.size < 5) {
+   875→    out.add(`${kwCap} suppliers`);
+   876→  }
+   877→  if (kw && out.size < 5) {
+   878→    out.add(`${kwCap} service providers`);
+   879→  }
+   880→  if (kw && out.size < 5) {
+   881→    out.add(`Top ${kwCap} companies`);
+   882→  }
+   883→  if (kw && out.size < 5) {
+   884→    out.add(`${kwCap} industry overview`);
+   885→  }
+   886→
+   887→  return Array.from(out).slice(0, 5);
+   888→}
+   889→
+   890→// ------------------------------------------------------------
+   891→// Facets aggregation (in-memory)
+   892→// ------------------------------------------------------------
+   893→
+   894→export function buildFacets(
+   895→  companies: {
+   896→    ecosystemId: string;
+   897→    businessType: string;
+   898→    country: string | null;
+   899→    city: string | null;
+   900→    verified: boolean;
+   901→    claimed: boolean;
+   902→    registered: boolean;
+   903→  }[],
+   904→): SearchFacets {
+   905→  const ecosystemMap = new Map<string, number>();
+   906→  const btMap = new Map<string, number>();
+   907→  const countryMap = new Map<string, number>();
+   908→  const cityMap = new Map<string, number>();
+   909→  let verifiedCount = 0;
+   910→  let claimedCount = 0;
+   911→  let registeredCount = 0;
+   912→
+   913→  for (const c of companies) {
+   914→    if (c.ecosystemId) {
+   915→      ecosystemMap.set(c.ecosystemId, (ecosystemMap.get(c.ecosystemId) ?? 0) + 1);
+   916→    }
+   917→    const bt = normalizeBusinessType(c.businessType);
+   918→    if (bt) btMap.set(bt, (btMap.get(bt) ?? 0) + 1);
+   919→    if (c.country) countryMap.set(c.country, (countryMap.get(c.country) ?? 0) + 1);
+   920→    if (c.city) cityMap.set(c.city, (cityMap.get(c.city) ?? 0) + 1);
+   921→    if (c.verified) verifiedCount++;
+   922→    else if (c.claimed) claimedCount++;
+   923→    else if (c.registered) registeredCount++;
+   924→  }
+   925→
+   926→  const toArr = (m: Map<string, number>) =>
+   927→    Array.from(m.entries())
+   928→      .map(([name, count]) => ({ name, count }))
+   929→      .sort((a, b) => b.count - a.count);
+   930→
+   931→  return {
+   932→    ecosystems: Array.from(ecosystemMap.entries()).map(([id, count]) => ({
+   933→      id,
+   934→      name: ECOSYSTEM_NAMES[id] ?? id,
+   935→      count,
+   936→    })),
+   937→    business_types: toArr(btMap),
+   938→    countries: toArr(countryMap),
+   939→    cities: toArr(cityMap),
+   940→    verified: {
+   941→      verified: verifiedCount,
+   942→      claimed: claimedCount,
+   943→      registered: registeredCount,
+   944→    },
+   945→  };
+   946→}
+   947→
+   948→// ------------------------------------------------------------
+   949→// Demo user (used by saved-searches endpoints)
+   950→// ------------------------------------------------------------
+   951→
+   952→let cachedDemoUserId: string | null = null;
+   953→export async function getDemoUserId(): Promise<string> {
+   954→  if (cachedDemoUserId) return cachedDemoUserId;
+   955→  const email = "demo@webuos.com";
+   956→  let user = await db.user.findUnique({ where: { email } });
+   957→  if (!user) {
+   958→    user = await db.user.create({
+   959→      data: { email, name: "WEBUOS Demo User" },
+   960→    });
+   961→  }
+   962→  cachedDemoUserId = user.id;
+   963→  return user.id;
+   964→}
+   965→
+   966→// ------------------------------------------------------------
+   967→// Sort comparator helpers
+   968→// ------------------------------------------------------------
+   969→
+   970→export function sortResults(
+   971→  results: SearchResult[],
+   972→  sort: SortOption,
+   973→): SearchResult[] {
+   974→  switch (sort) {
+   975→    case "az":
+   976→      return [...results].sort((a, b) =>
+   977→        (a.name ?? "").localeCompare(b.name ?? ""),
+   978→      );
+   979→    case "newest":
+   980→      // Companies/products/services carry createdAt implicitly via relevance_score
+   981→      // (we cannot sort by createdAt directly across mixed types in memory
+   982→      // without preserving it on each result). We approximate by treating
+   983→      // higher relevance as "newer" for non-company types. For company types
+   984→      // we have stored nothing about createdAt here, so fall through.
+   985→      return [...results].sort(
+   986→        (a, b) => b.relevance_score - a.relevance_score,
+   987→      );
+   988→    case "recently_updated":
+   989→      return [...results].sort(
+   990→        (a, b) => b.relevance_score - a.relevance_score,
+   991→      );
+   992→    case "most_complete":
+   993→      // Companies with more products+services rank higher
+   994→      return [...results].sort((a, b) => {
+   995→        const aCount =
+   996→          a.type === "company"
+   997→            ? a.product_count + a.service_count
+   998→            : a.type === "industry"
+   999→              ? a.company_count
+  1000→              : a.type === "technology"
+  1001→                ? a.company_count
+  1002→                : a.type === "location"
+  1003→                  ? a.business_count
+  1004→                  : 0;
+  1005→        const bCount =
+  1006→          b.type === "company"
+  1007→            ? b.product_count + b.service_count
+  1008→            : b.type === "industry"
+  1009→              ? b.company_count
+  1010→              : b.type === "technology"
+  1011→                ? b.company_count
+  1012→                : b.type === "location"
+  1013→                  ? b.business_count
+  1014→                  : 0;
+  1015→        return bCount - aCount || b.relevance_score - a.relevance_score;
+  1016→      });
+  1017→    case "nearest":
+  1018→      // No real geo-distance without query location context — keep relevance
+  1019→      return [...results].sort(
+  1020→        (a, b) => b.relevance_score - a.relevance_score,
+  1021→      );
+  1022→    case "relevance":
+  1023→    default:
+  1024→      return [...results].sort((a, b) => b.relevance_score - a.relevance_score);
+  1025→  }
+  1026→}
+  1027→
