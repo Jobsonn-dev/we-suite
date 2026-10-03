@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   ArrowLeft, Mail, Lock, Eye, EyeOff, ArrowRight, User, Building2,
-  Check, Search, Sparkles, UserPlus, Phone, Globe, Store, ShoppingCart, ArrowLeftRight,
+  Check, Search, Sparkles, UserPlus, Phone, Store, ShoppingCart, ArrowLeftRight, Info,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/page-shell";
 import { ecosystems } from "@/data/taxonomy";
@@ -326,170 +326,154 @@ export default function RegisterPage() {
 
             <div className="mb-8 text-center lg:text-left">
               <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                Create your {accountType === "employee" ? "Employee" : "Employer"} account
+                Account details
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                {accountType === "employee"
-                  ? "Register to discover businesses, save searches, and connect with employers."
-                  : "Register your company to list products, connect with buyers, and manage your business profile."}
+                Fill in your information to create your WEBUOS account.
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name */}
-              <div className="space-y-1.5">
-                <label htmlFor="name" className="text-sm font-medium text-foreground">
-                  {accountType === "employee" ? "Full Name" : "Contact Person Name"}
-                </label>
-                <div className="relative">
-                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    id="name"
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder={accountType === "employee" ? "John Doe" : "Jane Smith"}
-                    className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
-                  />
-                </div>
-              </div>
-
-              {/* Company name — only for employer */}
-              {accountType === "employer" && (
+              {/* Row 1: Full Name + Company/Organization Name (2 columns) */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {/* Full Name */}
                 <div className="space-y-1.5">
-                  <label htmlFor="companyName" className="text-sm font-medium text-foreground">Company Name</label>
+                  <label htmlFor="name" className="text-sm font-medium text-foreground">Full Name</label>
+                  <div className="relative">
+                    <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      id="name"
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="John Doe"
+                      className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                  </div>
+                </div>
+
+                {/* Company / Organization Name */}
+                <div className="space-y-1.5">
+                  <label htmlFor="companyName" className="text-sm font-medium text-foreground">
+                    {accountType === "employee" ? "Company / Organization Name" : "Company / Organization Name"}
+                  </label>
                   <div className="relative">
                     <Building2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                       id="companyName"
                       type="text"
-                      required
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="ABC Technologies Pvt Ltd"
+                      placeholder="Acme Industries"
                       className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
                     />
                   </div>
                 </div>
-              )}
-
-              {/* Email */}
-              <div className="space-y-1.5">
-                <label htmlFor="email" className="text-sm font-medium text-foreground">Email address</label>
-                <div className="relative">
-                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    id="email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@company.com"
-                    className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
-                  />
-                </div>
               </div>
 
-              {/* Phone */}
-              <div className="space-y-1.5">
-                <label htmlFor="phone" className="text-sm font-medium text-foreground">Phone number</label>
-                <div className="relative">
-                  <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+1 555 0100"
-                    className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
-                  />
-                </div>
-              </div>
-
-              {/* Website — only for employer */}
-              {accountType === "employer" && (
+              {/* Row 2: Email + Phone (2 columns) */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {/* Email */}
                 <div className="space-y-1.5">
-                  <label htmlFor="website" className="text-sm font-medium text-foreground">Company Website (optional)</label>
+                  <label htmlFor="email" className="text-sm font-medium text-foreground">Email</label>
                   <div className="relative">
-                    <Globe className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
-                      id="website"
-                      type="url"
-                      value={website}
-                      onChange={(e) => setWebsite(e.target.value)}
-                      placeholder="https://company.com"
+                      id="email"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@company.com"
                       className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
                     />
                   </div>
                 </div>
-              )}
 
-              {/* Password */}
-              <div className="space-y-1.5">
-                <label htmlFor="password" className="text-sm font-medium text-foreground">Password</label>
-                <div className="relative">
-                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-10 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+                {/* Phone */}
+                <div className="space-y-1.5">
+                  <label htmlFor="phone" className="text-sm font-medium text-foreground">Phone No</label>
+                  <div className="relative">
+                    <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      id="phone"
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Confirm Password */}
-              <div className="space-y-1.5">
-                <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">Confirm password</label>
-                <div className="relative">
-                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    id="confirmPassword"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
-                  />
+              {/* Row 3: Password + Confirm Password (2 columns) */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {/* Password */}
+                <div className="space-y-1.5">
+                  <label htmlFor="password" className="text-sm font-medium text-foreground">Password</label>
+                  <div className="relative">
+                    <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-10 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Confirm Password */}
+                <div className="space-y-1.5">
+                  <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">Confirm Password</label>
+                  <div className="relative">
+                    <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      id="confirmPassword"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-10 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Terms */}
-              <label className="flex items-start gap-2 cursor-pointer pt-1">
-                <input
-                  type="checkbox"
-                  required
-                  checked={agreed}
-                  onChange={(e) => setAgreed(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 rounded border-border"
-                />
-                <span className="text-sm text-muted-foreground">
-                  I agree to the{" "}
-                  <span className="font-medium text-primary hover:underline cursor-pointer">Terms of Service</span>
-                  {" "}and{" "}
-                  <span className="font-medium text-primary hover:underline cursor-pointer">Privacy Policy</span>
-                </span>
-              </label>
+              {/* Info alert */}
+              <div className="flex items-start gap-2.5 rounded-xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
+                <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                <p className="text-xs text-muted-foreground">
+                  After registration you'll verify your email and phone with a one-time code.
+                </p>
+              </div>
 
               {/* Submit */}
               <button
                 type="submit"
                 className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow"
               >
-                <UserPlus className="h-4 w-4" />
-                Register as {accountType === "employee" ? "Employee" : "Employer"}
+                Create account
+                <ArrowRight className="h-4 w-4" />
               </button>
 
               {/* Divider */}
