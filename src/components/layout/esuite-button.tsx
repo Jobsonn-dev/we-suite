@@ -104,11 +104,9 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
     const esc = (e: KeyboardEvent) => e.key === "Escape" && (setOpen(false), setEditMode(false), setSearch(""));
     document.addEventListener("mousedown", handler);
     document.addEventListener("keydown", esc);
-    document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("mousedown", handler);
       document.removeEventListener("keydown", esc);
-      document.body.style.overflow = "";
     };
   }, [open]);
 
@@ -183,94 +181,82 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
         )} />
       </button>
 
-      {/* ── Premium dropdown panel ── */}
+      {/* ── Dropdown panel (positioned below the button, NOT full-screen) ── */}
       {open && (
         <div
           ref={panelRef}
-          className="fixed right-0 top-0 z-[70] flex h-screen w-screen flex-col overflow-hidden"
+          className="absolute right-0 top-[calc(100%+8px)] z-[70] flex max-h-[calc(100vh-80px)] w-[360px] flex-col overflow-hidden rounded-2xl border border-white/10 shadow-2xl"
           style={{
-            background: "rgba(10, 14, 26, 0.85)",
+            background: "rgba(15, 20, 32, 0.97)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
             animation: "fadeIn .2s ease-out",
+            transformOrigin: "top right",
           }}
         >
-          {/* Animated background glow */}
-          <div className="pointer-events-none absolute inset-0 opacity-40">
-            <div className="absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-cyan-500/10 blur-[100px]" />
-            <div className="absolute -right-32 bottom-1/4 h-96 w-96 rounded-full bg-purple-500/10 blur-[100px]" />
-            <div className="absolute left-1/3 top-1/2 h-64 w-64 rounded-full bg-blue-500/5 blur-[80px]" />
-          </div>
+          {/* Subtle top border glow */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
 
-          {/* Starfield particles */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-30"
-            style={{
-              backgroundImage: "radial-gradient(1px 1px at 10% 15%, #fff, transparent), radial-gradient(1.5px 1.5px at 25% 60%, #67e8f9, transparent), radial-gradient(1px 1px at 45% 25%, #fff, transparent), radial-gradient(1px 1px at 65% 80%, #c4b5fd, transparent), radial-gradient(1.5px 1.5px at 80% 35%, #fff, transparent), radial-gradient(1px 1px at 90% 70%, #67e8f9, transparent)",
-              backgroundSize: "300px 300px",
-            }}
-          />
-
-          {/* Top bar */}
-          <div className="relative z-10 flex items-center justify-between border-b border-white/10 px-6 py-4 sm:px-10">
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/30">
-                <LayoutGrid className="h-5 w-5" />
+          {/* Top bar — compact */}
+          <div className="relative z-10 flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <div className="flex items-center gap-2.5">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/30">
+                <LayoutGrid className="h-4 w-4" />
               </span>
               <div>
-                <h2 className="text-lg font-bold uppercase tracking-[0.18em] text-cyan-400 sm:text-xl">
+                <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-cyan-400">
                   WEBUOS Apps
                 </h2>
-                <p className="text-[11px] text-white/50 sm:text-xs">
-                  {APPS.length} applications · {favorites.length} favorites
+                <p className="text-[10px] text-white/50">
+                  {APPS.length} apps · {favorites.length} favorites
                 </p>
               </div>
             </div>
             <button
               type="button"
               onClick={() => { setOpen(false); setEditMode(false); setSearch(""); }}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white"
               aria-label="Close"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </button>
           </div>
 
-          {/* Search bar */}
-          <div className="relative z-10 px-6 py-4 sm:px-10">
-            <div className="relative mx-auto max-w-md">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+          {/* Search bar — compact */}
+          <div className="relative z-10 px-3 py-2.5">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/40" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search apps..."
-                className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] pl-11 pr-4 text-sm text-white placeholder:text-white/40 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                className="h-9 w-full rounded-lg border border-white/10 bg-white/[0.04] pl-9 pr-8 text-xs text-white placeholder:text-white/40 focus:border-cyan-500/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                 autoFocus
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               )}
             </div>
           </div>
 
           {/* Scrollable content */}
-          <div className="relative z-10 flex-1 overflow-y-auto px-6 pb-6 scrollbar-thin sm:px-10">
-            <div className="mx-auto max-w-3xl">
+          <div className="relative z-10 flex-1 overflow-y-auto px-3 pb-3 scrollbar-thin">
+            <div className="w-full">
               {/* ── Favorites card (only when not searching and not editing) ── */}
               {!search.trim() && (
                 <div
-                  className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02] p-5 shadow-2xl"
+                  className="mb-4 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.02] p-3"
                   style={{ animation: "fadeInUp .3s ease-out" }}
                 >
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-white/80">Your Favorites</h3>
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/80">Your Favorites</h3>
                     <button
                       type="button"
                       onClick={() => setEditMode(!editMode)}
@@ -285,7 +271,7 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
                       <Pencil className="h-4 w-4" />
                     </button>
                   </div>
-                  <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 md:grid-cols-9">
+                  <div className="grid grid-cols-3 gap-2">
                     {favoriteApps.map((app, idx) => {
                       const Icon = app.icon;
                       return (
@@ -293,28 +279,28 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
                           key={app.name}
                           href={editMode ? "#" : app.href}
                           onClick={(e) => { if (editMode) e.preventDefault(); else { setOpen(false); } }}
-                          className="group flex flex-col items-center gap-2"
+                          className="group flex flex-col items-center gap-1.5"
                           style={{ animation: `fadeInUp .3s ease-out ${idx * 0.05}s both` }}
                         >
                           <span
                             className={cn(
-                              "relative inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-cyan-500/30",
+                              "relative inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br text-white shadow-md transition-all duration-300 group-hover:scale-110",
                               app.gradient,
                               editMode && "ring-2 ring-white/20"
                             )}
                           >
-                            <Icon className="h-5 w-5" />
+                            <Icon className="h-4 w-4" />
                             {editMode && (
                               <button
                                 type="button"
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(app.name); }}
-                                className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white shadow-md"
+                                className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white shadow-md"
                               >
-                                <X className="h-3 w-3" />
+                                <X className="h-2.5 w-2.5" />
                               </button>
                             )}
                           </span>
-                          <span className="text-center text-[11px] font-medium text-white/70 group-hover:text-white">
+                          <span className="text-center text-[10px] font-medium text-white/60 group-hover:text-white">
                             {app.name}
                           </span>
                         </Link>
@@ -331,8 +317,8 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
 
               {/* ── All apps grouped by category ── */}
               {search.trim() ? (
-                // Search results — flat grid
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-5">
+                // Search results — compact grid
+                <div className="grid grid-cols-3 gap-2">
                   {filteredApps.map((app, idx) => {
                     const Icon = app.icon;
                     return (
@@ -340,13 +326,13 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
                         key={app.name}
                         href={app.href}
                         onClick={() => setOpen(false)}
-                        className="group flex flex-col items-center gap-2 rounded-xl p-3 transition-all hover:bg-white/5"
+                        className="group flex flex-col items-center gap-1.5 rounded-lg p-2 transition-all hover:bg-white/5"
                         style={{ animation: `fadeInUp .2s ease-out ${idx * 0.03}s both` }}
                       >
-                        <span className={cn("inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-transform duration-300 group-hover:scale-110", app.gradient)}>
-                          <Icon className="h-5 w-5" />
+                        <span className={cn("inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br text-white shadow-md transition-transform duration-300 group-hover:scale-110", app.gradient)}>
+                          <Icon className="h-4 w-4" />
                         </span>
-                        <span className="text-center text-[11px] font-medium text-white/70 group-hover:text-white">{app.name}</span>
+                        <span className="text-center text-[10px] font-medium text-white/60 group-hover:text-white">{app.name}</span>
                       </Link>
                     );
                   })}
@@ -366,11 +352,11 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
                   if (editMode && displayApps.length === 0) return null;
 
                   return (
-                    <div key={category} className="mb-5">
-                      <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-cyan-400/60">
+                    <div key={category} className="mb-3">
+                      <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-cyan-400/60">
                         {CATEGORY_LABELS[category] || category}
                       </h3>
-                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-6">
+                      <div className="grid grid-cols-3 gap-2">
                         {displayApps.map((app, idx) => {
                           const Icon = app.icon;
                           return (
@@ -381,23 +367,23 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
                                 if (editMode) { e.preventDefault(); toggleFavorite(app.name); }
                                 else { setOpen(false); }
                               }}
-                              className="group flex flex-col items-center gap-1.5 rounded-xl p-2.5 transition-all hover:bg-white/5"
+                              className="group flex flex-col items-center gap-1.5 rounded-lg p-1.5 transition-all hover:bg-white/5"
                               style={{ animation: `fadeInUp .2s ease-out ${idx * 0.03}s both` }}
                             >
                               <span
                                 className={cn(
-                                  "relative inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg transition-all duration-300 group-hover:scale-110",
+                                  "relative inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br text-white shadow-md transition-all duration-300 group-hover:scale-110",
                                   app.gradient,
                                   editMode && favorites.includes(app.name) && "opacity-30",
                                   editMode && !favorites.includes(app.name) && "ring-2 ring-cyan-400/30"
                                 )}
                               >
-                                <Icon className="h-5 w-5" />
+                                <Icon className="h-4 w-4" />
                                 {editMode && !favorites.includes(app.name) && (
-                                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500 text-[10px] font-bold text-cyan-950">+</span>
+                                  <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-cyan-500 text-[8px] font-bold text-cyan-950">+</span>
                                 )}
                               </span>
-                              <span className="text-center text-[10px] font-medium text-white/60 group-hover:text-white sm:text-[11px]">{app.name}</span>
+                              <span className="text-center text-[9px] font-medium text-white/60 group-hover:text-white sm:text-[10px]">{app.name}</span>
                             </Link>
                           );
                         })}
@@ -409,15 +395,15 @@ export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }
 
               {/* ESuite CTA */}
               {!search.trim() && !editMode && (
-                <div className="mt-6 flex items-center justify-center">
+                <div className="mt-4 flex items-center justify-center border-t border-white/10 pt-3">
                   <a
                     href="https://esuite.webuos.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-6 py-2.5 text-sm font-semibold text-cyan-400 transition-all hover:bg-cyan-500/20"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-2 text-xs font-semibold text-cyan-400 transition-all hover:bg-cyan-500/20"
                   >
                     Open ESuite
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-3 w-3" />
                   </a>
                 </div>
               )}
