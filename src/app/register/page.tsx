@@ -2,29 +2,37 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, Mail, Lock, Eye, EyeOff, ArrowRight, User, Building2, Check, Search, Sparkles, UserPlus } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import {
+  ArrowLeft, Mail, Lock, Eye, EyeOff, ArrowRight, User, Building2,
+  Check, Search, Sparkles, UserPlus, Phone, Globe,
+} from "lucide-react";
 import { PageShell } from "@/components/layout/page-shell";
 import { ecosystems } from "@/data/taxonomy";
 import { getColor, accentText } from "@/lib/colors";
 import { DynamicIcon } from "@/lib/icon-registry";
 import { cn } from "@/lib/utils";
 
-export default function LoginPage() {
-  const router = useRouter();
+export default function RegisterPage() {
+  const searchParams = useSearchParams();
+  const urlType = searchParams.get("type");
+  const [accountType, setAccountType] = useState<"employee" | "employer">(
+    urlType === "employee" ? "employee" : "employer"
+  );
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [website, setWebsite] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [keepSignedIn, setKeepSignedIn] = useState(true);
-  const [accountType, setAccountType] = useState<"employee" | "employer">("employer");
+  const [agreed, setAgreed] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // Demo: navigate to dashboard
     window.location.href = "/dashboard";
-  }
-
-  function goToRegister(type: "employee" | "employer") {
-    router.push(`/register?type=${type}`);
   }
 
   return (
@@ -32,7 +40,6 @@ export default function LoginPage() {
       <div className="flex min-h-[calc(100vh-60px)] flex-col lg:flex-row">
         {/* Left brand panel — always dark */}
         <aside className="relative hidden overflow-hidden bg-[#0a0e1a] lg:flex lg:w-[44%] lg:flex-col lg:justify-between lg:p-10">
-          {/* Dark gradient background */}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#0a0e1a] via-[#0f1420] to-[#0a0e1a]" />
           <div className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-32 -right-16 h-96 w-96 rounded-full bg-purple-500/10 blur-3xl" />
@@ -42,20 +49,21 @@ export default function LoginPage() {
             <Link href="/" className="text-sm font-medium text-slate-400 hover:text-white inline-flex items-center gap-1.5 transition-colors">
               <ArrowLeft className="h-4 w-4" /> Back to WEBUOS
             </Link>
+            <Link href="/login" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
+              Sign In →
+            </Link>
           </div>
 
           <div className="relative z-10 space-y-6">
-            {/* "Don't have an account?" text + Register/Signup buttons */}
+            {/* Account type selection — Employee / Employer */}
             <div>
               <p className="mb-3 text-sm text-slate-400">
-                Don't have an account?{" "}
-                <span className="font-semibold text-cyan-400">Register / Signup</span>
+                Choose your account type to register
               </p>
               <div className="grid grid-cols-2 gap-3">
-                {/* Employee button — routes to register?type=employee */}
                 <button
                   type="button"
-                  onClick={() => goToRegister("employee")}
+                  onClick={() => setAccountType("employee")}
                   className={cn(
                     "group relative flex flex-col items-start gap-2 rounded-xl border p-4 transition-all duration-200",
                     accountType === "employee"
@@ -84,10 +92,9 @@ export default function LoginPage() {
                   )}
                 </button>
 
-                {/* Employer button — routes to register?type=employer */}
                 <button
                   type="button"
-                  onClick={() => goToRegister("employer")}
+                  onClick={() => setAccountType("employer")}
                   className={cn(
                     "group relative flex flex-col items-start gap-2 rounded-xl border p-4 transition-all duration-200",
                     accountType === "employer"
@@ -119,12 +126,12 @@ export default function LoginPage() {
             </div>
 
             <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              The global business discovery platform.
+              Join the WEBUOS business ecosystem.
             </h1>
             <p className="max-w-md text-base text-slate-400">
               {accountType === "employee"
-                ? "Discover companies, products, services and industries worldwide. Sign in to access your saved businesses, search history, and personalized recommendations across the WEBUOS ecosystem."
-                : "List your business, showcase products and services, connect with global buyers and suppliers. Sign in to manage your company profile, ESuite applications, and business network."}
+                ? "Create your account to discover companies, products, and services worldwide. Save businesses, track searches, and connect with employers across the global WEBUOS ecosystem."
+                : "Register your company to showcase products and services, connect with buyers and suppliers, and manage your business profile across the WEBUOS global discovery platform."}
             </p>
 
             {/* Feature highlights */}
@@ -167,23 +174,89 @@ export default function LoginPage() {
         {/* Right form panel */}
         <main className="flex flex-1 items-center justify-center bg-background px-4 py-10 sm:px-6 lg:px-8">
           <div className="w-full max-w-md">
-            {/* Mobile back link */}
-            <Link href="/" className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground lg:hidden">
-              <ArrowLeft className="h-4 w-4" /> Back to WEBUOS
-            </Link>
+            {/* Mobile back link + account type */}
+            <div className="mb-6 flex items-center justify-between">
+              <Link href="/" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground lg:hidden">
+                <ArrowLeft className="h-4 w-4" /> Back to WEBUOS
+              </Link>
+              <div className="ml-auto flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setAccountType("employee")}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
+                    accountType === "employee"
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <User className="h-3.5 w-3.5" /> Employee
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAccountType("employer")}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
+                    accountType === "employer"
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Building2 className="h-3.5 w-3.5" /> Employer
+                </button>
+              </div>
+            </div>
 
             <div className="mb-8 text-center lg:text-left">
               <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                Welcome back to WEBUOS
+                Create your {accountType === "employee" ? "Employee" : "Employer"} account
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 {accountType === "employee"
-                  ? "Sign in to discover businesses and manage your saved searches."
-                  : "Sign in to manage your company profile and business network."}
+                  ? "Register to discover businesses, save searches, and connect with employers."
+                  : "Register your company to list products, connect with buyers, and manage your business profile."}
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Name */}
+              <div className="space-y-1.5">
+                <label htmlFor="name" className="text-sm font-medium text-foreground">
+                  {accountType === "employee" ? "Full Name" : "Contact Person Name"}
+                </label>
+                <div className="relative">
+                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    id="name"
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={accountType === "employee" ? "John Doe" : "Jane Smith"}
+                    className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                  />
+                </div>
+              </div>
+
+              {/* Company name — only for employer */}
+              {accountType === "employer" && (
+                <div className="space-y-1.5">
+                  <label htmlFor="companyName" className="text-sm font-medium text-foreground">Company Name</label>
+                  <div className="relative">
+                    <Building2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      id="companyName"
+                      type="text"
+                      required
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      placeholder="ABC Technologies Pvt Ltd"
+                      className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Email */}
               <div className="space-y-1.5">
                 <label htmlFor="email" className="text-sm font-medium text-foreground">Email address</label>
@@ -201,12 +274,43 @@ export default function LoginPage() {
                 </div>
               </div>
 
+              {/* Phone */}
+              <div className="space-y-1.5">
+                <label htmlFor="phone" className="text-sm font-medium text-foreground">Phone number</label>
+                <div className="relative">
+                  <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+1 555 0100"
+                    className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                  />
+                </div>
+              </div>
+
+              {/* Website — only for employer */}
+              {accountType === "employer" && (
+                <div className="space-y-1.5">
+                  <label htmlFor="website" className="text-sm font-medium text-foreground">Company Website (optional)</label>
+                  <div className="relative">
+                    <Globe className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      id="website"
+                      type="url"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                      placeholder="https://company.com"
+                      className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Password */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-sm font-medium text-foreground">Password</label>
-                  <button type="button" className="text-xs font-medium text-primary hover:underline">Forgot password?</button>
-                </div>
+                <label htmlFor="password" className="text-sm font-medium text-foreground">Password</label>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <input
@@ -228,15 +332,38 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Keep me signed in */}
-              <label className="flex items-center gap-2 cursor-pointer">
+              {/* Confirm Password */}
+              <div className="space-y-1.5">
+                <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">Confirm password</label>
+                <div className="relative">
+                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    id="confirmPassword"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="h-11 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
+                  />
+                </div>
+              </div>
+
+              {/* Terms */}
+              <label className="flex items-start gap-2 cursor-pointer pt-1">
                 <input
                   type="checkbox"
-                  checked={keepSignedIn}
-                  onChange={(e) => setKeepSignedIn(e.target.checked)}
-                  className="h-4 w-4 rounded border-border"
+                  required
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-border"
                 />
-                <span className="text-sm text-muted-foreground">Keep me signed in</span>
+                <span className="text-sm text-muted-foreground">
+                  I agree to the{" "}
+                  <span className="font-medium text-primary hover:underline cursor-pointer">Terms of Service</span>
+                  {" "}and{" "}
+                  <span className="font-medium text-primary hover:underline cursor-pointer">Privacy Policy</span>
+                </span>
               </label>
 
               {/* Submit */}
@@ -244,8 +371,8 @@ export default function LoginPage() {
                 type="submit"
                 className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow"
               >
-                Sign in as {accountType === "employee" ? "Employee" : "Employer"}
-                <ArrowRight className="h-4 w-4" />
+                <UserPlus className="h-4 w-4" />
+                Register as {accountType === "employee" ? "Employee" : "Employer"}
               </button>
 
               {/* Divider */}
@@ -258,34 +385,14 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* SSO */}
-              <button
-                type="button"
-                onClick={() => { window.location.href = "/dashboard"; }}
-                className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 text-sm font-medium text-foreground transition-all hover:bg-muted"
-              >
-                Continue with Business SSO
-              </button>
+              {/* Already have an account */}
+              <p className="text-center text-sm text-muted-foreground">
+                Already have an account?{" "}
+                <Link href="/login" className="font-semibold text-primary hover:underline">
+                  Sign in →
+                </Link>
+              </p>
             </form>
-
-            {/* Register / Signup link */}
-            <div className="mt-6 rounded-xl border border-border bg-muted/30 p-4 text-center">
-              <p className="text-sm text-muted-foreground mb-3">Don't have an account? Register / Signup</p>
-              <div className="flex gap-2">
-                <Link
-                  href="/register?type=employee"
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2.5 text-xs font-semibold text-foreground transition-all hover:bg-muted"
-                >
-                  <User className="h-3.5 w-3.5" /> Register as Employee
-                </Link>
-                <Link
-                  href="/register?type=employer"
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2.5 text-xs font-semibold text-primary-foreground transition-all hover:bg-primary/90"
-                >
-                  <Building2 className="h-3.5 w-3.5" /> Register as Employer
-                </Link>
-              </div>
-            </div>
           </div>
         </main>
       </div>
