@@ -237,7 +237,7 @@ function useSearchFilters() {
 }
 
 // ── Pill dropdown WITH chevron (for Eco systems, Business Type, Business Size) ──
-// No background at all — fully transparent, no hover background
+// Looks like plain text + icon + chevron — NO button background, border, shadow, or padding
 function PillDropdown({
   value,
   placeholder,
@@ -259,11 +259,15 @@ function PillDropdown({
     <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
       <SelectTrigger
         className={cn(
-          "h-7 w-auto gap-1 rounded-full border-transparent bg-transparent px-2.5 py-1 text-xs font-medium transition-colors focus:ring-0 focus:ring-offset-0 sm:text-[13px]",
+          // Override ALL base button styles from shadcn SelectTrigger:
+          // no border, no shadow, no background, no fixed height, no focus ring
+          "h-auto w-auto gap-1 border-0 bg-transparent p-0 shadow-none",
+          "rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-0",
+          "text-xs font-medium transition-colors sm:text-[13px]",
           "[&_[data-slot=select-icon]_svg]:opacity-100 [&_[data-slot=select-icon]_svg]:size-3",
           isActive
             ? "text-white [&_[data-slot=select-icon]_svg]:text-cyan-400"
-            : "text-slate-300 [&_[data-slot=select-icon]_svg]:text-slate-400",
+            : "text-slate-400 hover:text-white [&_[data-slot=select-icon]_svg]:text-slate-500",
         )}
         aria-label={placeholder}
       >
@@ -289,7 +293,7 @@ function PillDropdown({
 }
 
 // ── Compact dropdown for advanced section ──
-// No background at all — fully transparent, no hover background
+// Looks like plain text + icon + chevron — NO button background, border, shadow, or padding
 function FilterDropdown({
   value,
   placeholder,
@@ -311,11 +315,15 @@ function FilterDropdown({
     <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
       <SelectTrigger
         className={cn(
-          "h-7 w-auto gap-1 rounded-full border-transparent bg-transparent px-2.5 py-1 text-xs font-medium transition-colors focus:ring-0 focus:ring-offset-0 sm:text-[13px]",
+          // Override ALL base button styles from shadcn SelectTrigger:
+          // no border, no shadow, no background, no fixed height, no focus ring
+          "h-auto w-auto gap-1 border-0 bg-transparent p-0 shadow-none",
+          "rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-0",
+          "text-xs font-medium transition-colors sm:text-[13px]",
           "[&_[data-slot=select-icon]_svg]:opacity-100 [&_[data-slot=select-icon]_svg]:size-3",
           isActive
             ? "text-white [&_[data-slot=select-icon]_svg]:text-cyan-400"
-            : "text-slate-300 [&_[data-slot=select-icon]_svg]:text-slate-400",
+            : "text-slate-400 hover:text-white [&_[data-slot=select-icon]_svg]:text-slate-500",
         )}
         aria-label={placeholder}
       >
