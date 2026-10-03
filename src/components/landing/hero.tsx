@@ -14,12 +14,8 @@ export function Hero() {
     <section className="relative flex flex-col items-center px-4 pb-12 pt-12 sm:pt-16 lg:pt-20">
       <div className="bg-grid pointer-events-none absolute inset-0 opacity-60 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
       <div className="relative z-10 flex w-full flex-col items-center">
-        <div className="mb-3 flex justify-center"><WebuosLogo size="xl" /></div>
+        <div className="mb-5 flex justify-center"><WebuosLogo size="xl" /></div>
         <h1 className="sr-only">WEBUOS - Global Business Discovery Platform</h1>
-        <p className="mb-8 max-w-3xl text-center text-base font-medium text-foreground/80 sm:text-lg">
-          World Enterprises Business Unified Operating System —{" "}
-          <span className="font-semibold text-foreground">Connecting &amp; Powering the Ecosystem.</span>
-        </p>
         <SearchBar />
         <div className="mt-5 flex w-full max-w-[620px] flex-col items-center justify-center gap-2.5 sm:flex-row">
           <Link href="/business-taxonomy" className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-card/70 px-5 py-2.5 text-sm font-semibold text-foreground shadow-soft backdrop-blur-sm transition-all hover:bg-card hover:shadow-soft-lg sm:w-auto">
@@ -47,6 +43,11 @@ export function Hero() {
             );
           })}
         </div>
+        {/* Tagline — moved below the ecosystem cards */}
+        <p className="mt-8 max-w-3xl text-center text-base font-medium text-foreground/80 sm:text-lg">
+          World Enterprises Business Unified Operating System —{" "}
+          <span className="font-semibold text-foreground">Connecting &amp; Powering the Ecosystem.</span>
+        </p>
       </div>
     </section>
   );
