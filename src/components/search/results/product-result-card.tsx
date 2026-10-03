@@ -9,10 +9,11 @@ import { Card } from "@/components/ui/card";
 import { SearchResult } from "@/lib/search/server";
 
 interface Props {
+  query?: string;
   result: SearchResult;
 }
 
-export function ProductResultCard({ result }: Props) {
+export function ProductResultCard({ result, query }: Props) {
   return (
     <Card className="group relative gap-0 overflow-hidden p-0 transition-all hover:border-amber-500/40 hover:shadow-soft-lg dark:hover:border-amber-500/40">
       <div className="h-1 w-full bg-amber-500/70" aria-hidden />

@@ -7,10 +7,11 @@ import { Card } from "@/components/ui/card";
 import { SearchResult } from "@/lib/search/server";
 
 interface Props {
+  query?: string;
   result: SearchResult;
 }
 
-export function TechnologyResultCard({ result }: Props) {
+export function TechnologyResultCard({ result, query }: Props) {
   // Providers & use cases can be either a comma-separated string (from our own
   // runSearch) OR an array (from the /api/search endpoint). Normalize to array.
   const providers = Array.isArray(result.providers)

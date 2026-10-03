@@ -7,10 +7,11 @@ import { Card } from "@/components/ui/card";
 import { SearchResult } from "@/lib/search/server";
 
 interface Props {
+  query?: string;
   result: SearchResult;
 }
 
-export function LocationResultCard({ result }: Props) {
+export function LocationResultCard({ result, query }: Props) {
   return (
     <Card className="group relative gap-0 overflow-hidden p-0 transition-all hover:border-emerald-500/40 hover:shadow-soft-lg dark:hover:border-emerald-500/40">
       <div className="h-1 w-full bg-emerald-500/70" aria-hidden />

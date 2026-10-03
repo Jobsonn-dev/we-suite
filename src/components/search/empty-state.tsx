@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { SearchX, RotateCcw, Lightbulb } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 
 interface Props {
   query: string;
@@ -22,11 +20,9 @@ const POPULAR_CATEGORIES = [
   { label: "Industrial Automation", href: "/search?q=industrial+automation&type=company" },
 ];
 
-// Simple typo suggestion heuristic — corrects common single-word typos by suggesting plurals
 function maybeSuggest(query: string): string | null {
   const q = query.trim();
   if (!q) return null;
-  // If word ends in "machin", "supplier" etc., suggest plural
   const corrections: [RegExp, string][] = [
     [/machin\b/i, "machine"],
     [/supplier\b/i, "suppliers"],
@@ -45,26 +41,26 @@ export function EmptyState({ query, relatedSearches = [], onReset }: Props) {
   const suggestion = maybeSuggest(query);
 
   return (
-    <Card className="flex flex-col items-center justify-center gap-6 border-dashed bg-muted/20 p-8 text-center sm:p-12">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-        <SearchX className="h-8 w-8 text-muted-foreground" />
+    <div className="flex flex-col items-center justify-center gap-6 rounded-2xl border border-dashed border-white/10 bg-[#131826] p-8 text-center sm:p-12">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/5">
+        <SearchX className="h-8 w-8 text-slate-500" />
       </div>
 
       <div className="space-y-1.5">
-        <h2 className="text-lg font-semibold text-foreground sm:text-xl">
+        <h2 className="text-lg font-semibold text-white sm:text-xl">
           No businesses found for &ldquo;{query}&rdquo;
         </h2>
-        <p className="max-w-md text-sm text-muted-foreground">
+        <p className="max-w-md text-sm text-slate-400">
           Try a broader search, remove some filters, or explore popular categories below.
         </p>
       </div>
 
       {suggestion && (
-        <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 px-4 py-2 text-sm">
+        <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-4 py-2 text-sm text-slate-300">
           Did you mean:{" "}
           <Link
             href={`/search?q=${encodeURIComponent(suggestion)}`}
-            className="font-semibold text-blue-600 underline-offset-4 hover:underline dark:text-blue-400"
+            className="font-semibold text-cyan-400 underline-offset-4 hover:underline"
           >
             {suggestion}
           </Link>
@@ -73,20 +69,23 @@ export function EmptyState({ query, relatedSearches = [], onReset }: Props) {
       )}
 
       <div className="flex flex-wrap items-center justify-center gap-2">
-        <Button onClick={onReset} variant="outline" className="gap-1.5">
+        <button
+          onClick={onReset}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 transition-all hover:border-white/20 hover:text-white"
+        >
           <RotateCcw className="h-3.5 w-3.5" /> Reset Filters
-        </Button>
+        </button>
       </div>
 
       {relatedSearches.length > 0 && (
-        <div className="w-full space-y-2 border-t border-border pt-6 text-left">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Related searches</p>
+        <div className="w-full space-y-2 border-t border-white/10 pt-6 text-left">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Related searches</p>
           <div className="flex flex-wrap gap-2">
             {relatedSearches.map((r) => (
               <Link
                 key={r}
                 href={`/search?q=${encodeURIComponent(r)}`}
-                className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground/80 hover:border-primary/40 hover:text-foreground"
+                className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-400 transition-all hover:border-cyan-400/30 hover:text-cyan-400"
               >
                 {r}
               </Link>
@@ -95,8 +94,8 @@ export function EmptyState({ query, relatedSearches = [], onReset }: Props) {
         </div>
       )}
 
-      <div className="w-full space-y-2 border-t border-border pt-6 text-left">
-        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <div className="w-full space-y-2 border-t border-white/10 pt-6 text-left">
+        <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
           <Lightbulb className="h-3 w-3" /> Popular categories
         </p>
         <div className="flex flex-wrap gap-2">
@@ -104,13 +103,13 @@ export function EmptyState({ query, relatedSearches = [], onReset }: Props) {
             <Link
               key={c.label}
               href={c.href}
-              className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground/80 hover:border-primary/40 hover:text-foreground"
+              className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-400 transition-all hover:border-cyan-400/30 hover:text-cyan-400"
             >
               {c.label}
             </Link>
           ))}
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

@@ -8,22 +8,23 @@ import { LocationResultCard } from "./location-result-card";
 
 interface Props {
   result: SearchResult;
+  query?: string;
 }
 
-export function ResultCard({ result }: Props) {
+export function ResultCard({ result, query }: Props) {
   switch (result.type) {
     case "company":
-      return <CompanyResultCard result={result} />;
+      return <CompanyResultCard result={result} query={query} />;
     case "product":
-      return <ProductResultCard result={result} />;
+      return <ProductResultCard result={result} query={query} />;
     case "service":
-      return <ServiceResultCard result={result} />;
+      return <ServiceResultCard result={result} query={query} />;
     case "industry":
-      return <IndustryResultCard result={result} />;
+      return <IndustryResultCard result={result} query={query} />;
     case "technology":
-      return <TechnologyResultCard result={result} />;
+      return <TechnologyResultCard result={result} query={query} />;
     case "location":
-      return <LocationResultCard result={result} />;
+      return <LocationResultCard result={result} query={query} />;
     default:
       return null;
   }

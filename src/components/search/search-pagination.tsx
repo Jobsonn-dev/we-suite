@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -15,7 +14,6 @@ export function SearchPagination({ page, totalPages, onChange }: Props) {
 
   const pages: (number | "...")[] = [];
 
-  // Build a compact list of page numbers with ellipses
   if (totalPages <= 7) {
     for (let i = 1; i <= totalPages; i++) pages.push(i);
   } else {
@@ -29,23 +27,21 @@ export function SearchPagination({ page, totalPages, onChange }: Props) {
   }
 
   return (
-    <nav aria-label="Search results pagination" className="flex items-center justify-center gap-1 py-4">
-      <Button
-        variant="outline"
-        size="sm"
+    <nav aria-label="Search results pagination" className="flex items-center justify-center gap-1 py-6">
+      <button
         disabled={page <= 1}
         onClick={() => onChange(page - 1)}
-        className="gap-1"
+        className="inline-flex h-9 items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-3 text-sm font-medium text-slate-300 transition-all hover:border-white/20 hover:text-white disabled:opacity-40 disabled:hover:border-white/10 disabled:hover:text-slate-300"
       >
         <ChevronLeft className="h-4 w-4" />
         <span className="hidden sm:inline">Previous</span>
-      </Button>
+      </button>
 
       {pages.map((p, idx) =>
         p === "..." ? (
           <span
             key={`ellipsis-${idx}`}
-            className="flex h-9 w-9 items-center justify-center text-muted-foreground"
+            className="flex h-9 w-9 items-center justify-center text-slate-500"
             aria-hidden
           >
             <MoreHorizontal className="h-4 w-4" />
@@ -57,10 +53,10 @@ export function SearchPagination({ page, totalPages, onChange }: Props) {
             aria-label={`Go to page ${p}`}
             aria-current={page === p ? "page" : undefined}
             className={cn(
-              "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors",
+              "inline-flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm font-medium transition-all",
               page === p
-                ? "border border-primary bg-primary text-primary-foreground shadow-soft"
-                : "border border-transparent text-foreground hover:bg-muted"
+                ? "bg-cyan-500 text-cyan-950 shadow-lg shadow-cyan-500/20"
+                : "border border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:text-white"
             )}
           >
             {p}
@@ -68,16 +64,14 @@ export function SearchPagination({ page, totalPages, onChange }: Props) {
         )
       )}
 
-      <Button
-        variant="outline"
-        size="sm"
+      <button
         disabled={page >= totalPages}
         onClick={() => onChange(page + 1)}
-        className="gap-1"
+        className="inline-flex h-9 items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-3 text-sm font-medium text-slate-300 transition-all hover:border-white/20 hover:text-white disabled:opacity-40 disabled:hover:border-white/10 disabled:hover:text-slate-300"
       >
         <span className="hidden sm:inline">Next</span>
         <ChevronRight className="h-4 w-4" />
-      </Button>
+      </button>
     </nav>
   );
 }

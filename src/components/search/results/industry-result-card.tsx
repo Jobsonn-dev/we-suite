@@ -11,10 +11,11 @@ import { accentText } from "@/lib/colors";
 import { SearchResult } from "@/lib/search/server";
 
 interface Props {
+  query?: string;
   result: SearchResult;
 }
 
-export function IndustryResultCard({ result }: Props) {
+export function IndustryResultCard({ result, query }: Props) {
   const eco = result.ecosystem ? getEcosystem(result.ecosystem) : undefined;
   const accent = eco?.accent ?? "blue";
 

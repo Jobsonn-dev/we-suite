@@ -5,15 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Building2, Package, Wrench, Factory, Cpu, MapPin,
-  ArrowRight, SlidersHorizontal, Sparkles, TrendingUp,
+  ArrowRight, X, TrendingUp, Sparkles, BadgeCheck,
+  Globe, Users, Briefcase, Network, FileText,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { SearchInput } from "@/components/search/search-input";
-import { SearchFilters, SearchFiltersState } from "@/components/search/search-filters";
 import { AiAnswerPanel } from "@/components/search/ai-answer-panel";
 import { ResultCard } from "@/components/search/results/result-card";
 import { SearchPagination } from "@/components/search/search-pagination";
@@ -34,24 +29,6 @@ interface Props {
   total: number;
 }
 
-const TAB_LIST: { key: ResultType | "all"; label: string; icon: typeof Building2 }[] = [
-  { key: "all", label: "All", icon: Sparkles },
-  { key: "company", label: "Companies", icon: Building2 },
-  { key: "product", label: "Products", icon: Package },
-  { key: "service", label: "Services", icon: Wrench },
-  { key: "industry", label: "Industries", icon: Factory },
-  { key: "technology", label: "Technology", icon: Cpu },
-  { key: "location", label: "Locations", icon: MapPin },
-];
-
-const SORT_OPTIONS = [
-  { key: "relevance", label: "Relevance" },
-  { key: "newest", label: "Newest" },
-  { key: "recently_updated", label: "Recently Updated" },
-  { key: "most_complete", label: "Most Complete" },
-  { key: "az", label: "A-Z" },
-];
-
 function buildUrl(q: string, params: Record<string, string | number | undefined>): string {
   const sp = new URLSearchParams();
   if (q) sp.set("q", q);
@@ -60,6 +37,14 @@ function buildUrl(q: string, params: Record<string, string | number | undefined>
   }
   const str = sp.toString();
   return `/search${str ? `?${str}` : ""}`;
+}
+
+// Active filter chip definitions
+interface ActiveFilter {
+  key: string;
+  label: string;
+  value: string;
+  param: string;
 }
 
 export function SearchClient({
@@ -85,9 +70,7 @@ export function SearchClient({
   const abortRef = useRef<AbortController | null>(null);
   const resultsTopRef = useRef<HTMLDivElement>(null);
 
-  // Hydrate initial state once on mount — already done via useState initial values
-
-  // Keep local state in sync with URL changes (e.g. browser back/forward)
+  // Keep local state in sync with URL changes
   useEffect(() => {
     const urlQuery = searchParams.get("q") ?? "";
     const urlType = (searchParams.get("type") ?? "all") as ResultType | "all";
@@ -107,6 +90,8 @@ export function SearchClient({
       business_type: searchParams.get("business_type") ?? prev.business_type,
       business_size: searchParams.get("business_size") ?? prev.business_size,
       verified: searchParams.get("verified") ?? prev.verified,
+      sector: searchParams.get("sector") ?? prev.sector,
+      category: searchParams.get("category") ?? prev.category,
     }));
   }, [searchParams]);
 
@@ -121,6 +106,8 @@ export function SearchClient({
         if (nextFilters.q) params.set("q", nextFilters.q);
         if (nextFilters.type && nextFilters.type !== "all") params.set("type", nextFilters.type);
         if (nextFilters.ecosystem) params.set("ecosystem", nextFilters.ecosystem);
+        if (nextFilters.sector) params.set("sector", nextFilters.sector);
+        if (nextFilters.category) params.set("category", nextFilters.category);
         if (nextFilters.country) params.set("country", nextFilters.country);
         if (nextFilters.state) params.set("state", nextFilters.state);
         if (nextFilters.city) params.set("city", nextFilters.city);
@@ -134,9 +121,6 @@ export function SearchClient({
         if (!res.ok) throw new Error("Search failed");
         const data: SearchResponse = await res.json();
 
-        // Normalize facets — the /api/search endpoint may use a slightly different
-        // shape (e.g. business_types with { name } instead of { key, label },
-        // verified with { verified, claimed, registered } instead of { all, ... }).
         const normalizedFacets: Facets = {
           ecosystems: (data.facets?.ecosystems ?? []).map((e: { id?: string; key?: string; name?: string; label?: string; count?: number }) => ({
             key: e.key ?? e.id ?? "",
@@ -168,7 +152,6 @@ export function SearchClient({
           types: (data.facets?.types ?? {}) as Record<ResultType, number>,
         };
 
-        // If the API didn't return facets.types, compute from results length by type
         if (!data.facets?.types) {
           const counts: Record<ResultType, number> = {
             company: 0, product: 0, service: 0, industry: 0, technology: 0, location: 0,
@@ -199,6 +182,8 @@ export function SearchClient({
       const url = buildUrl(nextFilters.q ?? "", {
         type: nextFilters.type,
         ecosystem: nextFilters.ecosystem,
+        sector: nextFilters.sector,
+        category: nextFilters.category,
         country: nextFilters.country,
         state: nextFilters.state,
         city: nextFilters.city,
@@ -212,54 +197,6 @@ export function SearchClient({
     },
     [router]
   );
-
-  function onTabChange(tab: ResultType | "all") {
-    const next = { ...filters, type: tab, page: 1 };
-    setFilters(next);
-    updateURL(next);
-    doFetch(next);
-    resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function onSortChange(sort: NonNullable<SearchParams["sort"]>) {
-    const next = { ...filters, sort, page: 1 };
-    setFilters(next);
-    updateURL(next);
-    doFetch(next);
-  }
-
-  function onApplyFilters(state: SearchFiltersState) {
-    const next: SearchParams = {
-      ...filters,
-      type: state.type,
-      ecosystem: state.ecosystem,
-      sector: state.sector,
-      category: state.category,
-      country: state.country,
-      state: state.state,
-      city: state.city,
-      business_type: state.business_type,
-      business_size: state.business_size,
-      verified: state.verified,
-      sort: state.sort,
-      page: 1,
-    };
-    setFilters(next);
-    updateURL(next);
-    doFetch(next);
-  }
-
-  function onResetFilters() {
-    const next: SearchParams = {
-      q: filters.q,
-      type: "all",
-      sort: "relevance",
-      page: 1,
-    };
-    setFilters(next);
-    updateURL(next);
-    doFetch(next);
-  }
 
   function onPageChange(page: number) {
     const next = { ...filters, page };
@@ -277,168 +214,162 @@ export function SearchClient({
     doFetch(next);
   }
 
+  // Remove a single filter by param key
+  function removeFilter(param: string) {
+    const next = { ...filters, [param]: "", page: 1 } as SearchParams;
+    setFilters(next);
+    updateURL(next);
+    doFetch(next);
+  }
+
+  // Build active filter chips
+  const activeFilters: ActiveFilter[] = [];
+  if (filters.type && filters.type !== "all") {
+    const typeLabel = filters.type.charAt(0).toUpperCase() + filters.type.slice(1) + "s";
+    activeFilters.push({ key: "type", label: "Type", value: typeLabel, param: "type" });
+  }
+  if (filters.ecosystem) {
+    activeFilters.push({ key: "ecosystem", label: "Ecosystem", value: filters.ecosystem, param: "ecosystem" });
+  }
+  if (filters.business_type) {
+    activeFilters.push({ key: "business_type", label: "Business Type", value: filters.business_type, param: "business_type" });
+  }
+  if (filters.business_size) {
+    activeFilters.push({ key: "business_size", label: "Business Size", value: filters.business_size, param: "business_size" });
+  }
+  if (filters.nature_of_business) {
+    activeFilters.push({ key: "nature", label: "Nature of Business", value: filters.nature_of_business ?? "", param: "nature_of_business" });
+  }
+  if (filters.sector) {
+    activeFilters.push({ key: "sector", label: "Core Sector", value: filters.sector ?? "", param: "sector" });
+  }
+  if (filters.category) {
+    activeFilters.push({ key: "category", label: "Category", value: filters.category ?? "", param: "category" });
+  }
+  if (filters.country) {
+    activeFilters.push({ key: "country", label: "Country", value: filters.country, param: "country" });
+  }
+  if (filters.city) {
+    activeFilters.push({ key: "city", label: "City", value: filters.city, param: "city" });
+  }
+  if (filters.verified) {
+    const vLabel = filters.verified === "true" ? "Verified" : filters.verified === "claimed" ? "Claimed" : "Registered";
+    activeFilters.push({ key: "verified", label: "Verification", value: vLabel, param: "verified" });
+  }
+  if (filters.sort && filters.sort !== "relevance") {
+    activeFilters.push({ key: "sort", label: "Sort", value: filters.sort, param: "sort" });
+  }
+
   return (
-    <div className="bg-background">
-      {/* Search Header */}
-      <div className="border-b border-border bg-card/50 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-          <SearchInput initialValue={query} autoFocus={!query} />
-
-          {/* Quick stats */}
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-            <div>
-              {!loading && (
-                <span>
-                  <span className="font-semibold text-foreground">{total.toLocaleString()}</span>{" "}
-                  {total === 1 ? "result" : "results"}
-                  {query && <> for &ldquo;<span className="font-medium text-foreground/80">{query}</span>&rdquo;</>}
-                  {interpreted.city && <> in <span className="font-medium text-foreground/80">{interpreted.city}</span></>}
-                </span>
-              )}
-              {loading && <span className="italic">Searching…</span>}
-            </div>
-            <div className="flex items-center gap-2">
-              {interpreted.intent !== "General" && (
-                <Badge variant="outline" className="gap-1 text-[10px] font-medium">
-                  <Sparkles className="h-3 w-3" /> {interpreted.intent}
-                </Badge>
-              )}
-              <span className="hidden sm:inline">Page {filters.page ?? 1} of {totalPages}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-[#0a0e1a] text-white">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* Tabs (entity type) */}
-        <div ref={resultsTopRef} className="mb-4 overflow-x-auto scrollbar-thin">
-          <Tabs value={(filters.type ?? "all") as string} onValueChange={(v) => onTabChange(v as ResultType | "all")}>
-            <TabsList className="h-auto flex-wrap gap-1 bg-muted/50 p-1">
-              {TAB_LIST.map((t) => {
-                const Icon = t.icon;
-                const typesMap = facets?.types ?? {};
-                const count = t.key === "all"
-                  ? Object.values(typesMap).reduce((a: number, b: number) => a + (b || 0), 0)
-                  : typesMap[t.key as ResultType] ?? 0;
-                return (
-                  <TabsTrigger
-                    key={t.key}
-                    value={t.key}
-                    className="gap-1.5 px-3 py-1.5 text-xs sm:text-sm"
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    <span>{t.label}</span>
-                    {count > 0 && (
-                      <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-muted px-1 text-[10px] font-semibold text-muted-foreground">
-                        {count > 999 ? `${Math.floor(count / 1000)}k` : count}
-                      </span>
-                    )}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {/* Layout: filters sidebar + results */}
-        <div className="grid gap-6 lg:grid-cols-[280px,1fr]">
-          <SearchFilters
-            filters={{
-              q: filters.q,
-              type: filters.type,
-              ecosystem: filters.ecosystem,
-              sector: filters.sector,
-              category: filters.category,
-              country: filters.country,
-              state: filters.state,
-              city: filters.city,
-              business_type: filters.business_type,
-              business_size: filters.business_size,
-              verified: filters.verified,
-              sort: filters.sort,
-              page: filters.page,
-            }}
-            facets={facets}
-            onApply={onApplyFilters}
-            onReset={onResetFilters}
-          />
-
-          {/* Results column */}
-          <div className="min-w-0 space-y-4">
-            {/* Sort bar (desktop inline) + mobile filters button row */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 lg:hidden">
-                {/* Mobile filters button is rendered inside <SearchFilters /> */}
-                <span className="text-xs text-muted-foreground">Filters</span>
-              </div>
-              <div className="ml-auto flex items-center gap-2">
-                <label htmlFor="sort-select" className="text-xs font-medium text-muted-foreground">Sort:</label>
-                <Select
-                  value={(filters.sort ?? "relevance") as string}
-                  onValueChange={(v) => onSortChange(v as NonNullable<SearchParams["sort"]>)}
-                >
-                  <SelectTrigger id="sort-select" size="sm" className="h-8 w-[150px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SORT_OPTIONS.map((s) => (
-                      <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* AI Overview panel */}
-            <AiAnswerPanel query={query} interpreted={interpreted} results={results} />
-
-            {/* Results / Loading / Empty */}
-            {loading ? (
-              <LoadingState count={5} />
-            ) : results.length === 0 ? (
-              <EmptyState query={query} relatedSearches={related_searches} onReset={onResetAll} />
-            ) : (
-              <div className="space-y-4">
-                {results.map((r, idx) => (
-                  <div key={`${r.type}-${r.id}-${idx}`}>
-                    <ResultCard result={r} />
-                  </div>
-                ))}
-              </div>
+        {/* Quick stats bar */}
+        <div ref={resultsTopRef} className="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm">
+          <div className="text-slate-400">
+            {!loading && (
+              <span>
+                <span className="font-semibold text-white">{total.toLocaleString()}</span>{" "}
+                {total === 1 ? "result" : "results"}
+                {query && <> for &ldquo;<span className="font-medium text-cyan-400">{query}</span>&rdquo;</>}
+                {interpreted.city && <> in <span className="font-medium text-white">{interpreted.city}</span></>}
+              </span>
             )}
-
-            {/* Pagination */}
-            {!loading && results.length > 0 && (
-              <SearchPagination
-                page={filters.page ?? 1}
-                totalPages={totalPages}
-                onChange={onPageChange}
-              />
+            {loading && <span className="italic text-slate-500">Searching…</span>}
+          </div>
+          <div className="flex items-center gap-2">
+            {interpreted.intent !== "General" && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-medium text-cyan-400">
+                <Sparkles className="h-3 w-3" /> {interpreted.intent}
+              </span>
             )}
-
-            {/* Related searches */}
-            {!loading && related_searches.length > 0 && results.length > 0 && (
-              <div className="space-y-2 border-t border-border pt-6">
-                <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <TrendingUp className="h-3 w-3" /> Related searches
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {related_searches.map((r) => (
-                    <Link
-                      key={r}
-                      href={`/search?q=${encodeURIComponent(r)}`}
-                      className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground/80 hover:border-primary/40 hover:text-foreground"
-                    >
-                      {r}
-                      <ArrowRight className="h-3 w-3" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+            <span className="hidden text-xs text-slate-500 sm:inline">Page {filters.page ?? 1} of {totalPages}</span>
           </div>
         </div>
+
+        {/* Active filter chips */}
+        {activeFilters.length > 0 && (
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            {activeFilters.map((f) => (
+              <button
+                key={f.key}
+                type="button"
+                onClick={() => removeFilter(f.param)}
+                className="group inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-300 transition-all hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-400"
+              >
+                <span className="text-slate-500">{f.label}:</span>
+                <span>{f.value}</span>
+                <X className="h-3 w-3 text-slate-500 transition-colors group-hover:text-red-400" />
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={onResetAll}
+              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-red-400 transition-colors hover:text-red-300"
+            >
+              <X className="h-3 w-3" /> Clear all
+            </button>
+          </div>
+        )}
+
+        {/* AI Overview panel */}
+        <AiAnswerPanel query={query} interpreted={interpreted} results={results} />
+
+        {/* Results / Loading / Empty */}
+        {loading ? (
+          <LoadingState count={5} />
+        ) : results.length === 0 ? (
+          <EmptyState query={query} relatedSearches={related_searches} onReset={onResetAll} />
+        ) : (
+          <div className="space-y-3">
+            {results.map((r, idx) => (
+              <div
+                key={`${r.type}-${r.id}-${idx}`}
+                style={{ animation: `fadeInUp .3s ease-out ${idx * 0.05}s both` }}
+              >
+                <ResultCard result={r} query={query} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!loading && results.length > 0 && (
+          <SearchPagination
+            page={filters.page ?? 1}
+            totalPages={totalPages}
+            onChange={onPageChange}
+          />
+        )}
+
+        {/* Related searches */}
+        {!loading && related_searches.length > 0 && results.length > 0 && (
+          <div className="mt-8 space-y-3 border-t border-white/10 pt-6">
+            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <TrendingUp className="h-3 w-3" /> Related searches
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {related_searches.map((r) => (
+                <Link
+                  key={r}
+                  href={`/search?q=${encodeURIComponent(r)}`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 transition-all hover:border-cyan-400/30 hover:bg-cyan-500/5 hover:text-cyan-400"
+                >
+                  {r}
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Animations */}
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
