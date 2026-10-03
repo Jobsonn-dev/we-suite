@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { Globe } from "lucide-react";
 import { WebuosLogo } from "@/components/brand/webuos-logo";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { ecosystems } from "@/data/taxonomy";
 
 export function Footer() {
@@ -37,9 +41,21 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-8 border-t border-border pt-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} WEBUOS. Global Business Discovery Platform.</p>
-          <p className="text-xs text-muted-foreground">Build · Produce · Operate — Digital · Data · Intelligence — People · Capital · Services</p>
+
+        {/* Bottom bar: copyright + theme toggle + language selector */}
+        <div className="mt-8 border-t border-border pt-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} WEBUOS. Global Business Discovery Platform.</p>
+            <p className="text-xs text-muted-foreground">Build · Produce · Operate — Digital · Data · Intelligence — People · Capital · Services</p>
+          </div>
+
+          {/* Theme toggle + Language selector — moved from header to footer */}
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <button type="button" className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="Language">
+              <Globe className="h-4 w-4" /><span>EN</span>
+            </button>
+          </div>
         </div>
       </div>
     </footer>

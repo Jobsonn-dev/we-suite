@@ -23,7 +23,7 @@ function apply(r: Resolved) {
 
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>(() => typeof window === "undefined" ? "system" : (() => { try { const v = localStorage.getItem(KEY) as Theme | null; return v === "light" || v === "dark" || v === "system" ? v : "system"; } catch { return "system"; } })());
-  const [resolved, setResolved] = useState<Resolved>(() => typeof window === "undefined" ? "light" : resolve((() => { try { const v = localStorage.getItem(KEY) as Theme | null; return v === "light" || v === "dark" || v === "system" ? v : "system"; } catch { return "system"; } })()));
+  const [resolved, setResolved] = useState<Resolved>(() => typeof window === "undefined" ? "dark" : resolve((() => { try { const v = localStorage.getItem(KEY) as Theme | null; return v === "light" || v === "dark" || v === "system" ? v : "system"; } catch { return "system"; } })()));
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

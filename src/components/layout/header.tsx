@@ -7,7 +7,6 @@ import { Globe, Menu, X, Search, ArrowRight } from "lucide-react";
 import { WebuosLogo } from "@/components/brand/webuos-logo";
 import { ESuiteButton, esuiteApps } from "@/components/layout/esuite-button";
 import { HeaderSearchInput, HeaderSearchOptions } from "@/components/layout/header-search-bar";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
 // ============================================================
@@ -126,14 +125,11 @@ export function Header() {
             </>
           )}
 
-          {/* Nav buttons — right side */}
+          {/* Nav buttons — right side (ESuite, Apps, Sign In) */}
           <nav className="hidden shrink-0 items-center gap-1 lg:flex">
             <ESuiteButton variant="pill" />
             <ESuiteButton variant="icon" />
-            <ThemeToggle />
-            <button type="button" className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="Language">
-              <Globe className="h-4 w-4" /><span>EN</span>
-            </button>
+            <Link href="/login" className="inline-flex items-center rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90">Sign In</Link>
           </nav>
 
           <button type="button" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-foreground hover:bg-muted lg:hidden" onClick={() => setMobileOpen(v => !v)} aria-label={mobileOpen ? "Close" : "Open menu"} aria-expanded={mobileOpen}>
@@ -165,11 +161,10 @@ export function Header() {
         <nav className="flex flex-col gap-1 px-4 py-3">
           <div className="flex items-center gap-2 py-1">
             <ESuiteButton variant="pill" />
-            <div className="ml-auto"><ThemeToggle /></div>
           </div>
           <button type="button" className="inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"><Globe className="h-4 w-4" /><span>English (EN)</span></button>
           <Link href="/business-taxonomy" className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted" onClick={() => setMobileOpen(false)}>Browse Ecosystems</Link>
-          <Link href="/dashboard" className="inline-flex items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground" onClick={() => setMobileOpen(false)}>Open Dashboard</Link>
+          <Link href="/login" className="inline-flex items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground" onClick={() => setMobileOpen(false)}>Sign In</Link>
         </nav>
       </div>
     </header>
