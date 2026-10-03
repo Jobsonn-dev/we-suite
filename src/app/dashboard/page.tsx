@@ -136,12 +136,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           Settings
         </Link>
         <Link
-          href="/login"
+          href="/"
           onClick={onNavigate}
           className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <LogOut className="h-4 w-4 shrink-0" />
-          Sign out
+          Back to Home
         </Link>
       </div>
     </div>

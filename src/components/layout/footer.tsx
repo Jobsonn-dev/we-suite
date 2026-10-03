@@ -22,10 +22,10 @@ export function Footer() {
           <div>
             <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Platform</h3>
             <ul className="space-y-2">
-              <li><Link href="/register" className="text-sm text-foreground/80 hover:text-foreground">Create Account</Link></li>
-              <li><Link href="/login" className="text-sm text-foreground/80 hover:text-foreground">Sign In</Link></li>
+              <li><Link href="/search" className="text-sm text-foreground/80 hover:text-foreground">Search</Link></li>
               <li><Link href="/business-taxonomy" className="text-sm text-foreground/80 hover:text-foreground">Taxonomy</Link></li>
               <li><Link href="/dashboard" className="text-sm text-foreground/80 hover:text-foreground">Dashboard</Link></li>
+              <li><Link href="/business/create" className="text-sm text-foreground/80 hover:text-foreground">List Your Business</Link></li>
             </ul>
           </div>
           <div>

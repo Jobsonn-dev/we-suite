@@ -265,3 +265,69 @@ Stage Summary:
 - ESuite redesigned: 32 apps (was 12) shown as small icon-over-name tiles in a responsive 3-8 column grid (was 2-column horizontal list)
 - Header search bar enhanced with a dropdown showing quick app access (small colored icons + names) and a "Search WEBUOS for..." action footer
 - All changes verified end-to-end via Agent Browser + VLM
+
+---
+Task ID: 9
+Agent: Main (Z.ai Code) — Remove Login & Registration Screens
+Task: Remove all registration screens and login screen
+
+Work Log:
+- Identified all login/register routes and references:
+  - `/login` route (page.tsx)
+  - `/register` route + 3 sub-routes (`/register/details`, `/register/verify`, `/register/success`)
+  - `RegistrationLayout` component (used by `/business/create`)
+  - Links in: header (Sign In, Register), footer (Create Account, Sign In), hero (Register/Signup), dashboard (Sign out → /login), registration-layout internal links
+
+**Deleted files/directories:**
+- `src/app/login/` (entire directory)
+- `src/app/register/` (entire directory, including details/, verify/, success/)
+- `src/components/registration/` (entire directory, including registration-layout.tsx)
+
+**Updated files to remove /login and /register references:**
+
+1. `src/components/landing/hero.tsx`:
+   - Removed `UserPlus` import, added `Compass` import
+   - Replaced `<Link href="/register">Register / Signup</Link>` with `<Link href="/business-taxonomy">Browse Ecosystems</Link>` (primary CTA now navigates to taxonomy browser)
+
+2. `src/components/layout/header.tsx`:
+   - Removed `<Link href="/login">Sign In</Link>` from desktop nav (right side)
+   - Updated mobile menu: replaced "Register" + "Sign In" links with "Browse Ecosystems" + "Open Dashboard" links
+   - Header now ends with: ESuite, Applications (grid icon), Theme toggle, Language (EN) — no auth buttons
+
+3. `src/components/layout/footer.tsx`:
+   - Removed "Create Account" and "Sign In" links from Platform column
+   - Added "Search" and "List Your Business" links (replaced the auth links with discovery-focused links)
+   - Footer Platform column now: Search, Taxonomy, Dashboard, List Your Business
+
+4. `src/app/dashboard/page.tsx`:
+   - Replaced `<Link href="/login">Sign out</Link>` with `<Link href="/">Back to Home</Link>` (LogOut icon retained, label changed)
+
+5. `src/app/business/create/page.tsx`:
+   - Removed `import { RegistrationLayout } from "@/components/registration/registration-layout"`
+   - Added `import { PageShell } from "@/components/layout/page-shell"`
+   - Replaced both `<RegistrationLayout>...</RegistrationLayout>` wrappers with `<PageShell><div className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center py-8">...</div></PageShell>` (preserves the centered layout but uses the standard header+footer shell)
+
+**Verification:**
+- `bun run lint`: 0 errors, 0 warnings
+- Route checks:
+  - `/login` → HTTP 404 ✓ (removed)
+  - `/register` → HTTP 404 ✓ (removed)
+  - `/` → HTTP 200 ✓
+  - `/search` → HTTP 200 ✓
+  - `/business/[slug]` → HTTP 200 ✓
+  - `/dashboard` → HTTP 200 ✓
+  - `/business/create` → HTTP 200 ✓ (still works, uses PageShell instead of RegistrationLayout)
+- No remaining `/login` or `/register` references in codebase (grep confirmed)
+- Agent Browser verified header no longer has Sign In button; hero no longer has Register/Signup button
+
+Stage Summary:
+- All registration screens removed: /login, /register, /register/details, /register/verify, /register/success
+- RegistrationLayout component removed (was only used by /business/create)
+- All links to /login and /register replaced with discovery-focused alternatives:
+  - Hero: "Register / Signup" → "Browse Ecosystems"
+  - Header desktop: removed Sign In button
+  - Header mobile: Register/Sign In → Browse Ecosystems/Open Dashboard
+  - Footer: Create Account/Sign In → Search/List Your Business
+  - Dashboard: Sign out → Back to Home
+- /business/create page still works, now uses PageShell wrapper instead of RegistrationLayout
+- Codebase is clean: no orphan imports, no broken links, lint passes

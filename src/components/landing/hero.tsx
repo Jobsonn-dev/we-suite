@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, SlidersHorizontal, UserPlus } from "lucide-react";
+import { ArrowRight, SlidersHorizontal, Compass } from "lucide-react";
 import { WebuosLogo } from "@/components/brand/webuos-logo";
 import { SearchBar } from "./search-bar";
 import { ecosystems } from "@/data/taxonomy";
@@ -25,8 +25,8 @@ export function Hero() {
           <Link href="/business-taxonomy" className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-card/70 px-5 py-2.5 text-sm font-semibold text-foreground shadow-soft backdrop-blur-sm transition-all hover:bg-card hover:shadow-soft-lg sm:w-auto">
             <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />Advanced Search
           </Link>
-          <Link href="/register" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow sm:w-auto">
-            <UserPlus className="h-4 w-4" />Register / Signup
+          <Link href="/business-taxonomy" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow sm:w-auto">
+            <Compass className="h-4 w-4" />Browse Ecosystems
           </Link>
         </div>
         <div className="mt-10 grid w-full max-w-4xl grid-cols-1 gap-3 sm:grid-cols-3">

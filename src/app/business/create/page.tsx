@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowLeft, Check, Search, ChevronRight, Home, CheckCircle2, Building2 } from "lucide-react";
-import { RegistrationLayout } from "@/components/registration/registration-layout";
+import { PageShell } from "@/components/layout/page-shell";
 import { ecosystems, getEcosystem, getCoreSector } from "@/data/taxonomy";
 import { getColor } from "@/lib/colors";
 import { DynamicIcon } from "@/lib/icon-registry";
@@ -61,7 +61,8 @@ export default function BusinessCreatePage() {
 
   if (done) {
     return (
-      <RegistrationLayout>
+      <PageShell>
+        <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center py-8">
         <div className="flex flex-col items-center py-4 text-center">
           <div className="relative mb-6 flex items-center justify-center">
             <span className="absolute inline-flex h-24 w-24 animate-ping rounded-full bg-green-400/20" />
@@ -86,12 +87,14 @@ export default function BusinessCreatePage() {
             <Link href="/business-taxonomy" className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-medium text-foreground hover:bg-muted">View Taxonomy</Link>
           </div>
         </div>
-      </RegistrationLayout>
+        </div>
+      </PageShell>
     );
   }
 
   return (
-    <RegistrationLayout>
+    <PageShell>
+      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center py-8">
       {/* Stepper */}
       <div className="mb-8">
         <div className="mx-auto w-full max-w-2xl">
@@ -252,6 +255,7 @@ export default function BusinessCreatePage() {
         <button type="button" onClick={prev} disabled={step === 1} className="inline-flex items-center gap-1.5 rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-40"><ArrowLeft className="h-4 w-4" />Back</button>
         <button type="button" onClick={next} className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90">{step === 3 ? "Create Business" : "Continue"}<ArrowRight className="h-4 w-4" /></button>
       </div>
-    </RegistrationLayout>
+      </div>
+    </PageShell>
   );
 }
