@@ -236,8 +236,8 @@ function useSearchFilters() {
   };
 }
 
-// ── Pill dropdown WITH chevron (for Eco systems, Business Type, Business Size) ──
-// Looks like plain text + icon + chevron — NO button background, border, shadow, or padding
+// ── Pill dropdown (for Eco systems, Business Type, Business Size) ──
+// Looks EXACTLY like a category pill — icon + text, NO chevron, NO button styling
 function PillDropdown({
   value,
   placeholder,
@@ -259,19 +259,19 @@ function PillDropdown({
     <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
       <SelectTrigger
         className={cn(
-          // Override ALL base button styles from shadcn SelectTrigger:
-          // no border, no shadow, no background, no fixed height, no focus ring
+          // Override ALL base button styles — no border, shadow, background, padding, height
           "h-auto w-auto gap-1 border-0 bg-transparent p-0 shadow-none",
           "rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-0",
           "text-xs font-medium transition-colors sm:text-[13px]",
-          "[&_[data-slot=select-icon]_svg]:opacity-100 [&_[data-slot=select-icon]_svg]:size-3",
+          // Hide the default chevron completely — look like a plain pill
+          "[&_[data-slot=select-icon]]:hidden [&_.lucide-chevron-down]:hidden",
           isActive
-            ? "text-white [&_[data-slot=select-icon]_svg]:text-cyan-400"
-            : "text-slate-400 hover:text-white [&_[data-slot=select-icon]_svg]:text-slate-500",
+            ? "text-white"
+            : "text-slate-400 hover:text-white",
         )}
         aria-label={placeholder}
       >
-        <Icon className="size-3.5 shrink-0" />
+        <Icon className={cn("size-3.5 shrink-0", isActive && "text-cyan-400")} />
         <span className="whitespace-nowrap">{displayLabel}</span>
       </SelectTrigger>
       <SelectContent className="max-h-72 border-white/10 bg-[#1a1f2e] text-white">
@@ -293,7 +293,7 @@ function PillDropdown({
 }
 
 // ── Compact dropdown for advanced section ──
-// Looks like plain text + icon + chevron — NO button background, border, shadow, or padding
+// Looks EXACTLY like a category pill — icon + text, NO chevron, NO button styling
 function FilterDropdown({
   value,
   placeholder,
@@ -315,19 +315,19 @@ function FilterDropdown({
     <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
       <SelectTrigger
         className={cn(
-          // Override ALL base button styles from shadcn SelectTrigger:
-          // no border, no shadow, no background, no fixed height, no focus ring
+          // Override ALL base button styles — no border, shadow, background, padding, height
           "h-auto w-auto gap-1 border-0 bg-transparent p-0 shadow-none",
           "rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-0",
           "text-xs font-medium transition-colors sm:text-[13px]",
-          "[&_[data-slot=select-icon]_svg]:opacity-100 [&_[data-slot=select-icon]_svg]:size-3",
+          // Hide the default chevron completely — look like a plain pill
+          "[&_[data-slot=select-icon]]:hidden [&_.lucide-chevron-down]:hidden",
           isActive
-            ? "text-white [&_[data-slot=select-icon]_svg]:text-cyan-400"
-            : "text-slate-400 hover:text-white [&_[data-slot=select-icon]_svg]:text-slate-500",
+            ? "text-white"
+            : "text-slate-400 hover:text-white",
         )}
         aria-label={placeholder}
       >
-        {Icon && <Icon className="size-3.5 shrink-0" />}
+        {Icon && <Icon className={cn("size-3.5 shrink-0", isActive && "text-cyan-400")} />}
         <span className="whitespace-nowrap">{displayLabel}</span>
       </SelectTrigger>
       <SelectContent className="max-h-72 border-white/10 bg-[#1a1f2e] text-white">
@@ -561,7 +561,6 @@ export function HeaderSearchOptions() {
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
           <span className="whitespace-nowrap">Advanced Search</span>
-          {showAdvanced ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
           {activeAdvancedCount > 0 && (
             <span className="ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-cyan-950">
               {activeAdvancedCount}
