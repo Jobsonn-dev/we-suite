@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Globe, Menu, X, Search, ArrowRight } from "lucide-react";
 import { WebuosLogo } from "@/components/brand/webuos-logo";
 import { ESuiteButton } from "@/components/layout/esuite-button";
@@ -42,6 +42,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState("");
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
 
@@ -55,6 +56,8 @@ export function Header() {
   }, [isHome]);
 
   const showHeaderSearch = !isHome || scrolled;
+  // Options row only shows when there's an actual search query in the URL
+  const hasSearchQuery = !!searchParams.get("q")?.trim();
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -70,7 +73,7 @@ export function Header() {
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* ── Row 1: Logo | Search bar | Nav buttons ── */}
+        {/* ── Row 1: Logo | Search bar (wider) | Nav buttons ── */}
         <div className={cn("flex items-center gap-3", showHeaderSearch ? "py-2.5" : "h-[60px]")}>
           <Link href="/" className="flex shrink-0 items-center" aria-label="WEBUOS home">
             <WebuosLogo size="md" />
@@ -78,9 +81,9 @@ export function Header() {
 
           {showHeaderSearch ? (
             <>
-              {/* Search bar — centered between logo and nav buttons */}
+              {/* Search bar — wider, responsive, centered */}
               <div className="hidden flex-1 items-center justify-center lg:flex">
-                <div className="w-full max-w-[480px] xl:max-w-[560px]">
+                <div className="w-full max-w-[640px] xl:max-w-[780px] 2xl:max-w-[860px]">
                   <HeaderSearchInput />
                 </div>
               </div>
@@ -110,8 +113,8 @@ export function Header() {
           </button>
         </div>
 
-        {/* ── Row 2: Options row — full width, left-aligned with the logo ── */}
-        {showHeaderSearch && (
+        {/* ── Row 2: Options row — ONLY shows when there's a search query ── */}
+        {showHeaderSearch && hasSearchQuery && (
           <div className="hidden lg:block pb-2">
             <HeaderSearchOptions />
           </div>
