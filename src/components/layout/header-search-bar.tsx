@@ -7,7 +7,7 @@ import {
   Layers, Building2, Briefcase, Package, Cpu, MapPin,
   Globe, Factory, TrendingUp, Users, Sparkles, Wrench, BarChart3,
   SlidersHorizontal, Network, FileText, BadgeCheck, Layers3, ListTree,
-  MapPinned, type LucideIcon,
+  MapPinned, Tag, Globe2, Hash, type LucideIcon,
 } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -37,16 +37,18 @@ interface FilterState {
   ecosystem: string;
   business_type: string;
   nature_of_business: string;
-  industry_sector: string;     // was "sector" — renamed
-  core_category: string;       // NEW — between sector and category
+  industry_sector: string;
+  core_category: string;
   category: string;
-  sub_category: string;         // NEW — after category
+  sub_category: string;
   business_size: string;
   country: string;
-  region: string;              // NEW — after country
+  region: string;
   city: string;
   sort: SearchSort;
   verified: string;
+  keywords: string;          // NEW — in advanced search
+  domain_name: string;        // NEW — in advanced search
   digital_ai: boolean;
 }
 
@@ -57,6 +59,11 @@ const CATEGORY_PILLS: { key: SearchCategory; label: string; icon: LucideIcon }[]
   { key: "service", label: "Services", icon: Wrench },
   { key: "industry", label: "Industries", icon: BarChart3 },
   { key: "location", label: "Locations", icon: MapPin },
+];
+
+// Additional pills shown in Row 1 after the category pills — not entity types but quick filters
+const EXTRA_PILLS: { label: string; icon: LucideIcon }[] = [
+  { label: "Brands", icon: Tag },
 ];
 
 const BUSINESS_TYPES = [
@@ -112,6 +119,20 @@ const CITIES = [
   "Hamburg", "Munich", "London", "Singapore", "Tokyo", "Dubai", "Shanghai",
 ];
 
+// Key Words — common business search keywords
+const KEY_WORDS = [
+  "Sustainability", "Digital Transformation", "Innovation", "Quality",
+  "Export", "Import", "B2B", "OEM", "ODM", "ISO Certified",
+  "AI-Powered", "Cloud-Native", "Automation", "Smart Factory",
+  "Green Energy", "Supply Chain", "Logistics", "R&D",
+];
+
+// Domain Name — common domain extensions for business filtering
+const DOMAIN_EXTENSIONS = [
+  ".com", ".net", ".org", ".io", ".ai", ".co", ".tech",
+  ".industry", ".business", ".inc", ".enterprise", ".cloud",
+];
+
 // ── Shared state hook (so both components share the same filters) ──
 function useSearchFilters() {
   const router = useRouter();
@@ -138,6 +159,8 @@ function useSearchFilters() {
     city: searchParams.get("city") ?? "",
     sort: initialSort,
     verified: searchParams.get("verified") ?? "",
+    keywords: searchParams.get("keywords") ?? "",
+    domain_name: searchParams.get("domain_name") ?? "",
     digital_ai: searchParams.get("ecosystem") === "technology-ai",
   });
 
@@ -146,6 +169,7 @@ function useSearchFilters() {
     return !!(sp.get("ecosystem") || sp.get("business_type") || sp.get("nature_of_business") ||
       sp.get("sector") || sp.get("core_category") || sp.get("category") || sp.get("sub_category") ||
       sp.get("business_size") || sp.get("country") || sp.get("region") || sp.get("city") ||
+      sp.get("keywords") || sp.get("domain_name") ||
       (sp.get("sort") && sp.get("sort") !== "relevance") || sp.get("verified"));
   });
 
@@ -212,6 +236,8 @@ function useSearchFilters() {
     if (next.city) params.set("city", next.city);
     if (next.sort && next.sort !== "relevance") params.set("sort", next.sort);
     if (next.verified) params.set("verified", next.verified);
+    if (next.keywords) params.set("keywords", next.keywords);
+    if (next.domain_name) params.set("domain_name", next.domain_name);
     const qs = params.toString();
     router.push(qs ? `/search?${qs}` : "/search");
   }
@@ -285,6 +311,8 @@ function useSearchFilters() {
       city: "",
       sort: "relevance",
       verified: "",
+      keywords: "",
+      domain_name: "",
       digital_ai: false,
     };
     setFilters(cleared);
@@ -296,6 +324,7 @@ function useSearchFilters() {
     filters.business_size, filters.industry_sector, filters.core_category,
     filters.category, filters.sub_category,
     filters.country, filters.region, filters.city, filters.verified,
+    filters.keywords, filters.domain_name,
   ].filter(Boolean).length
     + (filters.sort !== "relevance" ? 1 : 0)
     + (filters.digital_ai ? 1 : 0);
@@ -559,10 +588,10 @@ export function HeaderSearchInput() {
 // ════════════════════════════════════════════════════════════
 // PART 2: HeaderSearchOptions — the options rows
 //
-// Row 1: All | Companies | Products | Services | Industries | Locations |
-//        Business Type | Business Size | Advanced Search
+// Row 1: All | Companies | Products | Services | Industries | Brands | Locations |
+//        Business Type | Business Size | Verification | Sort By | Advanced Search
 // Row 2: Nature of Business | Eco systems | Industry Sector | Core Category |
-//        Categories | Sub Category | Country | Region | City | Verification | Sort By
+//        Categories | Sub Category | Country | Region | City | Key Words | Domain Name
 //
 // Cascading: Eco system → Industry Sector → Core Category → Categories → Sub Category
 // ════════════════════════════════════════════════════════════
@@ -576,7 +605,7 @@ export function HeaderSearchOptions() {
 
   return (
     <div className="w-full">
-      {/* ── Row 1: Category pills + Business Type + Business Size + Advanced Search ── */}
+      {/* ── Row 1: Category pills + Brands + Business Type + Business Size + Verification + Sort By + Advanced Search ── */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
         {/* Category pills */}
         {CATEGORY_PILLS.map((cat) => {
@@ -599,6 +628,26 @@ export function HeaderSearchOptions() {
           );
         })}
 
+        {/* Brands — extra pill (after Industries) */}
+        {EXTRA_PILLS.map((pill) => {
+          const Icon = pill.icon;
+          const isActive = filters.type === "product"; // Brands maps to product type
+          return (
+            <button
+              key={pill.label}
+              type="button"
+              onClick={() => selectCategory("product")}
+              className={cn(
+                "inline-flex shrink-0 items-center gap-1.5 px-1 py-1 text-xs font-medium transition-colors sm:text-[13px]",
+                isActive ? "text-white" : "text-slate-400 hover:text-white",
+              )}
+            >
+              <Icon className={cn("h-3.5 w-3.5", isActive && "text-cyan-400")} />
+              <span className="whitespace-nowrap">{pill.label}</span>
+            </button>
+          );
+        })}
+
         {/* Business Type */}
         <PillDropdown
           icon={FileText}
@@ -615,6 +664,24 @@ export function HeaderSearchOptions() {
           placeholder="Business Size"
           options={BUSINESS_SIZES.map((b) => ({ value: b, label: b }))}
           onChange={(v) => updateFilter("business_size", v)}
+        />
+
+        {/* Verification — moved from Row 2 to Row 1 */}
+        <PillDropdown
+          icon={BadgeCheck}
+          value={filters.verified}
+          placeholder="Verification"
+          options={VERIFICATION_OPTIONS}
+          onChange={(v) => updateFilter("verified", v)}
+        />
+
+        {/* Sort By — moved from Row 2 to Row 1 */}
+        <PillDropdown
+          icon={TrendingUp}
+          value={filters.sort === "relevance" ? "" : filters.sort}
+          placeholder="Sort By"
+          options={SORT_OPTIONS.filter((s) => s.key !== "relevance").map((s) => ({ value: s.key, label: s.label }))}
+          onChange={(v) => updateFilter("sort", (v || "relevance") as SearchSort)}
         />
 
         {/* Advanced Search button */}
@@ -650,7 +717,8 @@ export function HeaderSearchOptions() {
       </div>
 
       {/* ── Row 2: Advanced dropdown filters ──
-          Cascading: Eco system → Industry Sector → Core Category → Categories → Sub Category */}
+          Cascading: Eco system → Industry Sector → Core Category → Categories → Sub Category
+          New: Key Words, Domain Name added at the end */}
       {showAdvanced && (
         <div
           className="mt-1 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin"
@@ -665,7 +733,7 @@ export function HeaderSearchOptions() {
             onChange={(v) => updateFilter("nature_of_business", v)}
           />
 
-          {/* Eco systems — must be selected first for cascading */}
+          {/* Eco systems */}
           <FilterDropdown
             icon={Network}
             value={filters.ecosystem}
@@ -748,22 +816,22 @@ export function HeaderSearchOptions() {
             onChange={(v) => updateFilter("city", v)}
           />
 
-          {/* Verification */}
+          {/* Key Words — NEW */}
           <FilterDropdown
-            icon={BadgeCheck}
-            value={filters.verified}
-            placeholder="Verification"
-            options={VERIFICATION_OPTIONS}
-            onChange={(v) => updateFilter("verified", v)}
+            icon={Hash}
+            value={filters.keywords}
+            placeholder="Key Words"
+            options={KEY_WORDS.map((k) => ({ value: k, label: k }))}
+            onChange={(v) => updateFilter("keywords", v)}
           />
 
-          {/* Sort By */}
+          {/* Domain Name — NEW */}
           <FilterDropdown
-            icon={TrendingUp}
-            value={filters.sort === "relevance" ? "" : filters.sort}
-            placeholder="Sort By"
-            options={SORT_OPTIONS.filter((s) => s.key !== "relevance").map((s) => ({ value: s.key, label: s.label }))}
-            onChange={(v) => updateFilter("sort", (v || "relevance") as SearchSort)}
+            icon={Globe2}
+            value={filters.domain_name}
+            placeholder="Domain Name"
+            options={DOMAIN_EXTENSIONS.map((d) => ({ value: d, label: d }))}
+            onChange={(v) => updateFilter("domain_name", v)}
           />
         </div>
       )}
