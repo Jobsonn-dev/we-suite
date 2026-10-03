@@ -4,9 +4,10 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search, Mic, ArrowRight, X, ChevronDown, ChevronUp,
-  Layers, Building2, Briefcase, Package, MapPin,
+  Layers, Building2, Briefcase, Package, Cpu, MapPin,
   Globe, Factory, TrendingUp, Users, Sparkles, Wrench, BarChart3,
-  SlidersHorizontal, Network, FileText, BadgeCheck, type LucideIcon,
+  SlidersHorizontal, Network, FileText, BadgeCheck, Layers3, ListTree,
+  MapPinned, type LucideIcon,
 } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -15,15 +16,16 @@ import { cn } from "@/lib/utils";
 import { ecosystems, getEcosystem } from "@/data/taxonomy";
 
 // ============================================================
-// Header Search Components
+// Header Search Bar + Dropdown Filters
 //
-// Split into two parts:
-//   1. <HeaderSearchInput />  — the pill-shaped search bar (goes in Row 1)
-//   2. <HeaderSearchOptions /> — the options row below (goes in Row 2, full width)
+// Layout:
+//   Row 1 (always visible): Category pills + Business Type + Business Size + Advanced Search
+//   Row 2 (expandable): Nature of Business → Eco systems → Industry Sector →
+//     Core Category → Categories → Sub Category → Country → Region → City →
+//     Verification → Sort By
 //
-// Row 1: Logo | Search bar | Nav buttons
-// Row 2: All | Companies | Products | Services | Industries | Locations |
-//        Eco systems ▾ | Business Type ▾ | Business Size ▾ | Advanced Search
+// Cascading validation:
+//   Eco system → Industry Sector → Core Category → Categories → Sub Category
 // ============================================================
 
 export type SearchCategory = "all" | "company" | "product" | "service" | "industry" | "technology" | "location";
@@ -35,10 +37,13 @@ interface FilterState {
   ecosystem: string;
   business_type: string;
   nature_of_business: string;
-  sector: string;
+  industry_sector: string;     // was "sector" — renamed
+  core_category: string;       // NEW — between sector and category
   category: string;
+  sub_category: string;         // NEW — after category
   business_size: string;
   country: string;
+  region: string;              // NEW — after country
   city: string;
   sort: SearchSort;
   verified: string;
@@ -86,6 +91,20 @@ const COUNTRIES = [
   "Singapore", "Germany", "Australia", "Canada", "Japan", "China",
 ];
 
+// Region options — based on selected country
+const REGIONS_BY_COUNTRY: Record<string, string[]> = {
+  "India": ["North India", "South India", "East India", "West India", "Central India"],
+  "USA": ["West Coast", "East Coast", "Midwest", "South", "Southwest", "Pacific Northwest"],
+  "United Kingdom": ["England", "Scotland", "Wales", "Northern Ireland"],
+  "United Arab Emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Ras Al Khaimah"],
+  "Singapore": ["Central Region", "East Region", "North Region", "West Region", "North-East Region"],
+  "Germany": ["Bavaria", "Berlin", "Hamburg", "Hesse", "Saxony", "North Rhine-Westphalia"],
+  "Australia": ["New South Wales", "Victoria", "Queensland", "Western Australia", "South Australia"],
+  "Canada": ["Ontario", "Quebec", "British Columbia", "Alberta", "Manitoba"],
+  "Japan": ["Kanto", "Kansai", "Chubu", "Tohoku", "Kyushu"],
+  "China": ["Beijing", "Shanghai", "Guangdong", "Zhejiang", "Jiangsu"],
+};
+
 const CITIES = [
   "Bengaluru", "Mumbai", "Pune", "Chennai", "Hyderabad", "Delhi",
   "Gurugram", "Ahmedabad", "Jaipur",
@@ -109,10 +128,13 @@ function useSearchFilters() {
     ecosystem: searchParams.get("ecosystem") ?? "",
     business_type: searchParams.get("business_type") ?? "",
     nature_of_business: searchParams.get("nature_of_business") ?? "",
-    sector: searchParams.get("sector") ?? "",
+    industry_sector: searchParams.get("sector") ?? "",
+    core_category: searchParams.get("core_category") ?? "",
     category: searchParams.get("category") ?? "",
+    sub_category: searchParams.get("sub_category") ?? "",
     business_size: searchParams.get("business_size") ?? "",
     country: searchParams.get("country") ?? "",
+    region: searchParams.get("region") ?? "",
     city: searchParams.get("city") ?? "",
     sort: initialSort,
     verified: searchParams.get("verified") ?? "",
@@ -120,39 +142,57 @@ function useSearchFilters() {
   });
 
   const [showAdvanced, setShowAdvanced] = useState<boolean>(() => {
-    const eco = searchParams.get("ecosystem");
-    const bType = searchParams.get("business_type");
-    const nature = searchParams.get("nature_of_business");
-    const sector = searchParams.get("sector");
-    const cat = searchParams.get("category");
-    const bSize = searchParams.get("business_size");
-    const country = searchParams.get("country");
-    const city = searchParams.get("city");
-    const sort = searchParams.get("sort");
-    const verified = searchParams.get("verified");
-    return !!(eco || bType || nature || sector || cat || bSize || country || city || (sort && sort !== "relevance") || verified);
+    const sp = searchParams;
+    return !!(sp.get("ecosystem") || sp.get("business_type") || sp.get("nature_of_business") ||
+      sp.get("sector") || sp.get("core_category") || sp.get("category") || sp.get("sub_category") ||
+      sp.get("business_size") || sp.get("country") || sp.get("region") || sp.get("city") ||
+      (sp.get("sort") && sp.get("sort") !== "relevance") || sp.get("verified"));
   });
 
-  const sectorOptions = useMemo(() => {
-    if (!filters.ecosystem) {
-      return ecosystems.flatMap((e) => e.categories).map((s) => ({ value: s.id, label: s.name }));
-    }
+  // ── Cascading options ──
+
+  // Industry Sector options — based on Eco system selection
+  const industrySectorOptions = useMemo(() => {
+    if (!filters.ecosystem) return [];
     const eco = getEcosystem(filters.ecosystem);
     return (eco?.categories ?? []).map((s) => ({ value: s.id, label: s.name }));
   }, [filters.ecosystem]);
 
-  const categoryOptions = useMemo(() => {
-    if (!filters.ecosystem) {
-      return ecosystems.flatMap((e) => e.categories).flatMap((s) => s.categories).map((c) => ({ value: c.id, label: c.name }));
-    }
+  // Core Category options — based on Industry Sector selection
+  const coreCategoryOptions = useMemo(() => {
+    if (!filters.ecosystem || !filters.industry_sector) return [];
     const eco = getEcosystem(filters.ecosystem);
-    if (!eco) return [];
-    if (!filters.sector) {
-      return eco.categories.flatMap((s) => s.categories).map((c) => ({ value: c.id, label: c.name }));
-    }
-    const sector = eco.categories.find((s) => s.id === filters.sector);
+    const sector = eco?.categories.find((s) => s.id === filters.industry_sector);
     return (sector?.categories ?? []).map((c) => ({ value: c.id, label: c.name }));
-  }, [filters.ecosystem, filters.sector]);
+  }, [filters.ecosystem, filters.industry_sector]);
+
+  // Categories options — based on Core Category (uses products from taxonomy)
+  const categoryOptions = useMemo(() => {
+    if (!filters.ecosystem || !filters.industry_sector || !filters.core_category) return [];
+    const eco = getEcosystem(filters.ecosystem);
+    const sector = eco?.categories.find((s) => s.id === filters.industry_sector);
+    const coreCat = sector?.categories.find((c) => c.id === filters.core_category);
+    if (!coreCat) return [];
+    // Use products as Categories
+    return coreCat.products.map((p) => ({ value: p.name, label: p.name }));
+  }, [filters.ecosystem, filters.industry_sector, filters.core_category]);
+
+  // Sub Category options — based on Category (uses services from taxonomy)
+  const subCategoryOptions = useMemo(() => {
+    if (!filters.ecosystem || !filters.industry_sector || !filters.core_category || !filters.category) return [];
+    const eco = getEcosystem(filters.ecosystem);
+    const sector = eco?.categories.find((s) => s.id === filters.industry_sector);
+    const coreCat = sector?.categories.find((c) => c.id === filters.core_category);
+    if (!coreCat) return [];
+    // Use services as Sub Categories
+    return coreCat.services.map((s) => ({ value: s.name, label: s.name }));
+  }, [filters.ecosystem, filters.industry_sector, filters.core_category, filters.category]);
+
+  // Region options — based on Country
+  const regionOptions = useMemo(() => {
+    if (!filters.country) return [];
+    return (REGIONS_BY_COUNTRY[filters.country] ?? []).map((r) => ({ value: r, label: r }));
+  }, [filters.country]);
 
   function go(overrides?: Partial<FilterState>) {
     const next = { ...filters, ...overrides, q: query.trim() };
@@ -160,12 +200,15 @@ function useSearchFilters() {
     if (next.q) params.set("q", next.q);
     if (next.type && next.type !== "all") params.set("type", next.type);
     if (next.ecosystem) params.set("ecosystem", next.ecosystem);
-    if (next.sector) params.set("sector", next.sector);
+    if (next.industry_sector) params.set("sector", next.industry_sector);
+    if (next.core_category) params.set("core_category", next.core_category);
     if (next.category) params.set("category", next.category);
+    if (next.sub_category) params.set("sub_category", next.sub_category);
     if (next.business_type) params.set("business_type", next.business_type);
     if (next.nature_of_business) params.set("nature_of_business", next.nature_of_business);
     if (next.business_size) params.set("business_size", next.business_size);
     if (next.country) params.set("country", next.country);
+    if (next.region) params.set("region", next.region);
     if (next.city) params.set("city", next.city);
     if (next.sort && next.sort !== "relevance") params.set("sort", next.sort);
     if (next.verified) params.set("verified", next.verified);
@@ -180,19 +223,43 @@ function useSearchFilters() {
 
   function updateFilter<K extends keyof FilterState>(key: K, value: FilterState[K]) {
     const overrides: Partial<FilterState> = { [key]: value };
+
+    // ── Cascading reset logic ──
+    // Eco system → resets Industry Sector, Core Category, Categories, Sub Category
     if (key === "ecosystem") {
-      overrides.sector = "";
+      overrides.industry_sector = "";
+      overrides.core_category = "";
       overrides.category = "";
+      overrides.sub_category = "";
       overrides.digital_ai = value === "technology-ai";
     }
-    if (key === "sector") {
+    // Industry Sector → resets Core Category, Categories, Sub Category
+    if (key === "industry_sector") {
+      overrides.core_category = "";
       overrides.category = "";
+      overrides.sub_category = "";
     }
+    // Core Category → resets Categories, Sub Category
+    if (key === "core_category") {
+      overrides.category = "";
+      overrides.sub_category = "";
+    }
+    // Category → resets Sub Category
+    if (key === "category") {
+      overrides.sub_category = "";
+    }
+    // Country → resets Region
+    if (key === "country") {
+      overrides.region = "";
+    }
+    // Digital & AI toggle
     if (key === "digital_ai") {
       if (value) {
         overrides.ecosystem = "technology-ai";
-        overrides.sector = "";
+        overrides.industry_sector = "";
+        overrides.core_category = "";
         overrides.category = "";
+        overrides.sub_category = "";
       } else {
         overrides.ecosystem = "";
       }
@@ -208,10 +275,13 @@ function useSearchFilters() {
       ecosystem: "",
       business_type: "",
       nature_of_business: "",
-      sector: "",
+      industry_sector: "",
+      core_category: "",
       category: "",
+      sub_category: "",
       business_size: "",
       country: "",
+      region: "",
       city: "",
       sort: "relevance",
       verified: "",
@@ -223,8 +293,9 @@ function useSearchFilters() {
 
   const activeAdvancedCount = [
     filters.ecosystem, filters.business_type, filters.nature_of_business,
-    filters.business_size, filters.sector, filters.category,
-    filters.country, filters.city, filters.verified,
+    filters.business_size, filters.industry_sector, filters.core_category,
+    filters.category, filters.sub_category,
+    filters.country, filters.region, filters.city, filters.verified,
   ].filter(Boolean).length
     + (filters.sort !== "relevance" ? 1 : 0)
     + (filters.digital_ai ? 1 : 0);
@@ -232,49 +303,49 @@ function useSearchFilters() {
   return {
     query, setQuery, filters, setFilters, showAdvanced, setShowAdvanced,
     go, selectCategory, updateFilter, resetFilters,
-    sectorOptions, categoryOptions, activeAdvancedCount,
+    industrySectorOptions, coreCategoryOptions, categoryOptions, subCategoryOptions,
+    regionOptions, activeAdvancedCount,
   };
 }
 
-// ── Pill dropdown (for Eco systems, Business Type, Business Size) ──
-// Looks EXACTLY like a category pill — icon + text, NO chevron, NO button styling
+// ── Pill dropdown — plain text + icon, NO chevron, NO button styling ──
 function PillDropdown({
   value,
   placeholder,
   options,
   onChange,
   icon: Icon,
+  disabled,
 }: {
   value: string;
   placeholder: string;
   options: { value: string; label: string }[];
   onChange: (v: string) => void;
   icon: LucideIcon;
+  disabled?: boolean;
 }) {
   const selectedOption = options.find((o) => o.value === value);
   const displayLabel = selectedOption ? selectedOption.label : placeholder;
   const isActive = !!value;
 
   return (
-    <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
+    <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)} disabled={disabled}>
       <SelectTrigger
         className={cn(
-          // Override ALL base button styles — no border, shadow, background, padding, height
-          // Including dark mode overrides (dark:bg-input/30 and dark:hover:bg-input/50 from base)
           "h-auto w-auto gap-1.5 border-0 bg-transparent px-1 py-1 shadow-none",
           "dark:bg-transparent dark:hover:bg-transparent dark:border-0 dark:shadow-none",
           "rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-0",
           "dark:focus:ring-0 dark:focus-visible:ring-0 dark:focus-visible:outline-none dark:focus-visible:border-0",
           "text-xs font-medium transition-colors sm:text-[13px]",
-          // Hide the default chevron completely — look like a plain pill
           "[&_[data-slot=select-icon]]:hidden [&_.lucide-chevron-down]:hidden",
           isActive
             ? "text-white"
             : "text-slate-400 hover:text-white",
+          disabled && "opacity-40 cursor-not-allowed",
         )}
         aria-label={placeholder}
       >
-        <Icon className={cn("size-3.5 shrink-0", isActive && "text-cyan-400")} />
+        <Icon className={cn("size-3.5 shrink-0", isActive && "text-cyan-400", disabled && !isActive && "text-slate-600")} />
         <span className="whitespace-nowrap">{displayLabel}</span>
       </SelectTrigger>
       <SelectContent className="max-h-72 border-white/10 bg-[#1a1f2e] text-white">
@@ -296,44 +367,46 @@ function PillDropdown({
 }
 
 // ── Compact dropdown for advanced section ──
-// Looks EXACTLY like a category pill — icon + text, NO chevron, NO button styling
 function FilterDropdown({
   value,
   placeholder,
   options,
   onChange,
   icon: Icon,
+  disabled,
+  hint,
 }: {
   value: string;
   placeholder: string;
   options: { value: string; label: string }[];
   onChange: (v: string) => void;
   icon?: LucideIcon;
+  disabled?: boolean;
+  hint?: string;
 }) {
   const selectedOption = options.find((o) => o.value === value);
   const displayLabel = selectedOption ? selectedOption.label : placeholder;
   const isActive = !!value;
 
   return (
-    <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
+    <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)} disabled={disabled}>
       <SelectTrigger
         className={cn(
-          // Override ALL base button styles — no border, shadow, background, padding, height
-          // Including dark mode overrides (dark:bg-input/30 and dark:hover:bg-input/50 from base)
           "h-auto w-auto gap-1.5 border-0 bg-transparent px-1 py-1 shadow-none",
           "dark:bg-transparent dark:hover:bg-transparent dark:border-0 dark:shadow-none",
           "rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-0",
           "dark:focus:ring-0 dark:focus-visible:ring-0 dark:focus-visible:outline-none dark:focus-visible:border-0",
           "text-xs font-medium transition-colors sm:text-[13px]",
-          // Hide the default chevron completely — look like a plain pill
           "[&_[data-slot=select-icon]]:hidden [&_.lucide-chevron-down]:hidden",
           isActive
             ? "text-white"
             : "text-slate-400 hover:text-white",
+          disabled && "opacity-40 cursor-not-allowed",
         )}
         aria-label={placeholder}
+        title={hint}
       >
-        {Icon && <Icon className={cn("size-3.5 shrink-0", isActive && "text-cyan-400")} />}
+        {Icon && <Icon className={cn("size-3.5 shrink-0", isActive && "text-cyan-400", disabled && !isActive && "text-slate-600")} />}
         <span className="whitespace-nowrap">{displayLabel}</span>
       </SelectTrigger>
       <SelectContent className="max-h-72 border-white/10 bg-[#1a1f2e] text-white">
@@ -356,7 +429,6 @@ function FilterDropdown({
 
 // ════════════════════════════════════════════════════════════
 // PART 1: HeaderSearchInput — the pill-shaped search bar
-// Goes in Row 1: Logo | [this] | Nav buttons
 // ════════════════════════════════════════════════════════════
 export function HeaderSearchInput() {
   const { query, setQuery, go } = useSearchFilters();
@@ -486,24 +558,27 @@ export function HeaderSearchInput() {
 
 // ════════════════════════════════════════════════════════════
 // PART 2: HeaderSearchOptions — the options rows
-// Goes in Row 2 (full width, left-aligned with the logo):
-//   Row 1: All | Companies | Products | Services | Industries | Locations |
-//          Eco systems ▾ | Business Type ▾ | Business Size ▾
-//   Row 2: Nature of Business ▾ | Core Sector ▾ | Categories ▾ |
-//          Country ▾ | City ▾ | Verification ▾ | Sort By ▾
-// All transparent, no backgrounds, no containers.
+//
+// Row 1: All | Companies | Products | Services | Industries | Locations |
+//        Business Type | Business Size | Advanced Search
+// Row 2: Nature of Business | Eco systems | Industry Sector | Core Category |
+//        Categories | Sub Category | Country | Region | City | Verification | Sort By
+//
+// Cascading: Eco system → Industry Sector → Core Category → Categories → Sub Category
 // ════════════════════════════════════════════════════════════
 export function HeaderSearchOptions() {
   const {
     filters, setFilters, go, selectCategory, updateFilter, resetFilters,
-    showAdvanced, setShowAdvanced, sectorOptions, categoryOptions, activeAdvancedCount,
+    showAdvanced, setShowAdvanced,
+    industrySectorOptions, coreCategoryOptions, categoryOptions, subCategoryOptions,
+    regionOptions, activeAdvancedCount,
   } = useSearchFilters();
 
   return (
     <div className="w-full">
-      {/* ── Row 1: Category pills + 3 dropdowns ── */}
+      {/* ── Row 1: Category pills + Business Type + Business Size + Advanced Search ── */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
-        {/* Category pills (no chevron, no background) */}
+        {/* Category pills */}
         {CATEGORY_PILLS.map((cat) => {
           const Icon = cat.icon;
           const isActive = filters.type === cat.key;
@@ -514,9 +589,7 @@ export function HeaderSearchOptions() {
               onClick={() => selectCategory(cat.key)}
               className={cn(
                 "inline-flex shrink-0 items-center gap-1.5 px-1 py-1 text-xs font-medium transition-colors sm:text-[13px]",
-                isActive
-                  ? "text-white"
-                  : "text-slate-400 hover:text-white",
+                isActive ? "text-white" : "text-slate-400 hover:text-white",
               )}
               aria-pressed={isActive}
             >
@@ -526,16 +599,7 @@ export function HeaderSearchOptions() {
           );
         })}
 
-        {/* Eco systems dropdown (WITH chevron) */}
-        <PillDropdown
-          icon={Network}
-          value={filters.ecosystem}
-          placeholder="Eco systems"
-          options={ecosystems.map((e) => ({ value: e.id, label: e.shortName }))}
-          onChange={(v) => updateFilter("ecosystem", v)}
-        />
-
-        {/* Business Type dropdown (WITH chevron) */}
+        {/* Business Type */}
         <PillDropdown
           icon={FileText}
           value={filters.business_type}
@@ -544,7 +608,7 @@ export function HeaderSearchOptions() {
           onChange={(v) => updateFilter("business_type", v)}
         />
 
-        {/* Business Size dropdown (WITH chevron) */}
+        {/* Business Size */}
         <PillDropdown
           icon={Users}
           value={filters.business_size}
@@ -553,15 +617,13 @@ export function HeaderSearchOptions() {
           onChange={(v) => updateFilter("business_size", v)}
         />
 
-        {/* Advanced Search button (no background, expands Row 2) */}
+        {/* Advanced Search button */}
         <button
           type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
           className={cn(
             "inline-flex shrink-0 items-center gap-1.5 px-1 py-1 text-xs font-medium transition-colors sm:text-[13px]",
-            showAdvanced
-              ? "text-cyan-400"
-              : "text-slate-400 hover:text-white",
+            showAdvanced ? "text-cyan-400" : "text-slate-400 hover:text-white",
           )}
           aria-expanded={showAdvanced}
         >
@@ -574,7 +636,7 @@ export function HeaderSearchOptions() {
           )}
         </button>
 
-        {/* Clear button when filters are active */}
+        {/* Clear button */}
         {activeAdvancedCount > 0 && (
           <button
             type="button"
@@ -587,8 +649,8 @@ export function HeaderSearchOptions() {
         )}
       </div>
 
-      {/* ── Row 2: Advanced dropdown filters (hidden by default, expands when "Advanced Search" is clicked) ──
-          No background container — dropdowns float transparently on the header background */}
+      {/* ── Row 2: Advanced dropdown filters ──
+          Cascading: Eco system → Industry Sector → Core Category → Categories → Sub Category */}
       {showAdvanced && (
         <div
           className="mt-1 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin"
@@ -603,22 +665,58 @@ export function HeaderSearchOptions() {
             onChange={(v) => updateFilter("nature_of_business", v)}
           />
 
-          {/* Core Sector (cascading) */}
+          {/* Eco systems — must be selected first for cascading */}
           <FilterDropdown
-            icon={Factory}
-            value={filters.sector}
-            placeholder="Core Sector"
-            options={sectorOptions}
-            onChange={(v) => updateFilter("sector", v)}
+            icon={Network}
+            value={filters.ecosystem}
+            placeholder="Eco systems"
+            options={ecosystems.map((e) => ({ value: e.id, label: e.shortName }))}
+            onChange={(v) => updateFilter("ecosystem", v)}
+            hint="Select Eco system first"
           />
 
-          {/* Categories (cascading) */}
+          {/* Industry Sector — cascading from Eco system */}
+          <FilterDropdown
+            icon={Factory}
+            value={filters.industry_sector}
+            placeholder="Industry Sector"
+            options={industrySectorOptions}
+            onChange={(v) => updateFilter("industry_sector", v)}
+            disabled={!filters.ecosystem}
+            hint={filters.ecosystem ? undefined : "Select Eco system first"}
+          />
+
+          {/* Core Category — cascading from Industry Sector */}
+          <FilterDropdown
+            icon={Layers3}
+            value={filters.core_category}
+            placeholder="Core Category"
+            options={coreCategoryOptions}
+            onChange={(v) => updateFilter("core_category", v)}
+            disabled={!filters.industry_sector}
+            hint={filters.industry_sector ? undefined : "Select Industry Sector first"}
+          />
+
+          {/* Categories — cascading from Core Category */}
           <FilterDropdown
             icon={Package}
             value={filters.category}
             placeholder="Categories"
             options={categoryOptions}
             onChange={(v) => updateFilter("category", v)}
+            disabled={!filters.core_category}
+            hint={filters.core_category ? undefined : "Select Core Category first"}
+          />
+
+          {/* Sub Category — cascading from Categories */}
+          <FilterDropdown
+            icon={ListTree}
+            value={filters.sub_category}
+            placeholder="Sub Category"
+            options={subCategoryOptions}
+            onChange={(v) => updateFilter("sub_category", v)}
+            disabled={!filters.category}
+            hint={filters.category ? undefined : "Select Categories first"}
           />
 
           {/* Country */}
@@ -628,6 +726,17 @@ export function HeaderSearchOptions() {
             placeholder="Country"
             options={COUNTRIES.map((c) => ({ value: c, label: c }))}
             onChange={(v) => updateFilter("country", v)}
+          />
+
+          {/* Region — cascading from Country */}
+          <FilterDropdown
+            icon={MapPinned}
+            value={filters.region}
+            placeholder="Region"
+            options={regionOptions}
+            onChange={(v) => updateFilter("region", v)}
+            disabled={!filters.country}
+            hint={filters.country ? undefined : "Select Country first"}
           />
 
           {/* City */}
