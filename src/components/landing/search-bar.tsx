@@ -274,16 +274,6 @@ export function SearchBar() {
           )}
         </div>
       )}
-
-      {/* Keyboard shortcut hint */}
-      {!focused && !query && (
-        <div className="mt-2 hidden items-center justify-center gap-2 text-[11px] text-muted-foreground/70 sm:flex">
-          <kbd className="inline-flex h-5 items-center gap-0.5 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-semibold text-muted-foreground">⌘K</kbd>
-          <span>or</span>
-          <kbd className="inline-flex h-5 items-center gap-0.5 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-semibold text-muted-foreground">/</kbd>
-          <span>to focus search</span>
-        </div>
-      )}
     </div>
   );
 }

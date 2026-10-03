@@ -12,7 +12,6 @@ export default function HomePage() {
   return (
     <PageShell>
       <Hero />
-      <WebuosAcronym />
 
       {/* Ecosystem cards */}
       <section className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
@@ -55,6 +54,9 @@ export default function HomePage() {
           })}
         </div>
       </section>
+
+      {/* WEBUOS Acronym section — moved BELOW ecosystem cards */}
+      <WebuosAcronym />
     </PageShell>
   );
 }
