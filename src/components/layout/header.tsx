@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Globe, Menu, X, Search, ArrowRight } from "lucide-react";
 import { WebuosLogo } from "@/components/brand/webuos-logo";
 import { ESuiteButton, esuiteApps } from "@/components/layout/esuite-button";
-import { HeaderSearchBar } from "@/components/layout/header-search-bar";
+import { HeaderSearchInput, HeaderSearchOptions } from "@/components/layout/header-search-bar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
@@ -48,9 +48,7 @@ function MobileSearchBar() {
                 <button
                   key={app.id}
                   type="button"
-                  onClick={() => {
-                    window.location.href = app.href;
-                  }}
+                  onClick={() => { window.location.href = app.href; }}
                   title={app.desc}
                   className="group flex flex-col items-center gap-1 rounded-lg px-1 py-2 transition-colors hover:bg-muted"
                 >
@@ -84,7 +82,6 @@ export function Header() {
     }
   }, [isHome]);
 
-  // Show the search + categories inside the header on non-home pages, or on home when scrolled
   const showHeaderSearch = !isHome || scrolled;
 
   function submit(e: React.FormEvent) {
@@ -97,28 +94,24 @@ export function Header() {
     <header
       className={cn(
         "sticky top-0 z-50 bg-background/85 backdrop-blur-md",
-        // When search is shown, the header becomes a cohesive dark block containing everything
         showHeaderSearch ? "bg-[#0f1420] border-b border-white/10" : "border-b border-border",
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Row 1: Logo | Search bar (constrained width) | Nav buttons */}
+        {/* ── Row 1: Logo | Search bar | Nav buttons ── */}
         <div className={cn("flex items-center gap-3", showHeaderSearch ? "py-2.5" : "h-[60px]")}>
           <Link href="/" className="flex shrink-0 items-center" aria-label="WEBUOS home">
             <WebuosLogo size="md" />
           </Link>
 
-          {/* Inline search bar — constrained width, not full width.
-              Only shown on lg+ screens to avoid overflow on tablets. */}
           {showHeaderSearch ? (
             <>
-              <div className="hidden lg:block">
-                <div className="w-[400px] xl:w-[500px]">
-                  <HeaderSearchBar />
+              {/* Search bar — centered between logo and nav buttons */}
+              <div className="hidden flex-1 items-center justify-center lg:flex">
+                <div className="w-full max-w-[480px] xl:max-w-[560px]">
+                  <HeaderSearchInput />
                 </div>
               </div>
-              {/* Spacer pushes nav buttons to the right */}
-              <div className="hidden flex-1 lg:block" />
             </>
           ) : (
             <>
@@ -133,7 +126,7 @@ export function Header() {
             </>
           )}
 
-          {/* Nav buttons — same row as logo and search */}
+          {/* Nav buttons — right side */}
           <nav className="hidden shrink-0 items-center gap-1 lg:flex">
             <ESuiteButton variant="pill" />
             <ESuiteButton variant="icon" />
@@ -148,7 +141,14 @@ export function Header() {
           </button>
         </div>
 
-        {/* Mobile/tablet search input (when header search is shown) — still inside the header */}
+        {/* ── Row 2: Options row — full width, left-aligned with the logo ── */}
+        {showHeaderSearch && (
+          <div className="hidden lg:block pb-2">
+            <HeaderSearchOptions />
+          </div>
+        )}
+
+        {/* Mobile/tablet search input (when header search is shown) */}
         {showHeaderSearch && (
           <div className="pb-3 lg:hidden">
             <form onSubmit={submit} className="flex items-center gap-2">
