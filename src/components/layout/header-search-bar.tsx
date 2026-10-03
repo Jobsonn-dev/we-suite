@@ -260,8 +260,11 @@ function PillDropdown({
       <SelectTrigger
         className={cn(
           // Override ALL base button styles — no border, shadow, background, padding, height
+          // Including dark mode overrides (dark:bg-input/30 and dark:hover:bg-input/50 from base)
           "h-auto w-auto gap-1 border-0 bg-transparent p-0 shadow-none",
+          "dark:bg-transparent dark:hover:bg-transparent dark:border-0 dark:shadow-none",
           "rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-0",
+          "dark:focus:ring-0 dark:focus-visible:ring-0 dark:focus-visible:outline-none dark:focus-visible:border-0",
           "text-xs font-medium transition-colors sm:text-[13px]",
           // Hide the default chevron completely — look like a plain pill
           "[&_[data-slot=select-icon]]:hidden [&_.lucide-chevron-down]:hidden",
@@ -316,8 +319,11 @@ function FilterDropdown({
       <SelectTrigger
         className={cn(
           // Override ALL base button styles — no border, shadow, background, padding, height
+          // Including dark mode overrides (dark:bg-input/30 and dark:hover:bg-input/50 from base)
           "h-auto w-auto gap-1 border-0 bg-transparent p-0 shadow-none",
+          "dark:bg-transparent dark:hover:bg-transparent dark:border-0 dark:shadow-none",
           "rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-0",
+          "dark:focus:ring-0 dark:focus-visible:ring-0 dark:focus-visible:outline-none dark:focus-visible:border-0",
           "text-xs font-medium transition-colors sm:text-[13px]",
           // Hide the default chevron completely — look like a plain pill
           "[&_[data-slot=select-icon]]:hidden [&_.lucide-chevron-down]:hidden",
