@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  Search, Mic, ArrowRight, X, ChevronDown,
-  Layers, Building2, Briefcase, Package, Wrench, BarChart3, Cpu, MapPin,
+  Search, Mic, ArrowRight, X,
+  Layers, Building2, Briefcase, Package, Cpu, MapPin,
   Globe, Factory, type LucideIcon,
 } from "lucide-react";
 import {
@@ -65,48 +65,52 @@ const CITIES = [
   "Hamburg", "Munich", "London", "Singapore", "Tokyo", "Dubai", "Shanghai",
 ];
 
-// Compact dropdown wrapper for the filter row
+// Compact pill-shaped dropdown — matches target image:
+// transparent background, no border, [Icon] [Value] [Chevron] inline, no external label
 function FilterDropdown({
-  label,
   value,
   placeholder,
   options,
-  required,
   onChange,
   icon: Icon,
 }: {
-  label: string;
   value: string;
   placeholder: string;
   options: { value: string; label: string }[];
-  required?: boolean;
   onChange: (v: string) => void;
   icon?: LucideIcon;
 }) {
+  const selectedOption = options.find((o) => o.value === value);
+  const displayLabel = selectedOption ? selectedOption.label : placeholder;
+
   return (
-    <div className="flex shrink-0 flex-col gap-0.5">
-      <label className="flex items-center gap-0.5 px-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-        {Icon && <Icon className="h-2.5 w-2.5" />}
-        {label}
-        {required && <span className="text-red-400">*</span>}
-      </label>
-      <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
-        <SelectTrigger className="h-8 w-auto min-w-[120px] gap-1 rounded-lg border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-white hover:bg-white/10 [&>svg]:text-slate-400">
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent className="max-h-64 border-white/10 bg-[#1a1f2e] text-white">
-          {options.map((opt) => (
-            <SelectItem
-              key={opt.value}
-              value={opt.value}
-              className="text-xs text-slate-300 focus:bg-white/10 focus:text-white"
-            >
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <Select value={value || "all"} onValueChange={(v) => onChange(v === "all" ? "" : v)}>
+      <SelectTrigger
+        className={cn(
+          "h-8 w-auto gap-1.5 rounded-full border-transparent bg-transparent px-3 py-1 text-xs font-medium text-white hover:bg-white/10 focus:ring-0 focus:ring-offset-0",
+          // Style the default chevron that SelectTrigger appends automatically
+          "[&_[data-slot=select-icon]_svg]:opacity-100 [&_[data-slot=select-icon]_svg]:text-slate-400 [&_[data-slot=select-icon]_svg]:size-3",
+        )}
+        aria-label={placeholder}
+      >
+        {Icon && <Icon className="size-3.5 shrink-0 text-slate-300" />}
+        <span className="whitespace-nowrap">{displayLabel}</span>
+      </SelectTrigger>
+      <SelectContent className="max-h-72 border-white/10 bg-[#1a1f2e] text-white">
+        <SelectItem value="all" className="text-xs text-slate-400 focus:bg-white/10 focus:text-white">
+          {placeholder}
+        </SelectItem>
+        {options.map((opt) => (
+          <SelectItem
+            key={opt.value}
+            value={opt.value}
+            className="text-xs text-slate-200 focus:bg-white/10 focus:text-white"
+          >
+            {opt.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -347,125 +351,106 @@ export function HeaderSearchBar() {
         </div>
       </form>
 
-      {/* Dropdown filters row — replaces the old category pills */}
-      <div className="mt-1.5 flex items-end gap-2 overflow-x-auto pb-1 scrollbar-thin">
-        {/* Entity Type (Companies / Products / Services / Industries / Technology / Locations) */}
+      {/* Dropdown filters row — pill-shaped, transparent, no labels (matches target image) */}
+      <div className="mt-1.5 flex items-center gap-1 overflow-x-auto pb-1 scrollbar-thin">
+        {/* Entity Type (All / Companies / Products / Services / Industries / Technology / Locations) */}
         <FilterDropdown
-          label="Type"
           icon={Layers}
-          value={filters.type}
+          value={filters.type === "all" ? "" : filters.type}
           placeholder="All Types"
-          required
           options={ENTITY_TYPES.map((t) => ({ value: t.key, label: t.label }))}
-          onChange={(v) => updateFilter("type", v as SearchCategory)}
+          onChange={(v) => updateFilter("type", (v || "all") as SearchCategory)}
         />
 
         {/* Ecosystem (All / Industrial / Technology & AI / Business Services) */}
         <FilterDropdown
-          label="Ecosystem"
           icon={Globe}
           value={filters.ecosystem}
           placeholder="All Ecosystems"
-          required
           options={ecosystems.map((e) => ({ value: e.id, label: e.shortName }))}
           onChange={(v) => updateFilter("ecosystem", v)}
         />
 
         {/* Business Type (Manufacturer / Supplier / etc.) */}
         <FilterDropdown
-          label="Business Type"
           icon={Building2}
           value={filters.business_type}
-          placeholder="All Types"
+          placeholder="Business Type"
           options={BUSINESS_TYPES.map((b) => ({ value: b, label: b }))}
           onChange={(v) => updateFilter("business_type", v)}
         />
 
         {/* Nature of Business (Business Size) */}
         <FilterDropdown
-          label="Nature of Business"
           icon={Briefcase}
           value={filters.business_size}
-          placeholder="All Sizes"
+          placeholder="Nature of Business"
           options={BUSINESS_SIZES.map((b) => ({ value: b, label: b }))}
           onChange={(v) => updateFilter("business_size", v)}
         />
 
         {/* Core Sector (cascading from ecosystem) */}
         <FilterDropdown
-          label="Core Sector"
           icon={Factory}
           value={filters.sector}
-          placeholder="All Sectors"
+          placeholder="Core Sector"
           options={sectorOptions}
           onChange={(v) => updateFilter("sector", v)}
         />
 
         {/* Categories (cascading from sector) */}
         <FilterDropdown
-          label="Categories"
           icon={Package}
           value={filters.category}
-          placeholder="All Categories"
+          placeholder="Categories"
           options={categoryOptions}
           onChange={(v) => updateFilter("category", v)}
         />
 
         {/* Country */}
         <FilterDropdown
-          label="Country"
           icon={Globe}
           value={filters.country}
-          placeholder="All Countries"
+          placeholder="Country"
           options={COUNTRIES.map((c) => ({ value: c, label: c }))}
           onChange={(v) => updateFilter("country", v)}
         />
 
         {/* City */}
         <FilterDropdown
-          label="City"
           icon={MapPin}
           value={filters.city}
-          placeholder="All Cities"
+          placeholder="City"
           options={CITIES.map((c) => ({ value: c, label: c }))}
           onChange={(v) => updateFilter("city", v)}
         />
 
-        {/* Digital & AI quick toggle */}
-        <div className="flex shrink-0 flex-col gap-0.5">
-          <label className="flex items-center gap-0.5 px-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-            <Cpu className="h-2.5 w-2.5" />
-            Quick Filter
-          </label>
+        {/* Digital & AI quick toggle — pill-shaped to match dropdowns */}
+        <button
+          type="button"
+          onClick={() => updateFilter("digital_ai", !filters.digital_ai)}
+          className={cn(
+            "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all",
+            filters.digital_ai
+              ? "bg-cyan-500/20 text-cyan-300 shadow-sm ring-1 ring-cyan-400/40"
+              : "bg-transparent text-slate-300 hover:bg-white/10 hover:text-white",
+          )}
+          aria-pressed={filters.digital_ai}
+        >
+          <Cpu className="h-3.5 w-3.5" />
+          <span className="whitespace-nowrap">Digital &amp; AI</span>
+        </button>
+
+        {/* Reset button (only shown when filters are active) — pill-shaped */}
+        {activeFilterCount > 0 && (
           <button
             type="button"
-            onClick={() => updateFilter("digital_ai", !filters.digital_ai)}
-            className={cn(
-              "inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-all",
-              filters.digital_ai
-                ? "border-cyan-400/50 bg-cyan-500/20 text-cyan-300 shadow-sm"
-                : "border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white",
-            )}
-            aria-pressed={filters.digital_ai}
+            onClick={resetFilters}
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-red-500/15 px-3 text-xs font-medium text-red-400 transition-all hover:bg-red-500/25"
           >
-            <Cpu className="h-3.5 w-3.5" />
-            Digital &amp; AI
+            <X className="h-3.5 w-3.5" />
+            <span className="whitespace-nowrap">Clear ({activeFilterCount})</span>
           </button>
-        </div>
-
-        {/* Reset button (only shown when filters are active) */}
-        {activeFilterCount > 0 && (
-          <div className="flex shrink-0 flex-col gap-0.5">
-            <label className="px-1 text-[10px] font-semibold uppercase tracking-wider text-transparent">.</label>
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-red-400/30 bg-red-500/10 px-3 text-xs font-semibold text-red-400 transition-all hover:bg-red-500/20"
-            >
-              <X className="h-3.5 w-3.5" />
-              Clear ({activeFilterCount})
-            </button>
-          </div>
         )}
       </div>
     </div>
