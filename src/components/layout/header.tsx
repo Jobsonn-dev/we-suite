@@ -108,7 +108,8 @@ export function Header() {
             <WebuosLogo size="md" />
           </Link>
 
-          {/* Inline search bar + categories — part of the header row itself, not below it */}
+          {/* Inline search bar + categories — part of the header row itself, not below it.
+              The search bar fills the available space; dropdowns align to the logo's left edge. */}
           {showHeaderSearch ? (
             <div className="hidden flex-1 md:block">
               <HeaderSearchBar />

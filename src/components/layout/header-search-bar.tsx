@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search, Mic, ArrowRight, X,
   Layers, Building2, Briefcase, Package, Cpu, MapPin,
-  Globe, Factory, type LucideIcon,
+  Globe, Factory, TrendingUp, Users, type LucideIcon,
 } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -16,24 +16,38 @@ import { ecosystems, getEcosystem } from "@/data/taxonomy";
 // ============================================================
 // Header Search Bar + Dropdown Filters
 // Pill-shaped dark search bar with mic + Search button
-// Below it: row of dropdown filters (ecosystem, business type,
-// nature of business, core sector, categories, entity type,
-// country, city) + Digital & AI quick toggle
+// Below it: row of dropdown filters, left-aligned with the logo
+// (transparent pills: icon + value + chevron)
+// Filters:
+//   1. Type            (All / Companies / Products / Services / Industries / Technology / Locations)
+//   2. Ecosystem      (All / Industrial / Technology & AI / Business Services)
+//   3. Business Type   (Manufacturer / Supplier / Distributor / Wholesaler / Service Provider / Consultant / Startup / Enterprise)
+//   4. Nature of Business (Private Limited / Public Limited / LLP / Partnership / Proprietorship / Govt / NGO)
+//   5. Core Sector     (cascading from Ecosystem)
+//   6. Categories      (cascading from Sector)
+//   7. Business Size   (Startup / Small / Medium / Large / Enterprise)
+//   8. Country          (India / USA / UK / ...)
+//   9. City             (Bengaluru / Mumbai / ...)
+//  10. Sort By          (Relevance / Newest / Recently Updated / Most Complete / Nearest / A-Z)
+//  + Digital & AI quick toggle + Clear button
 // ============================================================
 
 export type SearchCategory = "all" | "company" | "product" | "service" | "industry" | "technology" | "location";
+export type SearchSort = "relevance" | "newest" | "recently_updated" | "most_complete" | "nearest" | "az";
 
 interface FilterState {
   q: string;
   type: SearchCategory;
-  ecosystem: string;     // "" = all
-  business_type: string; // "" = all
-  business_size: string; // "" = all (Nature of Business)
-  sector: string;        // "" = all (Core Sector)
-  category: string;     // "" = all (Categories)
-  country: string;      // "" = all
-  city: string;         // "" = all
-  digital_ai: boolean;  // Digital & AI quick toggle
+  ecosystem: string;        // "" = all
+  business_type: string;    // "" = all
+  nature_of_business: string; // "" = all
+  sector: string;           // "" = all (Core Sector)
+  category: string;         // "" = all (Categories)
+  business_size: string;   // "" = all
+  country: string;          // "" = all
+  city: string;             // "" = all
+  sort: SearchSort;         // default "relevance"
+  digital_ai: boolean;      // Digital & AI quick toggle
 }
 
 const ENTITY_TYPES: { key: SearchCategory; label: string }[] = [
@@ -51,7 +65,21 @@ const BUSINESS_TYPES = [
   "Service Provider", "Consultant", "Startup", "Enterprise",
 ];
 
+const NATURE_OF_BUSINESS = [
+  "Private Limited", "Public Limited", "LLP / Partnership",
+  "Proprietorship", "Government / PSU", "Non-Profit / NGO",
+];
+
 const BUSINESS_SIZES = ["Startup", "Small", "Medium", "Large", "Enterprise"];
+
+const SORT_OPTIONS: { key: SearchSort; label: string }[] = [
+  { key: "relevance", label: "Relevance" },
+  { key: "newest", label: "Newest" },
+  { key: "recently_updated", label: "Recently Updated" },
+  { key: "most_complete", label: "Most Complete" },
+  { key: "nearest", label: "Nearest" },
+  { key: "az", label: "A-Z" },
+];
 
 const COUNTRIES = [
   "India", "USA", "United Kingdom", "United Arab Emirates",
@@ -121,6 +149,7 @@ export function HeaderSearchBar() {
   // Initialize state from URL params
   const initialQuery = searchParams.get("q") ?? "";
   const initialType = (searchParams.get("type") as SearchCategory | null) ?? "all";
+  const initialSort = (searchParams.get("sort") as SearchSort | null) ?? "relevance";
   const [query, setQuery] = useState(initialQuery);
   const [listening, setListening] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -132,18 +161,19 @@ export function HeaderSearchBar() {
     type: initialType,
     ecosystem: searchParams.get("ecosystem") ?? "",
     business_type: searchParams.get("business_type") ?? "",
-    business_size: searchParams.get("business_size") ?? "",
+    nature_of_business: searchParams.get("nature_of_business") ?? "",
     sector: searchParams.get("sector") ?? "",
     category: searchParams.get("category") ?? "",
+    business_size: searchParams.get("business_size") ?? "",
     country: searchParams.get("country") ?? "",
     city: searchParams.get("city") ?? "",
+    sort: initialSort,
     digital_ai: searchParams.get("ecosystem") === "technology-ai",
   });
 
   // Cascading: compute sector options based on selected ecosystem
   const sectorOptions = useMemo(() => {
     if (!filters.ecosystem) {
-      // All sectors from all ecosystems
       return ecosystems.flatMap((e) => e.categories).map((s) => ({ value: s.id, label: s.name }));
     }
     const eco = getEcosystem(filters.ecosystem);
@@ -196,9 +226,11 @@ export function HeaderSearchBar() {
     if (next.sector) params.set("sector", next.sector);
     if (next.category) params.set("category", next.category);
     if (next.business_type) params.set("business_type", next.business_type);
+    if (next.nature_of_business) params.set("nature_of_business", next.nature_of_business);
     if (next.business_size) params.set("business_size", next.business_size);
     if (next.country) params.set("country", next.country);
     if (next.city) params.set("city", next.city);
+    if (next.sort && next.sort !== "relevance") params.set("sort", next.sort);
     const qs = params.toString();
     router.push(qs ? `/search?${qs}` : "/search");
   }
@@ -214,14 +246,11 @@ export function HeaderSearchBar() {
     if (key === "ecosystem") {
       overrides.sector = "";
       overrides.category = "";
-      // Digital & AI toggle sync
       overrides.digital_ai = value === "technology-ai";
     }
-    // If sector changes, reset category
     if (key === "sector") {
       overrides.category = "";
     }
-    // Digital & AI toggle: sets ecosystem to technology-ai or clears it
     if (key === "digital_ai") {
       if (value) {
         overrides.ecosystem = "technology-ai";
@@ -276,11 +305,13 @@ export function HeaderSearchBar() {
       type: "all",
       ecosystem: "",
       business_type: "",
-      business_size: "",
+      nature_of_business: "",
       sector: "",
       category: "",
+      business_size: "",
       country: "",
       city: "",
+      sort: "relevance",
       digital_ai: false,
     };
     setFilters(cleared);
@@ -288,9 +319,12 @@ export function HeaderSearchBar() {
   }
 
   const activeFilterCount = [
-    filters.ecosystem, filters.business_type, filters.business_size,
-    filters.sector, filters.category, filters.country, filters.city,
-  ].filter(Boolean).length + (filters.type !== "all" ? 1 : 0);
+    filters.ecosystem, filters.business_type, filters.nature_of_business,
+    filters.business_size, filters.sector, filters.category,
+    filters.country, filters.city,
+  ].filter(Boolean).length
+    + (filters.type !== "all" ? 1 : 0)
+    + (filters.sort !== "relevance" ? 1 : 0);
 
   return (
     <div ref={ref} className="w-full">
@@ -351,9 +385,10 @@ export function HeaderSearchBar() {
         </div>
       </form>
 
-      {/* Dropdown filters row — pill-shaped, transparent, no labels (matches target image) */}
+      {/* Dropdown filters row — left-aligned with the logo's starting point,
+          transparent pills with icon + value + chevron (matches target image) */}
       <div className="mt-1.5 flex items-center gap-1 overflow-x-auto pb-1 scrollbar-thin">
-        {/* Entity Type (All / Companies / Products / Services / Industries / Technology / Locations) */}
+        {/* 1. Type (All / Companies / Products / Services / Industries / Technology / Locations) */}
         <FilterDropdown
           icon={Layers}
           value={filters.type === "all" ? "" : filters.type}
@@ -362,7 +397,7 @@ export function HeaderSearchBar() {
           onChange={(v) => updateFilter("type", (v || "all") as SearchCategory)}
         />
 
-        {/* Ecosystem (All / Industrial / Technology & AI / Business Services) */}
+        {/* 2. Ecosystem (All / Industrial / Technology & AI / Business Services) */}
         <FilterDropdown
           icon={Globe}
           value={filters.ecosystem}
@@ -371,7 +406,7 @@ export function HeaderSearchBar() {
           onChange={(v) => updateFilter("ecosystem", v)}
         />
 
-        {/* Business Type (Manufacturer / Supplier / etc.) */}
+        {/* 3. Business Type (Manufacturer / Supplier / etc.) */}
         <FilterDropdown
           icon={Building2}
           value={filters.business_type}
@@ -380,16 +415,16 @@ export function HeaderSearchBar() {
           onChange={(v) => updateFilter("business_type", v)}
         />
 
-        {/* Nature of Business (Business Size) */}
+        {/* 4. Nature of Business (Private Limited / Public Limited / LLP / etc.) */}
         <FilterDropdown
           icon={Briefcase}
-          value={filters.business_size}
+          value={filters.nature_of_business}
           placeholder="Nature of Business"
-          options={BUSINESS_SIZES.map((b) => ({ value: b, label: b }))}
-          onChange={(v) => updateFilter("business_size", v)}
+          options={NATURE_OF_BUSINESS.map((b) => ({ value: b, label: b }))}
+          onChange={(v) => updateFilter("nature_of_business", v)}
         />
 
-        {/* Core Sector (cascading from ecosystem) */}
+        {/* 5. Core Sector (cascading from ecosystem) */}
         <FilterDropdown
           icon={Factory}
           value={filters.sector}
@@ -398,7 +433,7 @@ export function HeaderSearchBar() {
           onChange={(v) => updateFilter("sector", v)}
         />
 
-        {/* Categories (cascading from sector) */}
+        {/* 6. Categories (cascading from sector) */}
         <FilterDropdown
           icon={Package}
           value={filters.category}
@@ -407,7 +442,16 @@ export function HeaderSearchBar() {
           onChange={(v) => updateFilter("category", v)}
         />
 
-        {/* Country */}
+        {/* 7. Business Size (Startup / Small / Medium / Large / Enterprise) */}
+        <FilterDropdown
+          icon={Users}
+          value={filters.business_size}
+          placeholder="Business Size"
+          options={BUSINESS_SIZES.map((b) => ({ value: b, label: b }))}
+          onChange={(v) => updateFilter("business_size", v)}
+        />
+
+        {/* 8. Country */}
         <FilterDropdown
           icon={Globe}
           value={filters.country}
@@ -416,13 +460,22 @@ export function HeaderSearchBar() {
           onChange={(v) => updateFilter("country", v)}
         />
 
-        {/* City */}
+        {/* 9. City */}
         <FilterDropdown
           icon={MapPin}
           value={filters.city}
           placeholder="City"
           options={CITIES.map((c) => ({ value: c, label: c }))}
           onChange={(v) => updateFilter("city", v)}
+        />
+
+        {/* 10. Sort By (Relevance / Newest / Recently Updated / Most Complete / Nearest / A-Z) */}
+        <FilterDropdown
+          icon={TrendingUp}
+          value={filters.sort === "relevance" ? "" : filters.sort}
+          placeholder="Sort By"
+          options={SORT_OPTIONS.filter((s) => s.key !== "relevance").map((s) => ({ value: s.key, label: s.label }))}
+          onChange={(v) => updateFilter("sort", (v || "relevance") as SearchSort)}
         />
 
         {/* Digital & AI quick toggle — pill-shaped to match dropdowns */}
