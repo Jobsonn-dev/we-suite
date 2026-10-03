@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Globe, Menu, X, Search, ArrowRight } from "lucide-react";
 import { WebuosLogo } from "@/components/brand/webuos-logo";
-import { ESuiteButton, esuiteApps } from "@/components/layout/esuite-button";
+import { ESuiteButton } from "@/components/layout/esuite-button";
 import { HeaderSearchInput, HeaderSearchOptions } from "@/components/layout/header-search-bar";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +14,6 @@ import { cn } from "@/lib/utils";
 // ============================================================
 function MobileSearchBar() {
   const [query, setQuery] = useState("");
-  const [focused, setFocused] = useState(false);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -30,37 +29,11 @@ function MobileSearchBar() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setTimeout(() => setFocused(false), 150)}
           placeholder="Search companies, products, services..."
           className="h-9 w-full rounded-full border border-border bg-muted/50 pl-10 pr-4 text-sm focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/15"
           aria-label="Search"
         />
       </form>
-      {focused && (
-        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-2xl border border-border bg-popover p-2 shadow-soft-lg" style={{ animation: "fadeIn .15s ease-out" }}>
-          <p className="mb-1.5 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Quick apps</p>
-          <div className="grid grid-cols-4 gap-1">
-            {esuiteApps.slice(0, 8).map((app) => {
-              const Icon = app.icon;
-              return (
-                <button
-                  key={app.id}
-                  type="button"
-                  onClick={() => { window.location.href = app.href; }}
-                  title={app.desc}
-                  className="group flex flex-col items-center gap-1 rounded-lg px-1 py-2 transition-colors hover:bg-muted"
-                >
-                  <span className={cn("inline-flex h-8 w-8 items-center justify-center rounded-lg text-white shadow-sm", app.iconBg)}>
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  <span className="block w-full truncate text-center text-[10px] font-medium text-foreground/80">{app.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
