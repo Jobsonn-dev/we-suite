@@ -6,7 +6,7 @@ import {
   Search, Mic, ArrowRight, X, ChevronDown, ChevronUp,
   Layers, Building2, Briefcase, Package, Cpu, MapPin,
   Globe, Factory, TrendingUp, Users, Sparkles, Wrench, BarChart3,
-  SlidersHorizontal, type LucideIcon,
+  SlidersHorizontal, Network, type LucideIcon,
 } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -50,7 +50,6 @@ const CATEGORY_PILLS: { key: SearchCategory; label: string; icon: LucideIcon }[]
   { key: "product", label: "Products", icon: Package },
   { key: "service", label: "Services", icon: Wrench },
   { key: "industry", label: "Industries", icon: BarChart3 },
-  { key: "technology", label: "Technology", icon: Cpu },
   { key: "location", label: "Locations", icon: MapPin },
 ];
 
@@ -394,9 +393,10 @@ export function HeaderSearchBar() {
         </div>
       </form>
 
-      {/* ── Row 1: Category pills (All / Companies / Products / Services / Industries / Technology / Locations) ──
-          Icon + label, no chevron — matches target image */}
-      <div className="mt-1.5 flex items-center gap-1 overflow-x-auto pb-1 scrollbar-thin">
+      {/* ── Row 1: Category pills (All / Companies / Products / Services / Industries / Eco systems / Locations) ──
+          Icon + label, no chevron — matches target image.
+          "Eco systems" is a dropdown (no chevron shown) that opens 3 ecosystems. */}
+      <div className="mt-1.5 flex flex-wrap items-center gap-1 pb-1">
         {CATEGORY_PILLS.map((cat) => {
           const Icon = cat.icon;
           const isActive = filters.type === cat.key;
@@ -418,6 +418,45 @@ export function HeaderSearchBar() {
             </button>
           );
         })}
+
+        {/* ── "Eco systems" dropdown — no chevron, opens 3 ecosystems ── */}
+        <Select
+          value={filters.ecosystem || "all"}
+          onValueChange={(v) => updateFilter("ecosystem", v === "all" ? "" : v)}
+        >
+          <SelectTrigger
+            className={cn(
+              "h-[30px] w-auto gap-1.5 rounded-full border-transparent bg-transparent px-3 py-1.5 text-xs font-medium transition-all focus:ring-0 focus:ring-offset-0 sm:text-[13px]",
+              // Hide the default chevron completely (target by class)
+              "[&_.lucide-chevron-down]:hidden",
+              filters.ecosystem
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-300 hover:bg-white/10 hover:text-white",
+            )}
+            aria-label="Eco systems"
+          >
+            <Network className="h-3.5 w-3.5 shrink-0" />
+            <span className="whitespace-nowrap">
+              {filters.ecosystem
+                ? ecosystems.find((e) => e.id === filters.ecosystem)?.shortName ?? "Eco systems"
+                : "Eco systems"}
+            </span>
+          </SelectTrigger>
+          <SelectContent className="max-h-72 border-white/10 bg-[#1a1f2e] text-white">
+            <SelectItem value="all" className="text-xs text-slate-400 focus:bg-white/10 focus:text-white">
+              All Ecosystems
+            </SelectItem>
+            {ecosystems.map((e) => (
+              <SelectItem
+                key={e.id}
+                value={e.id}
+                className="text-xs text-slate-200 focus:bg-white/10 focus:text-white"
+              >
+                {e.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         {/* ── "Advanced Search" button — expands to show dropdown filters ── */}
         <button
@@ -457,18 +496,9 @@ export function HeaderSearchBar() {
       {/* ── Row 2: Advanced dropdown filters (hidden by default, shown when "Advanced Search" is clicked) ── */}
       {showAdvanced && (
         <div
-          className="mt-1 flex flex-wrap items-center gap-1 overflow-x-auto rounded-lg border border-white/10 bg-[#131826]/80 p-2 scrollbar-thin"
+          className="mt-1 flex flex-wrap items-center gap-1 rounded-lg border border-white/10 bg-[#131826]/80 p-2"
           style={{ animation: "fadeIn .2s ease-out" }}
         >
-          {/* Ecosystem */}
-          <FilterDropdown
-            icon={Globe}
-            value={filters.ecosystem}
-            placeholder="All Ecosystems"
-            options={ecosystems.map((e) => ({ value: e.id, label: e.shortName }))}
-            onChange={(v) => updateFilter("ecosystem", v)}
-          />
-
           {/* Business Type */}
           <FilterDropdown
             icon={Building2}

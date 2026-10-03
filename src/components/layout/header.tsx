@@ -102,33 +102,39 @@ export function Header() {
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Single cohesive header row: Logo | Search+Categories (center) | Nav buttons */}
+        {/* Row 1: Logo | Search bar (constrained width) | Nav buttons */}
         <div className={cn("flex items-center gap-3", showHeaderSearch ? "py-2.5" : "h-[60px]")}>
-          <Link href="/" className="flex shrink-0 items-center self-start pt-1" aria-label="WEBUOS home">
+          <Link href="/" className="flex shrink-0 items-center" aria-label="WEBUOS home">
             <WebuosLogo size="md" />
           </Link>
 
-          {/* Inline search bar + categories — part of the header row itself, not below it.
-              The search bar fills the available space; dropdowns align to the logo's left edge. */}
+          {/* Inline search bar — constrained width, not full width.
+              Only shown on lg+ screens to avoid overflow on tablets. */}
           {showHeaderSearch ? (
-            <div className="hidden flex-1 md:block">
-              <HeaderSearchBar />
-            </div>
+            <>
+              <div className="hidden lg:block">
+                <div className="w-[400px] xl:w-[500px]">
+                  <HeaderSearchBar />
+                </div>
+              </div>
+              {/* Spacer pushes nav buttons to the right */}
+              <div className="hidden flex-1 lg:block" />
+            </>
           ) : (
             <>
-              {/* Compact mobile search on home top */}
-              <div className="flex flex-1 items-center justify-center md:hidden">
+              {/* Compact mobile/tablet search on home top */}
+              <div className="flex flex-1 items-center justify-center lg:hidden">
                 <div className="w-full max-w-xs">
                   <MobileSearchBar />
                 </div>
               </div>
               {/* Spacer on desktop */}
-              <div className="hidden flex-1 md:block" />
+              <div className="hidden flex-1 lg:block" />
             </>
           )}
 
           {/* Nav buttons — same row as logo and search */}
-          <nav className="hidden shrink-0 items-center gap-1 self-start pt-1 md:flex">
+          <nav className="hidden shrink-0 items-center gap-1 lg:flex">
             <ESuiteButton variant="pill" />
             <ESuiteButton variant="icon" />
             <ThemeToggle />
@@ -137,14 +143,14 @@ export function Header() {
             </button>
           </nav>
 
-          <button type="button" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-foreground hover:bg-muted md:hidden" onClick={() => setMobileOpen(v => !v)} aria-label={mobileOpen ? "Close" : "Open menu"} aria-expanded={mobileOpen}>
+          <button type="button" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-foreground hover:bg-muted lg:hidden" onClick={() => setMobileOpen(v => !v)} aria-label={mobileOpen ? "Close" : "Open menu"} aria-expanded={mobileOpen}>
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
 
-        {/* Mobile search input (when header search is shown) — still inside the header */}
+        {/* Mobile/tablet search input (when header search is shown) — still inside the header */}
         {showHeaderSearch && (
-          <div className="pb-3 md:hidden">
+          <div className="pb-3 lg:hidden">
             <form onSubmit={submit} className="flex items-center gap-2">
               <Search className="h-4 w-4 shrink-0 text-slate-400" />
               <input type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search companies, products, services..." className="h-10 flex-1 rounded-full border border-white/10 bg-[#1a1f2e] px-4 text-sm text-white placeholder:text-slate-400 focus:border-cyan-400/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/20" autoFocus />
@@ -154,8 +160,8 @@ export function Header() {
         )}
       </div>
 
-      {/* Mobile menu */}
-      <div className={cn("border-t border-border bg-background md:hidden", mobileOpen ? "block" : "hidden")}>
+      {/* Mobile/tablet menu */}
+      <div className={cn("border-t border-border bg-background lg:hidden", mobileOpen ? "block" : "hidden")}>
         <nav className="flex flex-col gap-1 px-4 py-3">
           <div className="flex items-center gap-2 py-1">
             <ESuiteButton variant="pill" />
