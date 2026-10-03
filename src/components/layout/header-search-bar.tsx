@@ -261,7 +261,7 @@ function PillDropdown({
         className={cn(
           // Override ALL base button styles — no border, shadow, background, padding, height
           // Including dark mode overrides (dark:bg-input/30 and dark:hover:bg-input/50 from base)
-          "h-auto w-auto gap-1 border-0 bg-transparent p-0 shadow-none",
+          "h-auto w-auto gap-1.5 border-0 bg-transparent px-1 py-1 shadow-none",
           "dark:bg-transparent dark:hover:bg-transparent dark:border-0 dark:shadow-none",
           "rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-0",
           "dark:focus:ring-0 dark:focus-visible:ring-0 dark:focus-visible:outline-none dark:focus-visible:border-0",
@@ -320,7 +320,7 @@ function FilterDropdown({
         className={cn(
           // Override ALL base button styles — no border, shadow, background, padding, height
           // Including dark mode overrides (dark:bg-input/30 and dark:hover:bg-input/50 from base)
-          "h-auto w-auto gap-1 border-0 bg-transparent p-0 shadow-none",
+          "h-auto w-auto gap-1.5 border-0 bg-transparent px-1 py-1 shadow-none",
           "dark:bg-transparent dark:hover:bg-transparent dark:border-0 dark:shadow-none",
           "rounded-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:border-0",
           "dark:focus:ring-0 dark:focus-visible:ring-0 dark:focus-visible:outline-none dark:focus-visible:border-0",
@@ -502,7 +502,7 @@ export function HeaderSearchOptions() {
   return (
     <div className="w-full">
       {/* ── Row 1: Category pills + 3 dropdowns ── */}
-      <div className="flex items-center gap-0.5 overflow-x-auto pb-0.5 scrollbar-thin">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
         {/* Category pills (no chevron, no background) */}
         {CATEGORY_PILLS.map((cat) => {
           const Icon = cat.icon;
@@ -513,7 +513,7 @@ export function HeaderSearchOptions() {
               type="button"
               onClick={() => selectCategory(cat.key)}
               className={cn(
-                "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors sm:text-[13px]",
+                "inline-flex shrink-0 items-center gap-1.5 px-1 py-1 text-xs font-medium transition-colors sm:text-[13px]",
                 isActive
                   ? "text-white"
                   : "text-slate-400 hover:text-white",
@@ -558,7 +558,7 @@ export function HeaderSearchOptions() {
           type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
           className={cn(
-            "inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors sm:text-[13px]",
+            "inline-flex shrink-0 items-center gap-1.5 px-1 py-1 text-xs font-medium transition-colors sm:text-[13px]",
             showAdvanced
               ? "text-cyan-400"
               : "text-slate-400 hover:text-white",
@@ -579,7 +579,7 @@ export function HeaderSearchOptions() {
           <button
             type="button"
             onClick={resetFilters}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-red-400 transition-colors hover:text-red-300 sm:text-[13px]"
+            className="inline-flex shrink-0 items-center gap-1.5 px-1 py-1 text-xs font-medium text-red-400 transition-colors hover:text-red-300 sm:text-[13px]"
           >
             <X className="h-3.5 w-3.5" />
             <span className="whitespace-nowrap">Clear</span>
@@ -591,7 +591,7 @@ export function HeaderSearchOptions() {
           No background container — dropdowns float transparently on the header background */}
       {showAdvanced && (
         <div
-          className="mt-0.5 flex items-center gap-0.5 overflow-x-auto pb-0.5 scrollbar-thin"
+          className="mt-1 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin"
           style={{ animation: "fadeIn .15s ease-out" }}
         >
           {/* Nature of Business */}
