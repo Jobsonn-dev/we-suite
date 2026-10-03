@@ -595,6 +595,77 @@ export async function GET(req: NextRequest) {
   const topResults = sorted.slice(0, 5).map((r) => ({ name: r.name, type: r.type }));
   const related_searches = buildRelatedSearches(interpreted, topResults);
 
+  // ----------------------------------------------------------
+  // Build Discovery Data (40% panel)
+  // ----------------------------------------------------------
+  const knowledgePanel = pageResults.find(r => r.type === "company" && r.relevance_score > 70) ?? null;
+
+  const topIndustries = new Set(pageResults.filter(r => r.type === "company").map(r => r.industry).filter(Boolean));
+  const topCategories = new Set(pageResults.filter(r => r.type === "company").map(r => r.category).filter(Boolean));
+  const currentPageIds = new Set(pageResults.map(r => r.id));
+
+  const relatedCompanies = sorted
+    .filter(r => r.type === "company" && !currentPageIds.has(r.id) &&
+      ((r.industry && topIndustries.has(r.industry)) || (r.category && topCategories.has(r.category))))
+    .slice(0, 5);
+
+  const topBusinessTypes = new Set(pageResults.filter(r => r.type === "company").map(r => r.business_type).filter(Boolean));
+  const relatedIds = new Set(relatedCompanies.map(r => r.id));
+  const similarBusinesses = sorted
+    .filter(r => r.type === "company" && !currentPageIds.has(r.id) && !relatedIds.has(r.id) &&
+      r.business_type && topBusinessTypes.has(r.business_type))
+    .slice(0, 5);
+
+  const topCities = new Set(pageResults.filter(r => r.city).map(r => r.city));
+  const topCountries = new Set(pageResults.filter(r => r.country).map(r => r.country));
+  const similarIds = new Set(similarBusinesses.map(r => r.id));
+  const nearbyBusinesses = sorted
+    .filter(r => r.type === "company" && !currentPageIds.has(r.id) && !relatedIds.has(r.id) && !similarIds.has(r.id) &&
+      ((r.city && topCities.has(r.city)) || (r.country && topCountries.has(r.country))))
+    .slice(0, 5);
+
+  const trendingSearches = [
+    `${query} manufacturers`,
+    `${query} suppliers`,
+    `${query} companies in India`,
+    `best ${query} companies`,
+    `${query} near me`,
+  ].filter(s => !s.includes("undefined")).slice(0, 5);
+
+  const allIndustries = await db.industry.findMany({
+    where: interpreted.industry ? { name: { contains: interpreted.industry } } : {},
+    select: { name: true, companyCount: true },
+    take: 5,
+    orderBy: { companyCount: "desc" },
+  });
+  const relatedIndustries = allIndustries.map(i => ({ name: i.name, count: i.companyCount }));
+
+  const { ecosystems: allEcosystems } = await import("@/data/taxonomy");
+  const queryLower = query.toLowerCase();
+  const matchingCategories = allEcosystems
+    .flatMap(e => e.categories.flatMap(s => s.categories))
+    .filter(c => c.name.toLowerCase().includes(queryLower) || c.products.some(p => p.name.toLowerCase().includes(queryLower)))
+    .slice(0, 5)
+    .map(c => ({ name: c.name, count: c.businessProfiles.length }));
+
+  const exploreMore = [
+    { label: "Companies", query: `${query}`, icon: "Building2" },
+    { label: "Products", query: `${query}`, icon: "Package" },
+    { label: "Services", query: `${query}`, icon: "Wrench" },
+    { label: "Industries", query: `${query}`, icon: "BarChart3" },
+  ];
+
+  const discovery = {
+    related_companies: relatedCompanies,
+    similar_businesses: similarBusinesses,
+    nearby_businesses: nearbyBusinesses,
+    trending_searches: trendingSearches,
+    related_industries: relatedIndustries,
+    recommended_categories: matchingCategories,
+    knowledge_panel: knowledgePanel,
+    explore_more: exploreMore,
+  };
+
   const response: SearchResponse = {
     query,
     interpreted_query: interpreted,
@@ -610,6 +681,7 @@ export async function GET(req: NextRequest) {
     results: pageResults,
     facets,
     related_searches,
+    discovery,
   };
 
   return NextResponse.json(response, { headers: { "Cache-Control": "no-store" } });
