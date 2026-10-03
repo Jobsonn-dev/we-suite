@@ -1,47 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { Layers, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ============================================================
-// ESuite Button — simple link to esuite.webuos.com (no dropdown)
-// Apps Button — uses custom icon, links to /apps
+// ESuite Button + Apps Button — clean, modern, professional
+//
+// ESuite: minimal text + icon, subtle hover, no heavy border
+// Apps: clean Lucide icon (LayoutGrid) with subtle hover
 // ============================================================
 
 export function ESuiteButton({ variant = "pill" }: { variant?: "pill" | "icon" }) {
   if (variant === "icon") {
-    // Apps icon — uses the custom uploaded icon, links to /apps
+    // Apps icon — clean, modern Lucide icon linking to /apps
     return (
       <Link
         href="/apps"
         aria-label="WEBUOS Apps"
-        title="WEBUOS Apps"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full transition-all hover:bg-muted"
+        title="All Apps"
+        className="group relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-all duration-200 hover:bg-white/5 hover:text-white"
       >
-        <Image
-          src="/apps-icon.png"
-          alt="WEBUOS Apps"
-          width={24}
-          height={24}
-          className="h-7 w-7 rounded-lg"
-          unoptimized
-        />
+        <LayoutGrid className="h-[18px] w-[18px] transition-transform duration-200 group-hover:scale-110" />
+        {/* Subtle dot indicator for "new" feel */}
+        <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-cyan-400 opacity-0 transition-opacity group-hover:opacity-100" />
       </Link>
     );
   }
 
-  // ESuite pill — simple external link to esuite.webuos.com
+  // ESuite — clean, professional, minimal
   return (
     <a
       href="https://esuite.webuos.com"
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="ESuite"
+      aria-label="Open ESuite"
       title="Open ESuite"
-      className="inline-flex h-9 items-center gap-1.5 rounded-full border border-cyan-400/60 bg-cyan-50/50 px-3 text-xs font-bold uppercase tracking-wider text-cyan-700 transition-all hover:border-cyan-500 hover:bg-cyan-50 dark:bg-cyan-500/5 dark:text-cyan-400 dark:hover:bg-cyan-500/10"
+      className="group inline-flex h-9 items-center gap-2 rounded-lg px-2.5 text-slate-400 transition-all duration-200 hover:bg-white/5 hover:text-white"
     >
-      <span className="hidden sm:inline">ESuite</span>
+      <Layers className="h-[18px] w-[18px] transition-transform duration-200 group-hover:scale-110 group-hover:text-cyan-400" />
+      <span className="hidden text-xs font-semibold tracking-wide text-slate-400 transition-colors duration-200 group-hover:text-white sm:inline">
+        ESuite
+      </span>
     </a>
   );
 }
