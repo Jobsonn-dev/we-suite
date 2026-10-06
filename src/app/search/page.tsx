@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import { headers } from "next/headers";
 import { runSearch, SearchParams } from "@/lib/search/server";
@@ -95,17 +96,19 @@ export default async function SearchPage({
 
   return (
     <PageShell>
-      <SearchClient
-        initialQuery={data.query}
-        initialFilters={initialFilters}
-        initialResults={data.results}
-        interpreted={data.interpreted_query as never}
-        related_searches={data.related_searches}
-        facets={data.facets as never}
-        totalPages={data.total_pages}
-        total={data.total}
-        initialDiscovery={data.discovery}
-      />
+      <Suspense fallback={<div className="container mx-auto py-12 text-center text-sm text-muted-foreground">Loading search results...</div>}>
+        <SearchClient
+          initialQuery={data.query}
+          initialFilters={initialFilters}
+          initialResults={data.results}
+          interpreted={data.interpreted_query as never}
+          related_searches={data.related_searches}
+          facets={data.facets as never}
+          totalPages={data.total_pages}
+          total={data.total}
+          initialDiscovery={data.discovery}
+        />
+      </Suspense>
     </PageShell>
   );
 }

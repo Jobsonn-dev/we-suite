@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -13,7 +13,7 @@ import { getColor, accentText } from "@/lib/colors";
 import { DynamicIcon } from "@/lib/icon-registry";
 import { cn } from "@/lib/utils";
 
-export default function RegisterPage() {
+function RegisterContent() {
   const searchParams = useSearchParams();
   const urlType = searchParams.get("type");
   const [accountType, setAccountType] = useState<"employee" | "employer">(
@@ -472,3 +472,18 @@ export default function RegisterPage() {
     </PageShell>
   );
 }
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#0a0e1a] text-slate-400">
+          <div className="text-sm">Loading registration…</div>
+        </div>
+      }
+    >
+      <RegisterContent />
+    </Suspense>
+  );
+}
+

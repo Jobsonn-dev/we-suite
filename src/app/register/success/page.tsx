@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Check, ArrowRight, Sparkles, Factory, Cpu, ShoppingBag } from "lucide-react";
@@ -54,7 +54,7 @@ const ecosystemCards: EcosystemCard[] = [
   },
 ];
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
   const phone = searchParams.get("phone") ?? "";
@@ -194,3 +194,18 @@ export default function SuccessPage() {
     </div>
   );
 }
+
+export default function SuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#0a0e1a] text-slate-400">
+          <div className="text-sm">Loading…</div>
+        </div>
+      }
+    >
+      <SuccessContent />
+    </Suspense>
+  );
+}
+

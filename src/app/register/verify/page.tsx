@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -13,7 +13,7 @@ import { getColor, accentText } from "@/lib/colors";
 import { DynamicIcon } from "@/lib/icon-registry";
 import { cn } from "@/lib/utils";
 
-export default function VerifyPage() {
+function VerifyContent() {
   const searchParams = useSearchParams();
   const rawEmail = searchParams.get("email") ?? "";
   const rawPhone = searchParams.get("phone") ?? "";
@@ -99,7 +99,7 @@ export default function VerifyPage() {
   }
 
   function handleOtpPaste(
-    e: React.ClipboardEvent<HTMLInputElement>,
+    e: React.ClipboardEvent,
     type: "email" | "phone"
   ) {
     e.preventDefault();
@@ -426,3 +426,18 @@ export default function VerifyPage() {
     </PageShell>
   );
 }
+
+export default function VerifyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#0a0e1a] text-slate-400">
+          <div className="text-sm">Loading verification…</div>
+        </div>
+      }
+    >
+      <VerifyContent />
+    </Suspense>
+  );
+}
+

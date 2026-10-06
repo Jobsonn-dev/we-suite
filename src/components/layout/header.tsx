@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Globe, Menu, X, Search, ArrowRight, User } from "lucide-react";
 import { WebuosLogo } from "@/components/brand/webuos-logo";
@@ -39,7 +39,24 @@ function MobileSearchBar() {
   );
 }
 
-export function Header() {
+function HeaderFallback() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
+      <div className="mx-auto flex h-[60px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="flex shrink-0 items-center" aria-label="WEBUOS home">
+          <WebuosLogo size="md" />
+        </Link>
+        <div className="hidden shrink-0 items-center gap-1 lg:flex">
+          <ESuiteButton variant="pill" />
+          <ESuiteButton variant="icon" />
+          <ProfileDropdown />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function HeaderInner() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState("");
   const pathname = usePathname();
@@ -148,3 +165,12 @@ export function Header() {
     </header>
   );
 }
+
+export function Header() {
+  return (
+    <Suspense fallback={<HeaderFallback />}>
+      <HeaderInner />
+    </Suspense>
+  );
+}
+
