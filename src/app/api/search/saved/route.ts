@@ -1,16 +1,11 @@
 // ============================================================
-// WEBUOS Search API — Saved searches / search history
+// WEBUOS Search API — Saved searches / search history (In-Memory Mock)
 // GET  /api/search/saved      → returns saved search history for the demo user
 // POST /api/search/saved      → saves a search history entry for the demo user
 // Body: { query }
-//
-// Since auth isn't wired up yet, we resolve the demo user via the
-// `demo@webuos.com` email (creating the user record if missing) and use
-// their id for all SearchHistory rows.
 // ============================================================
 
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
 import { getDemoUserId, sanitizeQuery } from "@/lib/search-utils";
 
 export const dynamic = "force-dynamic";
@@ -32,36 +27,26 @@ interface SaveRequestBody {
   session_id?: string;
 }
 
-// ------------------------------------------------------------
-// GET — list the demo user's saved searches (most-recent first)
-// ------------------------------------------------------------
+// In-memory store of saved searches seeded with realistic demo entries
+let inMemorySavedSearches: SavedSearchItem[] = [
+  { id: "saved-1", query: "CNC Machining Bengaluru", created_at: new Date(Date.now() - 3600000).toISOString() },
+  { id: "saved-2", query: "Enterprise SaaS ERP", created_at: new Date(Date.now() - 86400000).toISOString() },
+  { id: "saved-3", query: "Precision Sheet Metal Pune", created_at: new Date(Date.now() - 172800000).toISOString() },
+  { id: "saved-4", query: "Industrial Automation Solutions", created_at: new Date(Date.now() - 259200000).toISOString() },
+];
 
 export async function GET() {
   const userId = await getDemoUserId();
-  const rows = await db.searchHistory.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    take: 50,
-    select: { id: true, query: true, createdAt: true },
-  });
 
   const response: SavedSearchListResponse = {
     user_id: userId,
-    count: rows.length,
-    saved: rows.map((r) => ({
-      id: r.id,
-      query: r.query,
-      created_at: r.createdAt.toISOString(),
-    })),
+    count: inMemorySavedSearches.length,
+    saved: inMemorySavedSearches,
   };
   return NextResponse.json(response, {
     headers: { "Cache-Control": "no-store" },
   });
 }
-
-// ------------------------------------------------------------
-// POST — save a search history entry for the demo user
-// ------------------------------------------------------------
 
 export async function POST(req: NextRequest) {
   let body: SaveRequestBody = {};
@@ -82,18 +67,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const userId = await getDemoUserId();
-  const sessionId = body.session_id ? String(body.session_id).slice(0, 200) : null;
+  const newEntry: SavedSearchItem = {
+    id: `saved-${Date.now()}`,
+    query,
+    created_at: new Date().toISOString(),
+  };
 
-  const created = await db.searchHistory.create({
-    data: { query, userId, sessionId },
-    select: { id: true, query: true, createdAt: true },
-  });
+  // Prepend so latest is first, cap to 50
+  inMemorySavedSearches = [newEntry, ...inMemorySavedSearches.filter((s) => s.query !== query)].slice(0, 50);
 
   return NextResponse.json({
     success: true,
-    id: created.id,
-    query: created.query,
-    created_at: created.createdAt.toISOString(),
+    id: newEntry.id,
+    query: newEntry.query,
+    created_at: newEntry.created_at,
   });
 }

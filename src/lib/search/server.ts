@@ -1,17 +1,21 @@
 // ============================================================
-// WEBUOS Search Engine — Server-side search runner
+// WEBUOS Search Engine — Server-side in-memory search runner
 //
-// Exposes `runSearch(params)` so that BOTH:
-//   • /api/search route handler (returns JSON to clients), and
-//   • /search page (Server Component, renders results directly)
-// can call the exact same code path. This guarantees the API and the
-// page produce identical results.
-//
-// The /api/search route is a thin wrapper that calls `runSearch`.
+// Pure TypeScript mock-data powered search engine.
+// Exposes `runSearch(params)` for both /api/search and /search page.
+// Zero database / Prisma dependencies.
 // ============================================================
 
-import { Prisma } from "@prisma/client";
-import { db } from "@/lib/db";
+import {
+  MOCK_COMPANIES,
+  MOCK_PRODUCTS,
+  MOCK_SERVICES,
+  MOCK_INDUSTRIES,
+  MOCK_TECHNOLOGIES,
+  MOCK_LOCATIONS,
+  MOCK_SYNONYMS,
+} from "@/data/mock-db";
+import { ecosystems as allEcosystems } from "@/data/taxonomy";
 import {
   buildFacets,
   buildRelatedSearches,
@@ -53,21 +57,20 @@ export interface SearchParams {
 }
 
 // ------------------------------------------------------------
-// Helper — build OR clauses for any model
+// Text matching helper
 // ------------------------------------------------------------
 
-function buildOrClauses(
+function matchesTokens(
+  targetText: string,
   tokens: string[],
-  fields: string[],
-): Record<string, unknown>[] {
-  const out: Record<string, unknown>[] = [];
-  for (const t of tokens) {
-    if (!t) continue;
-    for (const f of fields) {
-      out.push({ [f]: { contains: t } });
-    }
+  fallbackQuery: string,
+): boolean {
+  if (!tokens.length && !fallbackQuery) return true;
+  const lower = targetText.toLowerCase();
+  if (tokens.length > 0) {
+    return tokens.some((t) => t && lower.includes(t.toLowerCase()));
   }
-  return out;
+  return lower.includes(fallbackQuery.toLowerCase());
 }
 
 // ------------------------------------------------------------
@@ -106,458 +109,341 @@ export async function runSearch(params: SearchParams): Promise<SearchResponse> {
   if (isNaN(limit) || limit < 1) limit = 10;
   if (limit > 50) limit = 50;
 
-  // Load synonyms once
-  const synonyms = await db.searchSynonym.findMany();
-
-  // Tokenize & expand
+  // Synonyms and tokens
+  const synonyms = MOCK_SYNONYMS;
   const baseTokens = tokenize(query);
   const expandedTokens = expandTokensWithSynonyms(baseTokens, synonyms);
 
-  // Pre-load industries & locations for interpretation
-  const [industriesAll, locationsAll] = await Promise.all([
-    db.industry.findMany({
-      select: {
-        id: true,
-        name: true,
-        ecosystemId: true,
-        sectorId: true,
-        categoryId: true,
-      },
-    }),
-    db.location.findMany({
-      select: {
-        id: true,
-        name: true,
-        type: true,
-        country: true,
-        state: true,
-        city: true,
-        slug: true,
-      },
-    }),
-  ]);
-
+  // Interpret query
   const interpreted: InterpretedQuery = await interpretQuery(query, {
-    industries: industriesAll,
-    locations: locationsAll,
+    industries: MOCK_INDUSTRIES.map((ind) => ({
+      id: ind.id,
+      name: ind.name,
+      ecosystemId: ind.ecosystemId,
+      sectorId: ind.sectorId,
+      categoryId: ind.categoryId ?? "",
+    })),
+    locations: MOCK_LOCATIONS.map((loc) => ({
+      id: loc.id,
+      name: loc.name,
+      type: loc.type,
+      country: loc.country,
+      state: loc.state,
+      city: loc.city,
+      slug: loc.slug,
+    })),
     synonyms,
   });
 
+  const activeCountry = country ?? interpreted.country ?? null;
+  const activeState = state ?? interpreted.state ?? null;
+  const activeCity = city ?? interpreted.city ?? null;
+
   // ----------------------------------------------------------
-  // Search companies
+  // 1. Search Companies
   // ----------------------------------------------------------
   const companyResults: Extract<SearchResult, { type: "company" }>[] = [];
 
   if (type === "all" || type === "company") {
-    const fields = [
-      "name",
-      "description",
-      "businessType",
-      "industryName",
-      "categoryName",
-      "country",
-      "state",
-      "city",
-      "certifications",
-      "industriesServed",
-      "marketsServed",
-    ];
-    const companyWhere: Prisma.CompanyWhereInput = {};
-    if (expandedTokens.length > 0) {
-      const flatOr: Prisma.CompanyWhereInput[] = [];
-      for (const t of expandedTokens) {
-        if (!t) continue;
-        for (const f of fields) {
-          flatOr.push({ [f]: { contains: t } } as Prisma.CompanyWhereInput);
-        }
-      }
-      companyWhere.OR = flatOr;
-    } else if (query) {
-      const phraseOrs: Prisma.CompanyWhereInput[] = [];
-      for (const f of fields) {
-        phraseOrs.push({ [f]: { contains: query } } as Prisma.CompanyWhereInput);
-      }
-      companyWhere.OR = phraseOrs;
-    }
+    for (const c of MOCK_COMPANIES) {
+      // Filters
+      if (ecosystem && c.ecosystemId.toLowerCase() !== ecosystem.toLowerCase()) continue;
+      if (sector && c.sectorId.toLowerCase() !== sector.toLowerCase()) continue;
+      if (category && c.categoryId.toLowerCase() !== category.toLowerCase()) continue;
+      if (business_size && c.businessSize.toLowerCase() !== business_size.toLowerCase()) continue;
+      if (verified && !c.verified) continue;
+      if (business_type && !c.businessType.toLowerCase().includes(business_type.toLowerCase())) continue;
+      if (activeCountry && !c.country.toLowerCase().includes(activeCountry.toLowerCase())) continue;
+      if (activeState && !c.state.toLowerCase().includes(activeState.toLowerCase())) continue;
+      if (activeCity && !c.city.toLowerCase().includes(activeCity.toLowerCase())) continue;
 
-    if (ecosystem) companyWhere.ecosystemId = ecosystem;
-    if (sector) companyWhere.sectorId = sector;
-    if (category) companyWhere.categoryId = category;
-    if (business_size) companyWhere.businessSize = business_size;
-    if (verified) companyWhere.verified = true;
-    if (business_type) {
-      companyWhere.businessType = { contains: business_type };
-    }
-    if (country) companyWhere.country = { contains: country };
-    else if (interpreted.country)
-      companyWhere.country = { contains: interpreted.country };
-    if (state) companyWhere.state = { contains: state };
-    else if (interpreted.state)
-      companyWhere.state = { contains: interpreted.state };
-    if (city) companyWhere.city = { contains: city };
-    else if (interpreted.city) companyWhere.city = { contains: interpreted.city };
+      const searchableText = [
+        c.name,
+        c.description,
+        c.businessType,
+        c.industryName,
+        c.categoryName,
+        c.country,
+        c.state,
+        c.city,
+        c.certifications,
+        c.industriesServed,
+        c.marketsServed,
+      ].join(" ");
 
-    if (Object.keys(companyWhere).length > 0 || query === "") {
-      const companies = await db.company.findMany({
-        where: companyWhere,
-        take: 200,
-        orderBy: { popularity: "desc" },
-        select: {
-          id: true,
-          slug: true,
-          name: true,
-          description: true,
-          verified: true,
-          claimed: true,
-          registered: true,
-          businessType: true,
-          ecosystemId: true,
-          industryName: true,
-          categoryName: true,
-          country: true,
-          state: true,
-          city: true,
-          rating: true,
-          reviewCount: true,
-          productCount: true,
-          serviceCount: true,
-          website: true,
-          logoUrl: true,
-          popularity: true,
-          industriesServed: true,
-          marketsServed: true,
-          certifications: true,
-          createdAt: true,
-        },
+      if (query && !matchesTokens(searchableText, expandedTokens, query)) {
+        continue;
+      }
+
+      const otherText = [
+        c.businessType,
+        c.industryName,
+        c.categoryName,
+        c.country,
+        c.state,
+        c.city,
+        c.certifications,
+        c.industriesServed,
+        c.marketsServed,
+      ].join(" ");
+
+      const relevance = query
+        ? computeRelevance({
+            query,
+            tokens: expandedTokens,
+            name: c.name,
+            description: c.description,
+            otherText,
+            verified: c.verified,
+            claimed: c.claimed,
+            registered: c.registered,
+            popularity: c.popularity,
+            createdAt: new Date(2025, 0, 1),
+          })
+        : Math.round((c.popularity ?? 0.5) * 50 + (c.verified ? 10 : 0) + (c.claimed ? 5 : 0));
+
+      const locationBits = [c.city, c.state, c.country].filter(Boolean);
+      companyResults.push({
+        type: "company",
+        id: c.id,
+        slug: c.slug,
+        name: c.name,
+        description: c.description,
+        verified: c.verified,
+        claimed: c.claimed,
+        business_type: c.businessType,
+        ecosystem: c.ecosystemId,
+        industry: c.industryName,
+        category: c.categoryName,
+        location: locationBits.join(", "),
+        city: c.city,
+        country: c.country,
+        rating: c.rating,
+        review_count: c.reviewCount,
+        product_count: c.productCount,
+        service_count: c.serviceCount,
+        website: c.website,
+        relevance_score: relevance,
+        logo: c.logoUrl,
       });
-
-      for (const c of companies) {
-        const otherText = [
-          c.businessType ?? "",
-          c.industryName ?? "",
-          c.categoryName ?? "",
-          c.country ?? "",
-          c.state ?? "",
-          c.city ?? "",
-          c.certifications ?? "",
-          c.industriesServed ?? "",
-          c.marketsServed ?? "",
-        ].join(" ");
-        const relevance = query
-          ? computeRelevance({
-              query,
-              tokens: expandedTokens,
-              name: c.name,
-              description: c.description,
-              otherText,
-              verified: c.verified,
-              claimed: c.claimed,
-              registered: c.registered,
-              popularity: c.popularity,
-              createdAt: c.createdAt,
-            })
-          : Math.round(
-              (c.popularity ?? 0) * 50 +
-                (c.verified ? 10 : 0) +
-                (c.claimed ? 5 : 0),
-            );
-
-        const locationBits = [c.city, c.state, c.country].filter(Boolean);
-        companyResults.push({
-          type: "company",
-          id: c.id,
-          slug: c.slug,
-          name: c.name,
-          description: c.description,
-          verified: c.verified,
-          claimed: c.claimed,
-          business_type: c.businessType,
-          ecosystem: c.ecosystemId,
-          industry: c.industryName,
-          category: c.categoryName,
-          location: locationBits.join(", "),
-          city: c.city,
-          country: c.country,
-          rating: c.rating,
-          review_count: c.reviewCount,
-          product_count: c.productCount,
-          service_count: c.serviceCount,
-          website: c.website,
-          relevance_score: relevance,
-          logo: c.logoUrl,
-        });
-      }
     }
   }
 
   // ----------------------------------------------------------
-  // Search products
+  // 2. Search Products
   // ----------------------------------------------------------
   const productResults: Extract<SearchResult, { type: "product" }>[] = [];
-  if (type === "all" || type === "product") {
-    const fields = ["name", "description", "category", "subcategory", "brand"];
-    const orClauses = buildOrClauses(expandedTokens, fields);
-    const where: Prisma.ProductWhereInput = {};
-    if (orClauses.length > 0) {
-      where.OR = orClauses as Prisma.ProductWhereInput[];
-    } else if (query) {
-      where.OR = fields.map(
-        (f) => ({ [f]: { contains: query } }) as Prisma.ProductWhereInput,
-      );
-    }
-    if (country) where.country = { contains: country };
-    else if (interpreted.country)
-      where.country = { contains: interpreted.country };
-    if (city) where.city = { contains: city };
-    else if (interpreted.city) where.city = { contains: interpreted.city };
 
-    if (Object.keys(where).length > 0 || query === "") {
-      const products = await db.product.findMany({
-        where,
-        take: 100,
-        orderBy: { createdAt: "desc" },
-        include: {
-          company: { select: { id: true, name: true, slug: true, popularity: true } },
-        },
-      });
-      for (const p of products) {
-        const otherText = [p.category ?? "", p.subcategory ?? "", p.brand ?? ""].join(" ");
-        const relevance = query
-          ? computeRelevance({
-              query,
-              tokens: expandedTokens,
-              name: p.name,
-              description: p.description,
-              otherText,
-              popularity: p.company?.popularity,
-              createdAt: p.createdAt,
-            })
-          : 50;
-        const loc = [p.city, p.state, p.country].filter(Boolean).join(", ");
-        productResults.push({
-          type: "product",
-          id: p.id,
-          slug: p.slug,
-          name: p.name,
-          description: p.description,
-          company_id: p.companyId,
-          company_name: p.company?.name ?? null,
-          brand: p.brand,
-          category: p.category,
-          subcategory: p.subcategory,
-          price_range: p.priceRange,
-          availability: p.availability,
-          location: loc || null,
-          relevance_score: relevance,
-        });
+  if (type === "all" || type === "product") {
+    for (const p of MOCK_PRODUCTS) {
+      if (activeCountry && !p.country.toLowerCase().includes(activeCountry.toLowerCase())) continue;
+      if (activeCity && !p.city.toLowerCase().includes(activeCity.toLowerCase())) continue;
+
+      const searchableText = [p.name, p.description, p.category, p.subcategory, p.brand, p.companyName].join(" ");
+      if (query && !matchesTokens(searchableText, expandedTokens, query)) {
+        continue;
       }
+
+      const otherText = [p.category, p.subcategory, p.brand, p.companyName].join(" ");
+      const relevance = query
+        ? computeRelevance({
+            query,
+            tokens: expandedTokens,
+            name: p.name,
+            description: p.description,
+            otherText,
+            popularity: 0.8,
+            createdAt: new Date(2025, 0, 1),
+          })
+        : 50;
+
+      const loc = [p.city, p.state, p.country].filter(Boolean).join(", ");
+      productResults.push({
+        type: "product",
+        id: p.id,
+        slug: p.slug,
+        name: p.name,
+        description: p.description,
+        company_id: p.companyId,
+        company_name: p.companyName,
+        brand: p.brand,
+        category: p.category,
+        subcategory: p.subcategory,
+        price_range: p.priceRange,
+        availability: p.availability,
+        location: loc || null,
+        relevance_score: relevance,
+      });
     }
   }
 
   // ----------------------------------------------------------
-  // Search services
+  // 3. Search Services
   // ----------------------------------------------------------
   const serviceResults: Extract<SearchResult, { type: "service" }>[] = [];
-  if (type === "all" || type === "service") {
-    const fields = ["name", "description", "category", "industryServed"];
-    const orClauses = buildOrClauses(expandedTokens, fields);
-    const where: Prisma.ServiceWhereInput = {};
-    if (orClauses.length > 0) {
-      where.OR = orClauses as unknown as Prisma.ServiceWhereInput[];
-    } else if (query) {
-      where.OR = fields.map(
-        (f) =>
-          ({ [f]: { contains: query } }) as unknown as Prisma.ServiceWhereInput,
-      );
-    }
-    if (country) where.country = { contains: country };
-    else if (interpreted.country)
-      where.country = { contains: interpreted.country };
-    if (city) where.city = { contains: city };
-    else if (interpreted.city) where.city = { contains: interpreted.city };
 
-    if (Object.keys(where).length > 0 || query === "") {
-      const services = await db.service.findMany({
-        where,
-        take: 100,
-        orderBy: { createdAt: "desc" },
-        include: {
-          company: { select: { id: true, name: true, slug: true, popularity: true } },
-        },
-      });
-      for (const s of services) {
-        const otherText = [s.category ?? "", s.industryServed ?? ""].join(" ");
-        const relevance = query
-          ? computeRelevance({
-              query,
-              tokens: expandedTokens,
-              name: s.name,
-              description: s.description,
-              otherText,
-              popularity: s.company?.popularity,
-              createdAt: s.createdAt,
-            })
-          : 50;
-        const loc = [s.city, s.state, s.country].filter(Boolean).join(", ");
-        serviceResults.push({
-          type: "service",
-          id: s.id,
-          slug: s.slug,
-          name: s.name,
-          description: s.description,
-          company_id: s.companyId,
-          company_name: s.company?.name ?? null,
-          category: s.category,
-          industry_served: s.industryServed,
-          coverage: s.coverage,
-          pricing_model: s.pricingModel,
-          location: loc || null,
-          relevance_score: relevance,
-        });
+  if (type === "all" || type === "service") {
+    for (const s of MOCK_SERVICES) {
+      if (activeCountry && !s.country.toLowerCase().includes(activeCountry.toLowerCase())) continue;
+      if (activeCity && !s.city.toLowerCase().includes(activeCity.toLowerCase())) continue;
+
+      const searchableText = [s.name, s.description, s.category, s.industryServed, s.companyName].join(" ");
+      if (query && !matchesTokens(searchableText, expandedTokens, query)) {
+        continue;
       }
+
+      const otherText = [s.category, s.industryServed, s.companyName].join(" ");
+      const relevance = query
+        ? computeRelevance({
+            query,
+            tokens: expandedTokens,
+            name: s.name,
+            description: s.description,
+            otherText,
+            popularity: 0.8,
+            createdAt: new Date(2025, 0, 1),
+          })
+        : 50;
+
+      const loc = [s.city, s.state, s.country].filter(Boolean).join(", ");
+      serviceResults.push({
+        type: "service",
+        id: s.id,
+        slug: s.slug,
+        name: s.name,
+        description: s.description,
+        company_id: s.companyId,
+        company_name: s.companyName,
+        category: s.category,
+        industry_served: s.industryServed,
+        coverage: s.coverage,
+        pricing_model: s.pricingModel,
+        location: loc || null,
+        relevance_score: relevance,
+      });
     }
   }
 
   // ----------------------------------------------------------
-  // Search industries
+  // 4. Search Industries
   // ----------------------------------------------------------
   const industryResults: Extract<SearchResult, { type: "industry" }>[] = [];
-  if (type === "all" || type === "industry") {
-    const fields = ["name", "description"];
-    const orClauses = buildOrClauses(expandedTokens, fields);
-    const where: Prisma.IndustryWhereInput = {};
-    if (orClauses.length > 0) {
-      where.OR = orClauses as Prisma.IndustryWhereInput[];
-    } else if (query) {
-      where.OR = fields.map(
-        (f) => ({ [f]: { contains: query } }) as Prisma.IndustryWhereInput,
-      );
-    }
-    if (ecosystem) where.ecosystemId = ecosystem;
-    if (sector) where.sectorId = sector;
-    if (category) where.categoryId = category;
 
-    if (Object.keys(where).length > 0 || query === "") {
-      const industries = await db.industry.findMany({ where, take: 50 });
-      for (const ind of industries) {
-        const relevance = query
-          ? computeRelevance({
-              query,
-              tokens: expandedTokens,
-              name: ind.name,
-              description: ind.description,
-              companyCount: ind.companyCount,
-              createdAt: ind.createdAt,
-            })
-          : 50;
-        industryResults.push({
-          type: "industry",
-          id: ind.id,
-          slug: ind.slug,
-          name: ind.name,
-          description: ind.description,
-          ecosystem: ind.ecosystemId,
-          company_count: ind.companyCount,
-          product_count: ind.productCount,
-          service_count: ind.serviceCount,
-          relevance_score: relevance,
-        });
+  if (type === "all" || type === "industry") {
+    for (const ind of MOCK_INDUSTRIES) {
+      if (ecosystem && ind.ecosystemId.toLowerCase() !== ecosystem.toLowerCase()) continue;
+      if (sector && ind.sectorId.toLowerCase() !== sector.toLowerCase()) continue;
+      if (category && ind.categoryId && ind.categoryId.toLowerCase() !== category.toLowerCase()) continue;
+
+      const searchableText = [ind.name, ind.description].join(" ");
+      if (query && !matchesTokens(searchableText, expandedTokens, query)) {
+        continue;
       }
+
+      const relevance = query
+        ? computeRelevance({
+            query,
+            tokens: expandedTokens,
+            name: ind.name,
+            description: ind.description,
+            companyCount: ind.companyCount,
+            createdAt: new Date(2025, 0, 1),
+          })
+        : 50;
+
+      industryResults.push({
+        type: "industry",
+        id: ind.id,
+        slug: ind.slug,
+        name: ind.name,
+        description: ind.description,
+        ecosystem: ind.ecosystemId,
+        company_count: ind.companyCount,
+        product_count: ind.productCount,
+        service_count: ind.serviceCount,
+        relevance_score: relevance,
+      });
     }
   }
 
   // ----------------------------------------------------------
-  // Search technologies
+  // 5. Search Technologies
   // ----------------------------------------------------------
   const techResults: Extract<SearchResult, { type: "technology" }>[] = [];
-  if (type === "all" || type === "technology") {
-    const fields = ["name", "description", "providers", "useCases", "industries"];
-    const orClauses = buildOrClauses(expandedTokens, fields);
-    const where: Prisma.TechnologyWhereInput = {};
-    if (orClauses.length > 0) {
-      where.OR = orClauses as Prisma.TechnologyWhereInput[];
-    } else if (query) {
-      where.OR = fields.map(
-        (f) => ({ [f]: { contains: query } }) as Prisma.TechnologyWhereInput,
-      );
-    }
 
-    if (Object.keys(where).length > 0 || query === "") {
-      const techs = await db.technology.findMany({ where, take: 50 });
-      for (const t of techs) {
-        const otherText = [t.providers ?? "", t.useCases ?? "", t.industries ?? ""].join(" ");
-        const relevance = query
-          ? computeRelevance({
-              query,
-              tokens: expandedTokens,
-              name: t.name,
-              description: t.description,
-              otherText,
-              companyCount: t.companyCount,
-              createdAt: t.createdAt,
-            })
-          : 50;
-        techResults.push({
-          type: "technology",
-          id: t.id,
-          slug: t.slug,
-          name: t.name,
-          description: t.description,
-          type_field: t.type,
-          providers: t.providers ? t.providers.split(",").map((s) => s.trim()).filter(Boolean) : [],
-          use_cases: t.useCases ? t.useCases.split(",").map((s) => s.trim()).filter(Boolean) : [],
-          industries: t.industries ? t.industries.split(",").map((s) => s.trim()).filter(Boolean) : [],
-          company_count: t.companyCount,
-          relevance_score: relevance,
-        });
+  if (type === "all" || type === "technology") {
+    for (const t of MOCK_TECHNOLOGIES) {
+      const searchableText = [t.name, t.description, t.providers, t.useCases, t.industries].join(" ");
+      if (query && !matchesTokens(searchableText, expandedTokens, query)) {
+        continue;
       }
+
+      const otherText = [t.providers, t.useCases, t.industries].join(" ");
+      const relevance = query
+        ? computeRelevance({
+            query,
+            tokens: expandedTokens,
+            name: t.name,
+            description: t.description,
+            otherText,
+            companyCount: t.companyCount,
+            createdAt: new Date(2025, 0, 1),
+          })
+        : 50;
+
+      techResults.push({
+        type: "technology",
+        id: t.id,
+        slug: t.slug,
+        name: t.name,
+        description: t.description,
+        type_field: t.type,
+        providers: t.providers ? t.providers.split(",").map((s) => s.trim()).filter(Boolean) : [],
+        use_cases: t.useCases ? t.useCases.split(",").map((s) => s.trim()).filter(Boolean) : [],
+        industries: t.industries ? t.industries.split(",").map((s) => s.trim()).filter(Boolean) : [],
+        company_count: t.companyCount,
+        relevance_score: relevance,
+      });
     }
   }
 
   // ----------------------------------------------------------
-  // Search locations
+  // 6. Search Locations
   // ----------------------------------------------------------
   const locationResults: Extract<SearchResult, { type: "location" }>[] = [];
-  if (type === "all" || type === "location") {
-    const fields = ["name", "country", "state", "city", "type"];
-    const orClauses = buildOrClauses(expandedTokens, fields);
-    const where: Prisma.LocationWhereInput = {};
-    if (orClauses.length > 0) {
-      where.OR = orClauses as Prisma.LocationWhereInput[];
-    } else if (query) {
-      where.OR = fields.map(
-        (f) => ({ [f]: { contains: query } }) as Prisma.LocationWhereInput,
-      );
-    }
 
-    if (Object.keys(where).length > 0 || query === "") {
-      const locs = await db.location.findMany({ where, take: 50 });
-      for (const l of locs) {
-        const relevance = query
-          ? computeRelevance({
-              query,
-              tokens: expandedTokens,
-              name: l.name,
-              description: l.country,
-              otherText: [l.state ?? "", l.city ?? "", l.type ?? ""].join(" "),
-              companyCount: l.businessCount,
-              createdAt: l.createdAt,
-            })
-          : 50;
-        locationResults.push({
-          type: "location",
-          id: l.id,
-          slug: l.slug,
-          name: l.name,
-          type_field: l.type,
-          country: l.country,
-          state: l.state,
-          city: l.city,
-          business_count: l.businessCount,
-          industries: l.industries ? l.industries.split(",").map((s) => s.trim()).filter(Boolean) : [],
-          relevance_score: relevance,
-        });
+  if (type === "all" || type === "location") {
+    for (const l of MOCK_LOCATIONS) {
+      const searchableText = [l.name, l.country, l.state, l.city, l.type, l.industries].join(" ");
+      if (query && !matchesTokens(searchableText, expandedTokens, query)) {
+        continue;
       }
+
+      const relevance = query
+        ? computeRelevance({
+            query,
+            tokens: expandedTokens,
+            name: l.name,
+            description: l.country,
+            otherText: [l.state, l.city, l.type, l.industries].join(" "),
+            companyCount: l.businessCount,
+            createdAt: new Date(2025, 0, 1),
+          })
+        : 50;
+
+      locationResults.push({
+        type: "location",
+        id: l.id,
+        slug: l.slug,
+        name: l.name,
+        type_field: l.type,
+        country: l.country,
+        state: l.state,
+        city: l.city,
+        business_count: l.businessCount,
+        industries: l.industries ? l.industries.split(",").map((s) => s.trim()).filter(Boolean) : [],
+        relevance_score: relevance,
+      });
     }
   }
 
@@ -574,7 +460,6 @@ export async function runSearch(params: SearchParams): Promise<SearchResponse> {
   ];
 
   const filtered = query ? allResults.filter((r) => r.relevance_score > 0) : allResults;
-
   const sorted = sortResults(filtered, sort);
 
   const total = sorted.length;
@@ -605,68 +490,108 @@ export async function runSearch(params: SearchParams): Promise<SearchResponse> {
   // ----------------------------------------------------------
   // Build Discovery Data (40% panel)
   // ----------------------------------------------------------
+  const knowledgePanel =
+    pageResults.find((r) => r.type === "company" && r.relevance_score > 70) ?? null;
 
-  // Knowledge panel — if the top result is a company with high relevance, use it
-  const knowledgePanel = pageResults.find(r => r.type === "company" && r.relevance_score > 70) ?? null;
-
-  // Related companies — same industry/category as top results, not in current page
-  const topIndustries = new Set(pageResults.filter(r => r.type === "company").map(r => r.industry).filter(Boolean));
-  const topCategories = new Set(pageResults.filter(r => r.type === "company").map(r => r.category).filter(Boolean));
-  const currentPageIds = new Set(pageResults.map(r => r.id));
+  const topIndustries = new Set(
+    pageResults
+      .filter((r) => r.type === "company")
+      .map((r) => (r as Extract<SearchResult, { type: "company" }>).industry)
+      .filter(Boolean),
+  );
+  const topCategories = new Set(
+    pageResults
+      .filter((r) => r.type === "company")
+      .map((r) => (r as Extract<SearchResult, { type: "company" }>).category)
+      .filter(Boolean),
+  );
+  const currentPageIds = new Set(pageResults.map((r) => r.id));
 
   const relatedCompanies = sorted
-    .filter(r => r.type === "company" && !currentPageIds.has(r.id) &&
-      (r.industry && topIndustries.has(r.industry) || r.category && topCategories.has(r.category)))
+    .filter(
+      (r) =>
+        r.type === "company" &&
+        !currentPageIds.has(r.id) &&
+        (((r as Extract<SearchResult, { type: "company" }>).industry &&
+          topIndustries.has((r as Extract<SearchResult, { type: "company" }>).industry)) ||
+          ((r as Extract<SearchResult, { type: "company" }>).category &&
+            topCategories.has((r as Extract<SearchResult, { type: "company" }>).category))),
+    )
     .slice(0, 5);
 
-  // Similar businesses — same business_type as top companies
-  const topBusinessTypes = new Set(pageResults.filter(r => r.type === "company").map(r => r.business_type).filter(Boolean));
+  const topBusinessTypes = new Set(
+    pageResults
+      .filter((r) => r.type === "company")
+      .map((r) => (r as Extract<SearchResult, { type: "company" }>).business_type)
+      .filter(Boolean),
+  );
   const similarBusinesses = sorted
-    .filter(r => r.type === "company" && !currentPageIds.has(r.id) && !relatedCompanies.includes(r) &&
-      r.business_type && topBusinessTypes.has(r.business_type))
+    .filter(
+      (r) =>
+        r.type === "company" &&
+        !currentPageIds.has(r.id) &&
+        !relatedCompanies.includes(r) &&
+        (r as Extract<SearchResult, { type: "company" }>).business_type &&
+        topBusinessTypes.has((r as Extract<SearchResult, { type: "company" }>).business_type),
+    )
     .slice(0, 5);
 
-  // Nearby businesses — same city/country as top results
-  const topCities = new Set(pageResults.filter(r => r.city).map(r => r.city));
-  const topCountries = new Set(pageResults.filter(r => r.country).map(r => r.country));
+  const topCities = new Set(
+    pageResults
+      .filter((r) => (r as Extract<SearchResult, { type: "company" }>).city)
+      .map((r) => (r as Extract<SearchResult, { type: "company" }>).city),
+  );
+  const topCountries = new Set(
+    pageResults
+      .filter((r) => (r as Extract<SearchResult, { type: "company" }>).country)
+      .map((r) => (r as Extract<SearchResult, { type: "company" }>).country),
+  );
   const nearbyBusinesses = sorted
-    .filter(r => r.type === "company" && !currentPageIds.has(r.id) && !relatedCompanies.includes(r) && !similarBusinesses.includes(r) &&
-      ((r.city && topCities.has(r.city)) || (r.country && topCountries.has(r.country))))
+    .filter(
+      (r) =>
+        r.type === "company" &&
+        !currentPageIds.has(r.id) &&
+        !relatedCompanies.includes(r) &&
+        !similarBusinesses.includes(r) &&
+        (((r as Extract<SearchResult, { type: "company" }>).city &&
+          topCities.has((r as Extract<SearchResult, { type: "company" }>).city)) ||
+          ((r as Extract<SearchResult, { type: "company" }>).country &&
+            topCountries.has((r as Extract<SearchResult, { type: "company" }>).country))),
+    )
     .slice(0, 5);
 
-  // Trending searches — based on the interpreted query
   const trendingSearches: string[] = [
-    `${query} manufacturers`,
-    `${query} suppliers`,
-    `${query} companies in India`,
-    `best ${query} companies`,
-    `${query} near me`,
-  ].filter(s => !s.includes("undefined")).slice(0, 5);
+    `${query || "Industrial"} manufacturers`,
+    `${query || "B2B"} suppliers`,
+    `${query || "Manufacturing"} companies in India`,
+    `best ${query || "tech"} companies`,
+    `${query || "Services"} near me`,
+  ].slice(0, 5);
 
-  // Related industries
-  const allIndustries = await db.industry.findMany({
-    where: interpreted.industry ? { name: { contains: interpreted.industry } } : {},
-    select: { name: true, companyCount: true },
-    take: 5,
-    orderBy: { companyCount: "desc" },
-  });
-  const relatedIndustries = allIndustries.map(i => ({ name: i.name, count: i.companyCount }));
+  const matchingIndustries = MOCK_INDUSTRIES.filter((ind) =>
+    interpreted.industry ? ind.name.toLowerCase().includes(interpreted.industry.toLowerCase()) : true,
+  )
+    .sort((a, b) => b.companyCount - a.companyCount)
+    .slice(0, 5)
+    .map((i) => ({ name: i.name, count: i.companyCount }));
 
-  // Recommended categories from taxonomy
-  const { ecosystems: allEcosystems } = await import("@/data/taxonomy");
   const queryLower = query.toLowerCase();
   const matchingCategories = allEcosystems
-    .flatMap(e => e.categories.flatMap(s => s.categories))
-    .filter(c => c.name.toLowerCase().includes(queryLower) || c.products.some(p => p.name.toLowerCase().includes(queryLower)))
+    .flatMap((e) => e.categories.flatMap((s) => s.categories))
+    .filter(
+      (c) =>
+        !query ||
+        c.name.toLowerCase().includes(queryLower) ||
+        c.products.some((p) => p.name.toLowerCase().includes(queryLower)),
+    )
     .slice(0, 5)
-    .map(c => ({ name: c.name, count: c.businessProfiles.length }));
+    .map((c) => ({ name: c.name, count: c.businessProfiles.length }));
 
-  // Explore more cards
   const exploreMore = [
-    { label: "Companies", query: `${query} type=company`, icon: "Building2" },
-    { label: "Products", query: `${query} type=product`, icon: "Package" },
-    { label: "Services", query: `${query} type=service`, icon: "Wrench" },
-    { label: "Industries", query: `${query} type=industry`, icon: "BarChart3" },
+    { label: "Companies", query: `${query} type=company`.trim(), icon: "Building2" },
+    { label: "Products", query: `${query} type=product`.trim(), icon: "Package" },
+    { label: "Services", query: `${query} type=service`.trim(), icon: "Wrench" },
+    { label: "Industries", query: `${query} type=industry`.trim(), icon: "BarChart3" },
   ];
 
   const discovery: DiscoveryData = {
@@ -674,7 +599,7 @@ export async function runSearch(params: SearchParams): Promise<SearchResponse> {
     similar_businesses: similarBusinesses,
     nearby_businesses: nearbyBusinesses,
     trending_searches: trendingSearches,
-    related_industries: relatedIndustries,
+    related_industries: matchingIndustries,
     recommended_categories: matchingCategories,
     knowledge_panel: knowledgePanel,
     explore_more: exploreMore,

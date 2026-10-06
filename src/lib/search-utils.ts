@@ -3,8 +3,6 @@
 // Used by all /api/search* and /api/businesses routes
 // ============================================================
 
-import { db } from "@/lib/db";
-
 // ------------------------------------------------------------
 // Public types — response shapes returned by the search APIs
 // ------------------------------------------------------------
@@ -949,18 +947,8 @@ export function buildFacets(
 // Demo user (used by saved-searches endpoints)
 // ------------------------------------------------------------
 
-let cachedDemoUserId: string | null = null;
 export async function getDemoUserId(): Promise<string> {
-  if (cachedDemoUserId) return cachedDemoUserId;
-  const email = "demo@webuos.com";
-  let user = await db.user.findUnique({ where: { email } });
-  if (!user) {
-    user = await db.user.create({
-      data: { email, name: "WEBUOS Demo User" },
-    });
-  }
-  cachedDemoUserId = user.id;
-  return user.id;
+  return "demo-user-webuos-1";
 }
 
 // ------------------------------------------------------------
